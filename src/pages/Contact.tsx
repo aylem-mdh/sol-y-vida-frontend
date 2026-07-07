@@ -1,7 +1,10 @@
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
+import { useTranslation } from "react-i18next";
 
 export default function Contact() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-soft">
       <div className="pt-8 px-6 max-w-7xl mx-auto">
@@ -10,10 +13,12 @@ export default function Contact() {
 
       {/* HERO */}
       <section className="py-20 text-center">
-        <h1 className="text-5xl font-bold text-gray-800">Contacto</h1>
+        <h1 className="text-5xl font-bold text-gray-800">
+          {t("contactTitle")}
+        </h1>
 
         <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-          Estamos aquí para ayudarte y resolver cualquier duda.
+          {t("contactSubtitle")}
         </p>
       </section>
 
@@ -22,12 +27,14 @@ export default function Contact() {
           {/* INFO */}
           <section className="bg-white rounded-3xl shadow-md p-10">
             <h2 className="text-3xl font-bold text-gray-800">
-              Información de contacto
+              {t("contactInfo")}
             </h2>
 
             <div className="mt-8 space-y-6 text-lg text-gray-600">
               <div>
-                <p className="font-semibold text-gray-800">📞 Teléfono</p>
+                <p className="font-semibold text-gray-800">
+                  📞 {t("phone")}
+                </p>
                 <a
                   href="tel:+34626406477"
                   className="text-primary hover:underline"
@@ -38,11 +45,13 @@ export default function Contact() {
 
               <div>
                 <p className="font-semibold text-gray-800">✉️ Email</p>
-                <p>info@solyvida.com</p>
+                <p>solyvidacare@gmail.com</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800">📍 Cobertura</p>
+                <p className="font-semibold text-gray-800">
+                  📍 {t("coverage")}
+                </p>
                 <p>
                   Torremolinos · Benalmádena · Fuengirola · Mijas · Alhaurín de
                   la Torre
@@ -50,8 +59,10 @@ export default function Contact() {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800">🕒 Horario</p>
-                <p>Lunes a Domingo · 24h</p>
+                <p className="font-semibold text-gray-800">
+                  🕒 {t("schedule")}
+                </p>
+                <p>{t("scheduleValue")}</p>
               </div>
             </div>
 
@@ -63,19 +74,19 @@ export default function Contact() {
           {/* FORM */}
           <section className="bg-white rounded-3xl shadow-md p-10">
             <h2 className="text-3xl font-bold text-gray-800">
-              Envíanos un mensaje
+              {t("sendMessage")}
             </h2>
 
             <form className="mt-8 space-y-5">
               <input
                 type="text"
-                placeholder="Nombre"
+                placeholder={t("name")}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4"
               />
 
               <input
                 type="tel"
-                placeholder="Teléfono"
+                placeholder={t("phone")}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4"
               />
 
@@ -86,13 +97,13 @@ export default function Contact() {
               />
 
               <textarea
-                placeholder="¿Cómo podemos ayudarte?"
+                placeholder={t("messagePlaceholder")}
                 rows={5}
                 className="w-full border border-gray-200 rounded-xl px-4 py-4"
               />
 
               <button className="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:opacity-90 transition">
-                Enviar mensaje
+                {t("sendButton")}
               </button>
             </form>
           </section>

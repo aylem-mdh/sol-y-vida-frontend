@@ -1,68 +1,116 @@
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const [role, setRole] = useState("admin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  async function testBackend() {
+    try {
+      const res = await axios.get("https://localhost:7131/api/Clients");
+      console.log("Backend responde:", res.data);
+      alert("Backend conectado correctamente ✅");
+    } catch (err) {
+      console.error("Error backend:", err);
+      alert("Error conectando backend ❌");
+    }
+  }
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7131/api/Auth/login",
+        {
+          email,
+          password,
+        }
+      );
+
+      const token = response.data.token || response.data.Token;
+
+      localStorage.setItem("token", token);
+
+      if (role === "admin") navigate("/admin");
+      if (role === "worker") navigate("/worker");
+      if (role === "family") navigate("/family");
+    } catch (err) {
+      console.error(err);
+      setError("Email o contraseña incorrectos");
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-soft">
-      {/* HERO */}
-      <section className="bg-slate-900 pb-16 pt-8">
-        <div className="px-6 max-w-7xl mx-auto">
-          <Header />
-        </div>
-
-        <div className="text-center mt-20 text-white px-6">
-          <h1 className="text-5xl font-bold">Acceder</h1>
-
-          <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
-            Selecciona tu tipo de acceso para continuar.
+    <div className="min-h-screen bg-gradient-to-br from-[#072B61] via-[#0B4EA2] to-[#2563EB] flex items-center justify-center p-6">
+      <div className="w-full max-w-[520px] bg-white rounded-[32px] shadow-2xl p-10">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-[#0B4EA2]">Sol y Vida</h1>
+          <p className="text-orange-500 font-semibold tracking-wide mt-2">
+            CUIDADOS
           </p>
         </div>
-      </section>
 
-      <main className="max-w-6xl mx-auto px-6 py-24">
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* FAMILY */}
-          <Link
-            to="/family"
-            className="bg-white rounded-3xl shadow-lg p-10 hover:shadow-2xl transition block"
+        <h2 className="text-3xl font-bold text-slate-800 text-center">
+          Acceder
+        </h2>
+
+        <p className="text-gray-500 text-center mt-3">
+          Inicia sesión en tu cuenta
+        </p>
+
+        {error && (
+          <p className="text-red-500 text-center mt-4 font-semibold">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleLogin} className="mt-8 space-y-5">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-5 py-4 rounded-2xl border border-slate-200"
+          />
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-5 py-4 rounded-2xl border border-slate-200"
+          />
+
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-5 py-4 rounded-2xl border border-slate-200"
           >
-            <div className="text-5xl">👨‍👩‍👧</div>
-            <h2 className="text-3xl font-bold mt-6 text-gray-800">Familias</h2>
-            <p className="mt-4 text-gray-600">
-              Consulta servicios, mensajes e historial.
-            </p>
-          </Link>
+            <option value="admin">Administradora</option>
+            <option value="worker">Trabajador</option>
+            <option value="family">Familia</option>
+          </select>
 
-          {/* WORKER */}
-          <Link
-            to="/worker"
-            className="bg-white rounded-3xl shadow-lg p-10 hover:shadow-2xl transition block"
+          <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-bold text-lg transition">
+            Entrar
+          </button>
+
+          <button
+            type="button"
+            onClick={testBackend}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg transition"
           >
-            <div className="text-5xl">👩‍⚕️</div>
-            <h2 className="text-3xl font-bold mt-6 text-gray-800">
-              Trabajadores
-            </h2>
-            <p className="mt-4 text-gray-600">
-              Gestiona turnos, disponibilidad y documentos.
-            </p>
-          </Link>
-
-          {/* ADMIN */}
-          <Link
-            to="/admin"
-            className="bg-white rounded-3xl shadow-lg p-10 hover:shadow-2xl transition block"
-          >
-            <div className="text-5xl">🛠</div>
-            <h2 className="text-3xl font-bold mt-6 text-gray-800">Admin</h2>
-            <p className="mt-4 text-gray-600">
-              Administra familias, trabajadores y solicitudes.
-            </p>
-          </Link>
-        </section>
-      </main>
-
-      <Footer />
+            Test Backend
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

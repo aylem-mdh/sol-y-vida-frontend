@@ -1,95 +1,119 @@
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+import Sidebar from "../components/dashboard/Sidebar";
+import Topbar from "../components/dashboard/Topbar";
 
 export default function Worker() {
   return (
-    <div className="min-h-screen bg-soft">
-      {/* HERO */}
-      <section className="bg-slate-900 pb-16 pt-8">
-        <div className="px-6 max-w-7xl mx-auto">
-          <Header />
-        </div>
+    <div className="flex bg-slate-100 min-h-screen">
+      <Sidebar />
 
-        <div className="text-center mt-20 text-white px-6">
-          <h1 className="text-5xl font-bold">Panel del Trabajador</h1>
+      <main className="flex-1 p-8">
+        <Topbar
+          title="Bienvenida 👋"
+          subtitle="Aquí tienes tu agenda y próximas visitas."
+          name="María García"
+          role="Trabajadora"
+        />
 
-          <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
-            Gestiona turnos, disponibilidad y documentos laborales.
-          </p>
-        </div>
-      </section>
-
-      <main className="max-w-7xl mx-auto px-6 py-24">
-        {/* RESUMEN */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <section className="grid grid-cols-4 gap-6 mt-8">
           {[
-            ["📅", "Próximo turno", "Hoy · 17:00"],
-            ["🟢", "Disponibilidad", "Disponible"],
-            ["⏱", "Horas esta semana", "32 h"],
-          ].map(([icon, title, value]) => (
-            <div key={title} className="bg-white rounded-3xl shadow-md p-8">
-              <div className="text-4xl">{icon}</div>
-              <h3 className="text-xl font-bold mt-4">{title}</h3>
-              <p className="text-gray-600 mt-2 text-lg">{value}</p>
+            ["4", "Visitas hoy"],
+            ["32h", "Horas semanales"],
+            ["98%", "Puntualidad"],
+            ["4.9", "Valoración"],
+          ].map(([value, label]) => (
+            <div key={label} className="bg-white rounded-3xl shadow-sm p-6">
+              <h2 className="text-4xl font-bold text-[#0B4EA2]">{value}</h2>
+              <p className="text-gray-500 mt-2">{label}</p>
             </div>
           ))}
         </section>
 
-        {/* ACCIONES */}
-        <section className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-3xl shadow-md p-10">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Actualizar disponibilidad
-            </h2>
+        <section className="grid grid-cols-3 gap-6 mt-8">
+          <div className="col-span-2 bg-white rounded-3xl shadow-sm p-8">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6">
+              Agenda de hoy
+            </h3>
 
-            <p className="mt-4 text-gray-600">
-              Indica tus horarios disponibles para próximos servicios.
-            </p>
+            <div className="space-y-4">
+              {[
+                ["08:00", "Carmen López", "Torremolinos"],
+                ["11:00", "Antonio Ruiz", "Benalmádena"],
+                ["15:00", "María Sánchez", "Fuengirola"],
+              ].map(([time, client, zone]) => (
+                <div
+                  key={time}
+                  className="flex justify-between items-center bg-slate-50 rounded-2xl p-5"
+                >
+                  <div>
+                    <p className="font-bold text-lg">{time}</p>
+                    <p className="text-gray-700">{client}</p>
+                    <p className="text-sm text-gray-500">{zone}</p>
+                  </div>
 
-            <button className="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-semibold">
-              Actualizar
-            </button>
+                  <button className="bg-orange-500 text-white px-5 py-3 rounded-xl font-semibold">
+                    Check-in
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="bg-white rounded-3xl shadow-md p-10">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Documentos laborales
-            </h2>
+          <div className="bg-white rounded-3xl shadow-sm p-8">
+            <h3 className="text-2xl font-bold text-slate-800">
+              Próxima visita
+            </h3>
 
-            <p className="mt-4 text-gray-600">
-              Consulta contratos, nóminas y documentación.
-            </p>
+            <div className="mt-8">
+              <p className="text-5xl">🏠</p>
+              <p className="text-2xl font-bold mt-4">Carmen López</p>
+              <p className="text-gray-500 mt-2">Torremolinos</p>
 
-            <button className="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-semibold">
-              Ver documentos
-            </button>
+              <div className="mt-6 bg-blue-50 rounded-2xl p-5">
+                <p className="font-semibold">Hora</p>
+                <p className="text-2xl text-[#0B4EA2] font-bold">08:00</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* TURNOS */}
-        <section className="mt-16 bg-white rounded-3xl shadow-md p-10">
-          <h2 className="text-3xl font-bold text-gray-800">
-            Próximos servicios
-          </h2>
+        <section className="grid grid-cols-2 gap-6 mt-8">
+          <div className="bg-white rounded-3xl shadow-sm p-8">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6">
+              Documentos
+            </h3>
 
-          <div className="mt-6 space-y-4">
-            {[
-              "02 Jul · 17:00 · Torremolinos",
-              "03 Jul · 09:00 · Benalmádena",
-              "05 Jul · 12:00 · Fuengirola",
-            ].map((item) => (
-              <div
-                key={item}
-                className="border border-gray-100 rounded-xl px-5 py-4"
-              >
-                {item}
-              </div>
-            ))}
+            <div className="space-y-4">
+              <div className="bg-slate-50 rounded-2xl p-4">📄 Nómina Junio</div>
+              <div className="bg-slate-50 rounded-2xl p-4">📄 Contrato</div>
+              <div className="bg-slate-50 rounded-2xl p-4">📄 PRL</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-sm p-8">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6">
+              Acciones rápidas
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button className="bg-blue-50 rounded-2xl p-4 font-semibold">
+                Reportar incidencia
+              </button>
+
+              <button className="bg-orange-50 rounded-2xl p-4 font-semibold">
+                Subir fotos
+              </button>
+
+              <button className="bg-blue-50 rounded-2xl p-4 font-semibold">
+                Ver ruta
+              </button>
+
+              <button className="bg-orange-50 rounded-2xl p-4 font-semibold">
+                Contactar admin
+              </button>
+            </div>
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

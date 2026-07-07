@@ -1,185 +1,85 @@
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-soft">
-      <section className="relative min-h-[82vh] overflow-hidden bg-slate-100">
-        <div className="absolute inset-0 bg-slate-900"></div>
+  const { t } = useTranslation();
 
-        {/* FOTO MUJER */}
+  return (
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <section className="relative min-h-screen overflow-hidden bg-[#071B3B]">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#072B61] via-[#0B4EA2] to-[#06152E]" />
+
         <div
-          className="absolute inset-y-0 right-0 w-[65%] bg-no-repeat"
+          className="absolute top-0 right-0 h-screen w-[55%] bg-no-repeat"
           style={{
             backgroundImage: "url('/hero.png')",
             backgroundSize: "contain",
-            backgroundPosition: "right bottom",
+            backgroundPosition: "right top",
           }}
         />
 
-        {/* OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/75 via-40% to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#071B3B] via-[#071B3B]/85 to-transparent" />
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6">
-          {/* COBERTURA */}
-          <div className="pt-6 ml-[180px] text-left text-orange-400 text-base md:text-lg tracking-[0.14em] font-semibold mb-5 whitespace-nowrap">
-            Torremolinos · Benalmádena · Fuengirola · Mijas · Alhaurín de la Torre
-          </div>
+        <div className="relative z-20 max-w-7xl mx-auto px-6 pt-8">
+          <Header />
 
-          {/* HEADER */}
-          <div className="mb-12 ml-10 scale-95 origin-left">
-            <Header />
-          </div>
+          <p className="mt-8 text-orange-400 tracking-[0.15em] font-semibold text-sm md:text-base">
+            TORREMOLINOS · BENALMÁDENA · FUENGIROLA · MIJAS · ALHAURÍN
+          </p>
         </div>
 
-        {/* HERO TEXT */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 text-white w-full">
-          <div className="pt-14 md:pt-16 ml-2">
-            <h1 className="text-4xl md:text-[56px] font-light tracking-[-0.02em] leading-tight max-w-4xl">
-              Cuidamos de quienes más quieres
+        <div className="relative z-20 max-w-7xl mx-auto px-6 pt-20 pb-20">
+          <div className="max-w-3xl">
+            <div className="inline-block px-4 py-2 rounded-full bg-[#16C6C6]/10 backdrop-blur-md border border-[#16C6C6]/30 text-[#16C6C6] text-sm font-semibold">
+              {t("home.badge")}
+            </div>
+
+            <h1 className="mt-8 text-5xl md:text-7xl font-bold text-white leading-tight">
+              {t("home.title1")}
+              <span className="text-orange-400">{t("home.title2")}</span>
             </h1>
 
-            <p className="mt-5 text-lg md:text-xl max-w-3xl text-gray-200 leading-relaxed">
-              Cuidado profesional y humano para que tus seres queridos reciban
-              la atención que merecen, con seguridad, cercanía y sin salir de
-              casa.
+            <p className="mt-6 text-xl text-blue-100 leading-relaxed max-w-2xl">
+              {t("home.text")}
             </p>
-
-            <div className="mt-7 space-y-3 text-lg text-gray-100">
-              <p>✓ Acompañamiento y compañía</p>
-              <p>✓ Ayuda a domicilio</p>
-              <p>✓ Respiro familiar</p>
-            </div>
 
             <div className="mt-10 flex flex-col md:flex-row gap-4">
               <Link
-                to="/services"
-                className="bg-primary hover:opacity-90 px-5 py-2.5 rounded-xl text-base font-semibold transition shadow-lg"
+                to="/contact"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl transition"
               >
-                Nuestros Servicios
+                {t("home.btn1")}
               </Link>
 
               <Link
-                to="/contact"
-                className="bg-white text-gray-900 hover:bg-gray-100 px-5 py-2.5 rounded-xl text-base font-semibold transition shadow-lg"
+                to="/services"
+                className="bg-[#16C6C6]/10 backdrop-blur-md border border-[#16C6C6]/30 text-[#16C6C6] px-8 py-4 rounded-2xl font-semibold hover:bg-[#16C6C6]/20 transition"
               >
-                Contactar
+                {t("home.btn2")}
               </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+              {[
+                ["25+", "Familias"],
+                ["128+", "Servicios"],
+                ["4.8", "Rating"],
+                ["24h", "Soporte"],
+              ].map(([value, label]) => (
+                <div
+                  key={label}
+                  className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl p-5"
+                >
+                  <p className="text-3xl font-bold text-[#16C6C6]">{value}</p>
+                  <p className="text-blue-100 mt-1">{label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
-
-      <main className="max-w-7xl mx-auto px-6 py-24">
-        {/* KPI */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            ["25", "Familias atendidas este mes"],
-            ["128", "Servicios realizados"],
-            ["4.8/5", "Valoración media"],
-            ["18", "Trabajadores activos"],
-          ].map(([value, label]) => (
-            <div
-              key={label}
-              className="bg-white rounded-2xl shadow-md p-6 text-center"
-            >
-              <h3 className="text-3xl font-bold text-primary">{value}</h3>
-              <p className="text-gray-600 mt-2">{label}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* WHY US */}
-        <section className="mt-28">
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold text-gray-800">
-              ¿Por qué elegirnos?
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              ["👩‍⚕️", "Profesionales cualificados"],
-              ["❤️", "Atención personalizada"],
-              ["🛡️", "Confianza y seguridad"],
-              ["📋", "Seguimiento diario"],
-              ["📞", "Comunicación constante"],
-              ["🕒", "Flexibilidad horaria"],
-            ].map(([icon, title]) => (
-              <div key={title} className="bg-white rounded-2xl shadow-md p-8">
-                <div className="text-4xl">{icon}</div>
-                <h3 className="text-xl font-bold mt-4">{title}</h3>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SERVICES */}
-        <section className="mt-28">
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold text-gray-800">
-              Nuestros Servicios
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              ["👥", "ACOMPAÑAMIENTO Y COMPAÑÍA"],
-              ["🏠", "AYUDA A DOMICILIO"],
-              ["🏥", "ACOMPAÑAMIENTO MÉDICO Y HOSPITALARIO"],
-              ["🕒", "RESPIRO FAMILIAR"],
-            ].map(([icon, title]) => (
-              <div key={title} className="bg-white rounded-2xl shadow-lg p-8">
-                <div className="text-5xl">{icon}</div>
-                <h3 className="text-2xl font-bold mt-4">{title}</h3>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ABOUT REAL */}
-        <section className="mt-28">
-          <div className="bg-white rounded-3xl shadow-md p-10 md:p-14">
-            <h2 className="text-4xl font-bold text-gray-800 mb-6">
-              Sobre Nosotros
-            </h2>
-
-            <p className="text-gray-600 leading-relaxed text-lg">
-              Somos una empresa especializada en la atención y acompañamiento de
-              personas mayores en la Costa del Sol.
-            </p>
-
-            <p className="text-gray-600 leading-relaxed text-lg mt-5">
-              Ofrecemos servicios adaptados a las necesidades de cada familia,
-              con personal cualificado y seleccionado cuidadosamente para
-              garantizar un trato humano, respetuoso y profesional.
-            </p>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="mt-20 bg-primary rounded-3xl px-8 py-12 md:px-14 md:py-16 text-white">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold">
-                ¿Necesitas ayuda para un familiar?
-              </h2>
-
-              <p className="mt-4 text-lg text-blue-100 max-w-2xl">
-                Solicita una valoración gratuita y te asesoraremos sin compromiso.
-              </p>
-            </div>
-
-            <Link
-              to="/contact"
-              className="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition"
-            >
-              Solicitar valoración gratuita →
-            </Link>
-          </div>
-        </section>
-      </main>
 
       <Footer />
     </div>

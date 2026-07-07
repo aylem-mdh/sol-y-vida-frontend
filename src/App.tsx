@@ -7,12 +7,14 @@ import Contact from "./pages/Contact";
 import Family from "./pages/Family";
 import Worker from "./pages/Worker";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
