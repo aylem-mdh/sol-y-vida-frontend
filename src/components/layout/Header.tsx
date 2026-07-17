@@ -1,32 +1,43 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function changeLang(lang: string) {
     i18n.changeLanguage(lang);
   }
 
   return (
-    <header className="flex items-center gap-10 w-full">
-      {/* LOGO */}
+    <header className="relative z-50 w-full">
+<div className="relative flex items-center w-full">
 
-      <div className="z-20 shrink-0">
-        <img
-          src="/logo.png"
-          alt="Sol y Vida"
-          className="h-44 w-auto object-contain drop-shadow-xl"
-        />
-      </div>
+        {/* LOGO */}
 
-      {/* MENÚ */}
+        <div className="z-20 shrink-0">
+          <img
+            src="/logo.png"
+            alt="Sol yVida"
+            className="h-20 sm:h-44 w-auto object-contain drop-shadow-xl"
+          />
+        </div>
 
-      <div className="flex-1 flex justify-start ml-4">
+        {/* BOTÓN HAMBURGUESA (MÓVIL) */}
 
-        <nav className="w-fit flex items-center gap-5 bg-[#A9E1FF] border border-[#7CCEFF] px-6 py-4 rounded-2xl shadow-xl">
+        <button
+  onClick={() => setMenuOpen(!menuOpen)}
+  className="ml-auto md:hidden bg-white p-3 rounded-xl shadow-lg border border-[#DDF7F5]"
+> </button>
 
-          <div className="flex items-center gap-5">
+        {/* MENÚ ESCRITORIO */}
+
+      <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
+
+ <nav className="flex items-center justify-center gap-8 bg-white/95 backdrop-blur-xl border border-[#CFEFEA] px-12 py-4 rounded-full shadow-2xl">
 
             <Link
               to="/"
@@ -56,29 +67,90 @@ export default function Header() {
               {t("common.contact")}
             </Link>
 
-          </div>
+            <div className="w-px h-6 bg-[#6EBEE7]" />
 
-          <div className="w-px h-6 bg-[#6EBEE7]" />
+            <select
+              value={i18n.language}
+              onChange={(e) => changeLang(e.target.value)}
+              className="bg-white border border-[#7CCEFF] rounded-xl px-3 py-2"
+            >
+              <option value="es">ES</option>
+              <option value="en">EN</option>
+            </select>
 
-          <select
-            value={i18n.language}
-            onChange={(e) => changeLang(e.target.value)}
-            className="bg-white text-black border border-[#7CCEFF] rounded-xl px-3 py-2 outline-none"
-          >
-            <option value="es">ES</option>
-            <option value="en">EN</option>
-          </select>
+            <Link
+              to="/login"
+              className="bg-[#FFD8A6] hover:bg-[#FFC57D] text-black px-5 py-2 rounded-xl font-bold transition"
+            >
+              {t("common.login")}
+            </Link>
 
-          <Link
-            to="/login"
-            className="bg-[#FFD8A6] hover:bg-[#FFC57D] text-black px-5 py-2 rounded-xl font-bold transition"
-          >
-            {t("common.login")}
-          </Link>
+          </nav>
 
-        </nav>
+        </div>
+
+        {/* MENÚ MÓVIL */}
+        {menuOpen && (
+  <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-2xl shadow-2xl border border-[#DDF7F5] p-6 md:hidden">
+
+    <div className="flex flex-col gap-5">
+
+      <Link
+        to="/"
+        onClick={() => setMenuOpen(false)}
+        className="font-semibold text-black hover:text-[#0F9E98]"
+      >
+        {t("common.home")}
+      </Link>
+
+      <Link
+        to="/services"
+        onClick={() => setMenuOpen(false)}
+        className="font-semibold text-black hover:text-[#0F9E98]"
+      >
+        {t("common.services")}
+      </Link>
+
+      <Link
+        to="/about"
+        onClick={() => setMenuOpen(false)}
+        className="font-semibold text-black hover:text-[#0F9E98]"
+      >
+        {t("common.about")}
+      </Link>
+
+      <Link
+        to="/contact"
+        onClick={() => setMenuOpen(false)}
+        className="font-semibold text-black hover:text-[#0F9E98]"
+      >
+        {t("common.contact")}
+      </Link>
+
+      <select
+        value={i18n.language}
+        onChange={(e) => changeLang(e.target.value)}
+        className="border border-[#7CCEFF] rounded-xl px-3 py-2"
+      >
+        <option value="es">ES</option>
+        <option value="en">EN</option>
+      </select>
+
+      <Link
+        to="/login"
+        onClick={() => setMenuOpen(false)}
+        className="bg-[#FFD8A6] hover:bg-[#FFC57D] text-center text-black py-3 rounded-xl font-bold transition"
+      >
+        {t("common.login")}
+      </Link>
+
+    </div>
+
+  </div>
+)}
 
       </div>
+
     </header>
   );
 }
