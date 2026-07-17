@@ -29,10 +29,16 @@ export default function Header() {
         {/* BOTÓN HAMBURGUESA (MÓVIL) */}
 
         <button
+ 
   onClick={() => setMenuOpen(!menuOpen)}
   className="ml-auto md:hidden bg-white p-3 rounded-xl shadow-lg border border-[#DDF7F5]"
-> </button>
-
+>
+  {menuOpen ? (
+    <X size={28} className="text-[#0F9E98]" />
+  ) : (
+    <Menu size={28} className="text-[#0F9E98]" />
+  )}
+</button>
         {/* MENÚ ESCRITORIO */}
 
       <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
