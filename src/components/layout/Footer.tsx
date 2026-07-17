@@ -1,22 +1,37 @@
+import React from "react";
+
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-10 mt-20">
-      <div className="max-w-7xl mx-auto px-6">
-        <h3 className="text-xl font-bold">Sol y Vida Cuidados</h3>
+    <footer className="bg-[#FFE6BF] border-t border-[#FFD4A3] mt-20">
 
-        <p className="text-gray-400 mt-3">
+      <div className="max-w-7xl mx-auto px-8 py-10">
+
+        <h2 className="text-2xl font-bold text-black">
+          Sol y Vida Cuidados
+        </h2>
+
+        <p className="mt-3 text-black">
           Servicios de atención domiciliaria profesional.
         </p>
 
-        <div className="mt-6 text-sm text-gray-500 space-y-2">
-          <p>Protección de Datos incluida.</p>
-          <p>Servicios VITALY: PRL + Vigilancia de la Salud.</p>
+        <p className="mt-2 text-black">
+          Protección de Datos incluida.
+        </p>
+
+        <p className="mt-2 text-black">
+          Servicios <strong>VITALY</strong>: PRL + Vigilancia de la Salud.
+        </p>
+
+        <div className="border-t border-[#FFD4A3] mt-8 pt-5">
+
+          <p className="text-black">
+            © 2026 Sol y Vida Cuidados
+          </p>
+
         </div>
 
-        <p className="mt-8 text-xs text-gray-600">
-          © 2026 Sol y Vida Cuidados
-        </p>
       </div>
+
     </footer>
   );
 }

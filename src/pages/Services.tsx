@@ -1,72 +1,117 @@
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import Sidebar from "../components/dashboard/Sidebar";
+import Topbar from "../components/dashboard/Topbar";
+import ServicesTable from "../components/dashboard/ServicesTable";
+import ServiceForm from "../components/dashboard/ServiceForm";
+import Modal from "../components/ui/Modal";
+
+import {
+  getServices,
+  deleteService,
+  type Service,
+} from "../services/serviceService";
 
 export default function Services() {
-  const { t } = useTranslation();
+  const [services, setServices] = useState<Service[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedService, setSelectedService] =
+    useState<Service | null>(null);
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  async function loadServices() {
+    try {
+      const data = await getServices();
+      setServices(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function removeService(id: number) {
+    if (!window.confirm("¿Seguro que deseas eliminar este servicio?"))
+      return;
+
+    try {
+      await deleteService(id);
+
+      setServices((prev) =>
+        prev.filter((s) => s.id !== id)
+      );
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo eliminar el servicio.");
+    }
+  }
+
+  function newService() {
+    setSelectedService(null);
+    setShowModal(true);
+  }
+
+  function editService(service: Service) {
+    setSelectedService(service);
+    setShowModal(true);
+  }
+
+  function closeModal() {
+    setSelectedService(null);
+    setShowModal(false);
+  }
 
   return (
-    <div className="min-h-screen bg-soft">
-      {/* HERO */}
-      <section className="bg-slate-900 pb-16 pt-8">
-        <div className="px-6 max-w-7xl mx-auto">
-          <Header />
-        </div>
+    <div className="flex bg-slate-100 min-h-screen">
+      <Sidebar />
 
-        <div className="text-center mt-20 text-white px-6">
-          <h1 className="text-5xl font-bold">{t("servicesTitle")}</h1>
+      <main className="flex-1 p-8">
+        <Topbar
+          title="Servicios"
+          subtitle="Gestiona todos los servicios de Sol y Vida Cuidados."
+          name="Carmen López"
+          role="Administradora"
+        />
 
-          <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
-            {t("servicesSubtitle")}
-          </p>
-        </div>
-      </section>
+        <section className="mt-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-slate-800">
+              Servicios
+            </h2>
 
-      <main className="max-w-7xl mx-auto px-6 py-24">
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[
-            ["👥", t("service1Title"), t("service1Text")],
-            ["🏠", t("service2Title"), t("service2Text")],
-            ["🏥", t("service3Title"), t("service3Text")],
-            ["🕒", t("service4Title"), t("service4Text")],
-          ].map(([icon, title, text]) => (
-            <div
-              key={title}
-              className="bg-white rounded-3xl shadow-lg p-10 hover:shadow-xl transition"
+            <button
+              onClick={newService}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl font-bold transition"
             >
-              <div className="text-5xl">{icon}</div>
-
-              <h3 className="text-2xl font-bold mt-5">{title}</h3>
-
-              <p className="text-gray-600 mt-4 text-lg">{text}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-28">
-          <h2 className="text-4xl font-bold text-center text-gray-800">
-            {t("howWeWork")}
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mt-14">
-            {[
-              ["1", t("step1")],
-              ["2", t("step2")],
-              ["3", t("step3")],
-            ].map(([num, title]) => (
-              <div
-                key={num}
-                className="bg-white rounded-2xl shadow-md p-8 text-center"
-              >
-                <div className="text-4xl font-bold text-primary">{num}</div>
-                <h3 className="text-xl font-semibold mt-4">{title}</h3>
-              </div>
-            ))}
+              + Nuevo Servicio
+            </button>
           </div>
-        </section>
-      </main>
 
-      <Footer />
+          <ServicesTable
+            services={services}
+            onDelete={removeService}
+            onEdit={editService}
+          />
+        </section>
+
+        <Modal
+          open={showModal}
+          title={
+            selectedService
+              ? "Editar servicio"
+              : "Nuevo servicio"
+          }
+          onClose={closeModal}
+        >
+          <ServiceForm
+            service={selectedService}
+            onSaved={async () => {
+              await loadServices();
+              closeModal();
+            }}
+          />
+        </Modal>
+      </main>
     </div>
   );
 }

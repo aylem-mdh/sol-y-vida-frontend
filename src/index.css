@@ -2,10 +2,218 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: #f8fafc;
-  font-family: Arial, Helvetica, sans-serif;
+/*============================
+
+SOL Y VIDA DESIGN SYSTEM
+
+============================*/
+
+:root{
+
+  --primary:#0F9E98;
+
+  --primary-dark:#0A7F7A;
+
+  --primary-light:#DDF7F5;
+
+  --secondary:#FFF5E8;
+
+  --orange:#F29A38;
+
+  --orange-light:#FFE8C8;
+
+  --background:#F7FCFB;
+
+  --text:#1F2937;
+
+  --gray:#6B7280;
+
+}
+
+*{
+
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+
+}
+
+html{
+
+  scroll-behavior:smooth;
+
+}
+
+body{
+
+  min-width:320px;
+
+  min-height:100vh;
+
+  font-family:'Poppins',sans-serif;
+
+  background:var(--background);
+
+  color:var(--text);
+
+  -webkit-font-smoothing:antialiased;
+
+  -moz-osx-font-smoothing:grayscale;
+
+}
+
+a{
+
+  color:inherit;
+
+  text-decoration:none;
+
+}
+
+button{
+
+  cursor:pointer;
+
+  transition:.3s;
+
+}
+
+img{
+
+  max-width:100%;
+
+  display:block;
+
+}
+
+::selection{
+
+  background:var(--primary);
+
+  color:white;
+
+}
+
+/* Scroll */
+
+::-webkit-scrollbar{
+
+  width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+  background:var(--primary);
+
+  border-radius:50px;
+
+}
+
+::-webkit-scrollbar-track{
+
+  background:#EDFDFC;
+
+}
+
+/* Sombras */
+
+.shadow-soft{
+
+  box-shadow:
+  0 15px 45px rgba(15,158,152,.12);
+
+}
+
+.shadow-card{
+
+  box-shadow:
+  0 10px 35px rgba(0,0,0,.06);
+
+}
+
+/* Hover */
+
+.hover-card{
+
+  transition:.35s;
+
+}
+
+.hover-card:hover{
+
+  transform:translateY(-8px);
+
+}
+
+/* Botón principal */
+
+.btn-primary{
+
+  background:var(--primary);
+
+  color:white;
+
+  border-radius:18px;
+
+}
+
+.btn-primary:hover{
+
+  background:var(--primary-dark);
+
+}
+
+/* Botón secundario */
+
+.btn-secondary{
+
+  background:white;
+
+  color:var(--primary);
+
+  border:2px solid var(--primary);
+
+  border-radius:18px;
+
+}
+
+.btn-secondary:hover{
+
+  background:var(--primary-light);
+
+}
+
+/* Tarjetas */
+
+.card{
+
+  background:white;
+
+  border-radius:30px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+/* Títulos */
+
+.section-title{
+
+  color:var(--text);
+
+  font-weight:800;
+
+}
+
+.section-subtitle{
+
+  color:var(--orange);
+
+  letter-spacing:4px;
+
+  text-transform:uppercase;
+
+  font-weight:700;
+
 }

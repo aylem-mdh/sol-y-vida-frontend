@@ -1,131 +1,104 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-interface Client {
-  id: number;
-  nombre: string;
-  apellidos: string;
-  fechaNacimiento: string;
-  dni: string;
-  numeroSeguridadSocial: string;
-  direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  telefono: string;
-  email: string;
-  activo: boolean;
-}
+import type { FamilyMember } from "../../services/familyMemberService";
 
 interface Props {
-  clients: Client[];
+  familyMembers: FamilyMember[];
   onDelete: (id: number) => void;
-  onEdit: (client: Client) => void;
+  onEdit: (member: FamilyMember) => void;
 }
 
-export default function ClientsTable({
-  clients,
+export default function FamilyMembersTable({
+  familyMembers,
   onDelete,
   onEdit,
 }: Props) {
   const [search, setSearch] = useState("");
 
-  const filteredClients = useMemo(() => {
-    return clients.filter((client) => {
+  const filtered = useMemo(() => {
+    return familyMembers.filter((member) => {
       const text = (
-        client.nombre +
+        member.nombre +
         " " +
-        client.apellidos +
+        member.apellidos +
         " " +
-        client.ciudad +
+        member.parentesco +
         " " +
-        client.telefono +
+        member.telefono +
         " " +
-        client.email
+        (member.email ?? "")
       ).toLowerCase();
 
       return text.includes(search.toLowerCase());
     });
-  }, [clients, search]);
+  }, [familyMembers, search]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-
-      {/* CABECERA */}
 
       <div className="flex justify-between items-center px-8 py-6 border-b">
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Clientes recientes
+            Familiares
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona todos los clientes de Sol y Vida.
+            Gestiona los familiares de los clientes.
           </p>
         </div>
 
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar cliente..."
+          placeholder="Buscar familiar..."
           className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
         />
 
       </div>
 
-      {/* TABLA */}
-
       <table className="w-full">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Cliente</th>
-            <th className="py-4">Ciudad</th>
-            <th className="py-4">Teléfono</th>
-            <th className="py-4">Estado</th>
-            <th className="py-4 text-center">Acciones</th>
+            <th className="px-8 py-4">Nombre</th>
+            <th>Parentesco</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Principal</th>
+            <th className="text-center">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
 
-          {filteredClients.map((client) => (
+          {filtered.map((member) => (
 
             <tr
-              key={client.id}
-              className="border-t hover:bg-slate-50 transition"
+              key={member.id}
+              className="border-t hover:bg-slate-50"
             >
 
-              <td className="px-8 py-5">
-
-                <div>
-
-                  <p className="font-semibold text-slate-800">
-                    {client.nombre} {client.apellidos}
-                  </p>
-
-                  <p className="text-sm text-gray-500">
-                    {client.email}
-                  </p>
-
-                </div>
-
+              <td className="px-8 py-5 font-semibold">
+                {member.nombre} {member.apellidos}
               </td>
 
-              <td>{client.ciudad}</td>
+              <td>{member.parentesco}</td>
 
-              <td>{client.telefono}</td>
+              <td>{member.telefono}</td>
+
+              <td>{member.email}</td>
 
               <td>
 
                 <span
                   className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${
-                    client.activo
+                    member.esContactoPrincipal
                       ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                      : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {client.activo ? "Activo" : "Inactivo"}
+                  {member.esContactoPrincipal ? "Sí" : "No"}
                 </span>
 
               </td>
@@ -135,17 +108,15 @@ export default function ClientsTable({
                 <div className="flex justify-center gap-3">
 
                   <button
-                    onClick={() => onEdit(client)}
+                    onClick={() => onEdit(member)}
                     className="w-10 h-10 rounded-xl bg-blue-100 hover:bg-[#0B4EA2] text-[#0B4EA2] hover:text-white transition flex items-center justify-center"
-                    title="Editar"
                   >
                     <Pencil size={18} />
                   </button>
 
                   <button
-                    onClick={() => onDelete(client.id)}
+                    onClick={() => onDelete(member.id)}
                     className="w-10 h-10 rounded-xl bg-red-100 hover:bg-red-500 text-red-600 hover:text-white transition flex items-center justify-center"
-                    title="Eliminar"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -158,19 +129,15 @@ export default function ClientsTable({
 
           ))}
 
-          {filteredClients.length === 0 && (
-
+          {filtered.length === 0 && (
             <tr>
-
               <td
-                colSpan={5}
-                className="text-center py-12 text-gray-500"
+                colSpan={6}
+                className="text-center py-10 text-gray-500"
               >
-                No se encontraron clientes.
+                No hay familiares registrados.
               </td>
-
             </tr>
-
           )}
 
         </tbody>

@@ -1,76 +1,92 @@
+import { useEffect, useState } from "react";
+import {
+  Users,
+  UserCog,
+  CalendarDays,
+  HeartHandshake,
+  UsersRound,
+} from "lucide-react";
+
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
-import StatusBadge from "../components/dashboard/StatusBadge";
 import VisitsChart from "../components/dashboard/VisitsChart";
-import ClientsTable from "../components/dashboard/ClientsTable";
+import StatCard from "../components/dashboard/StatCard";
+
+import { getDashboardData } from "../services/dashboardService";
+import type { DashboardData } from "../services/dashboardService";
 
 export default function Admin() {
+  const [stats, setStats] = useState<DashboardData>({
+    clientes: 0,
+    trabajadores: 0,
+    visitas: 0,
+    servicios: 0,
+    familiares: 0,
+  });
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  async function loadDashboard() {
+    try {
+      const data = await getDashboardData();
+      setStats(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <div className="flex bg-slate-100 min-h-screen">
+    <div className="flex bg-background min-h-screen">
       <Sidebar />
 
       <main className="flex-1 p-8">
         <Topbar
-          title="Bienvenida, Administradora 👋"
-          subtitle="Aquí tienes un resumen de la actividad de Sol y Vida Cuidados."
+          title="Dashboard"
+          subtitle="Resumen general de Sol y Vida Cuidados."
           name="Carmen López"
           role="Administradora"
         />
 
-        <section className="grid grid-cols-4 gap-6 mt-8">
-          {[
-            ["25", "Clientes activos"],
-            ["18", "Trabajadores"],
-            ["32", "Visitas hoy"],
-            ["4.8", "Valoración media"],
-          ].map(([value, label]) => (
-            <div key={label} className="bg-white rounded-3xl shadow-sm p-6">
-              <h2 className="text-4xl font-bold text-[#0B4EA2]">{value}</h2>
-              <p className="text-gray-500 mt-2">{label}</p>
-            </div>
-          ))}
+        {/* TARJETAS */}
+
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-8">
+          <StatCard
+            title="Clientes"
+            value={stats.clientes}
+            icon={Users}
+          />
+
+          <StatCard
+            title="Trabajadores"
+            value={stats.trabajadores}
+            icon={UserCog}
+          />
+
+          <StatCard
+            title="Visitas"
+            value={stats.visitas}
+            icon={CalendarDays}
+          />
+
+          <StatCard
+            title="Servicios"
+            value={stats.servicios}
+            icon={HeartHandshake}
+          />
+
+          <StatCard
+            title="Familiares"
+            value={stats.familiares}
+            icon={UsersRound}
+          />
         </section>
 
-        <section className="grid grid-cols-3 gap-6 mt-8">
-          <div className="col-span-2">
-            <VisitsChart />
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Visitas de hoy
-            </h3>
-
-            <div className="space-y-5">
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-semibold">Carmen López</p>
-                  <p className="text-sm text-gray-500">08:00</p>
-                </div>
-                <StatusBadge status="Completada" />
-              </div>
-
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-semibold">Antonio Ruiz</p>
-                  <p className="text-sm text-gray-500">10:00</p>
-                </div>
-                <StatusBadge status="En curso" />
-              </div>
-
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-semibold">María Sánchez</p>
-                  <p className="text-sm text-gray-500">12:00</p>
-                </div>
-                <StatusBadge status="Pendiente" />
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* GRÁFICA */}
 
         <section className="mt-8">
-          <ClientsTable />
+          <VisitsChart />
         </section>
       </main>
     </div>

@@ -1,151 +1,117 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-interface Client {
-  id: number;
-  nombre: string;
-  apellidos: string;
-  fechaNacimiento: string;
-  dni: string;
-  numeroSeguridadSocial: string;
-  direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  telefono: string;
-  email: string;
-  activo: boolean;
-}
+import type { Worker } from "../../services/workerService";
 
 interface Props {
-  clients: Client[];
+  workers: Worker[];
   onDelete: (id: number) => void;
-  onEdit: (client: Client) => void;
+  onEdit: (worker: Worker) => void;
 }
 
-export default function ClientsTable({
-  clients,
+export default function WorkersTable({
+  workers,
   onDelete,
   onEdit,
 }: Props) {
   const [search, setSearch] = useState("");
 
-  const filteredClients = useMemo(() => {
-    return clients.filter((client) => {
+  const filteredWorkers = useMemo(() => {
+    return workers.filter((worker) => {
       const text = (
-        client.nombre +
+        worker.nombre +
         " " +
-        client.apellidos +
+        worker.apellidos +
         " " +
-        client.ciudad +
+        worker.dni +
         " " +
-        client.telefono +
+        worker.telefono +
         " " +
-        client.email
+        worker.email +
+        " " +
+        worker.especialidad
       ).toLowerCase();
 
       return text.includes(search.toLowerCase());
     });
-  }, [clients, search]);
+  }, [workers, search]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-
-      {/* CABECERA */}
 
       <div className="flex justify-between items-center px-8 py-6 border-b">
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Clientes recientes
+            Trabajadores
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona todos los clientes de Sol y Vida.
+            Gestiona todos los trabajadores de Sol y Vida.
           </p>
         </div>
 
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar cliente..."
+          placeholder="Buscar trabajador..."
           className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
         />
 
       </div>
 
-      {/* TABLA */}
-
       <table className="w-full">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Cliente</th>
-            <th className="py-4">Ciudad</th>
-            <th className="py-4">Teléfono</th>
-            <th className="py-4">Estado</th>
-            <th className="py-4 text-center">Acciones</th>
+            <th className="px-8 py-4">Trabajador</th>
+            <th>Especialidad</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th className="text-center">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
 
-          {filteredClients.map((client) => (
+          {filteredWorkers.map((worker) => (
 
             <tr
-              key={client.id}
+              key={worker.id}
               className="border-t hover:bg-slate-50 transition"
             >
 
               <td className="px-8 py-5">
-
                 <div>
-
                   <p className="font-semibold text-slate-800">
-                    {client.nombre} {client.apellidos}
+                    {worker.nombre} {worker.apellidos}
                   </p>
 
                   <p className="text-sm text-gray-500">
-                    {client.email}
+                    {worker.dni}
                   </p>
-
                 </div>
-
               </td>
 
-              <td>{client.ciudad}</td>
+              <td>{worker.especialidad}</td>
 
-              <td>{client.telefono}</td>
+              <td>{worker.telefono}</td>
 
-              <td>
-
-                <span
-                  className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${
-                    client.activo
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {client.activo ? "Activo" : "Inactivo"}
-                </span>
-
-              </td>
+              <td>{worker.email}</td>
 
               <td>
 
                 <div className="flex justify-center gap-3">
 
                   <button
-                    onClick={() => onEdit(client)}
+                    onClick={() => onEdit(worker)}
                     className="w-10 h-10 rounded-xl bg-blue-100 hover:bg-[#0B4EA2] text-[#0B4EA2] hover:text-white transition flex items-center justify-center"
-                    title="Editar"
                   >
                     <Pencil size={18} />
                   </button>
 
                   <button
-                    onClick={() => onDelete(client.id)}
+                    onClick={() => onDelete(worker.id)}
                     className="w-10 h-10 rounded-xl bg-red-100 hover:bg-red-500 text-red-600 hover:text-white transition flex items-center justify-center"
-                    title="Eliminar"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -158,19 +124,15 @@ export default function ClientsTable({
 
           ))}
 
-          {filteredClients.length === 0 && (
-
+          {filteredWorkers.length === 0 && (
             <tr>
-
               <td
                 colSpan={5}
                 className="text-center py-12 text-gray-500"
               >
-                No se encontraron clientes.
+                No se encontraron trabajadores.
               </td>
-
             </tr>
-
           )}
 
         </tbody>
