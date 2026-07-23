@@ -17,7 +17,7 @@ import {
 
 const services = [
   {
-    title: "Acompañamiento",
+    title: "Acompañamiento y compañía",
     description:
       "Compañía, conversación y apoyo diario para que cada día se viva con mayor tranquilidad y bienestar.",
     icon: HeartHandshake,
@@ -29,7 +29,7 @@ const services = [
     icon: HomeIcon,
   },
   {
-    title: "Acompañamiento médico",
+    title: "Acompañamiento médico y hospitalario",
     description:
       "Apoyo y supervisión en los cuidados de salud, siempre con respeto y profesionalidad.",
     icon: BriefcaseMedical,
@@ -97,11 +97,11 @@ export default function Home() {
               </h1>
 
               <p className="mt-4 text-base font-semibold text-[#374151] sm:mt-5 sm:text-lg md:text-xl">
-                Atención domiciliaria cercana, humana y profesional para personas mayores.
+                Somos una empresa especializada en la atención y acompañamiento de personas mayores en la Costa del Sol.
               </p>
 
               <p className="mt-3 text-sm leading-6 text-[#4B5563] sm:mt-4 sm:text-base sm:leading-7">
-                Somos una empresa comprometida con el bienestar de las personas mayores y sus familias, ofreciendo cuidados personalizados en el entorno más familiar: el hogar.
+                Ofrecemos servicios adaptados a las necesidades de cada familia, con personal cualificado y seleccionado cuidadosamente para garantizar un trato humano, respetuoso y profesional.
               </p>
 
               <p className="mt-2 text-sm leading-6 text-[#4B5563] sm:mt-3 sm:text-base sm:leading-7">
@@ -227,15 +227,15 @@ export default function Home() {
             <div className="mt-6 space-y-3 text-[#4B5563] sm:mt-8 sm:space-y-4">
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 flex-shrink-0 text-[#0F9E98] sm:h-6 sm:w-6" />
-                <span className="text-sm sm:text-lg">+34 600 000 000</span>
+                <span className="text-sm sm:text-lg">626 406 477</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 flex-shrink-0 text-[#0F9E98] sm:h-6 sm:w-6" />
-                <span className="text-sm sm:text-lg">Marbella, Costa del Sol</span>
+                <span className="text-sm sm:text-lg">Paseo del Colorado, 7 · Torremolinos</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 flex-shrink-0 text-[#0F9E98] sm:h-6 sm:w-6" />
-                <span className="text-sm sm:text-lg">info@solyvidacuidados.com</span>
+                <span className="text-sm sm:text-lg">solyvida@solyvidacare.com</span>
               </div>
             </div>
           </div>

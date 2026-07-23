@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createService,
   updateService,
@@ -14,6 +15,7 @@ export default function ServiceForm({
   service,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -55,7 +57,7 @@ export default function ServiceForm({
 
   async function save() {
     if (!form.nombre || form.precioPorHora <= 0) {
-      alert("Completa los campos obligatorios.");
+      alert(t("forms.service.errors.required"));
       return;
     }
 
@@ -71,18 +73,18 @@ export default function ServiceForm({
       onSaved();
     } catch (error) {
       console.error(error);
-      alert("Ha ocurrido un error.");
+      alert(t("forms.common.errors.generic"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
       <input
         name="nombre"
-        placeholder="Nombre del servicio"
+        placeholder={t("forms.service.name")}
         value={form.nombre}
         onChange={change}
         className="border rounded-xl p-3"
@@ -91,7 +93,7 @@ export default function ServiceForm({
       <input
         type="number"
         name="precioPorHora"
-        placeholder="Precio por hora (€)"
+        placeholder={t("forms.service.pricePerHour")}
         value={form.precioPorHora}
         onChange={change}
         className="border rounded-xl p-3"
@@ -99,7 +101,7 @@ export default function ServiceForm({
 
       <textarea
         name="descripcion"
-        placeholder="Descripción"
+        placeholder={t("forms.common.description")}
         value={form.descripcion}
         onChange={change}
         className="border rounded-xl p-3 col-span-2 min-h-[120px]"
@@ -113,7 +115,7 @@ export default function ServiceForm({
           onChange={change}
         />
 
-        Activo
+        {t("tables.common.active")}
       </label>
 
       <div className="col-span-2 flex justify-end">
@@ -124,10 +126,10 @@ export default function ServiceForm({
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-bold"
         >
           {loading
-            ? "Guardando..."
+            ? t("forms.common.saving")
             : service
-            ? "Guardar cambios"
-            : "Crear servicio"}
+            ? t("forms.common.saveChanges")
+            : t("forms.service.save")}
         </button>
 
       </div>

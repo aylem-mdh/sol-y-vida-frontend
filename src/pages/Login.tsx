@@ -1,49 +1,66 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { login as loginRequest } from "../services/authService";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [role, setRole] = useState("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  async function testBackend() {
-    try {
-      const res = await axios.get("https://localhost:7131/api/Clients");
-      console.log("Backend responde:", res.data);
-      alert("Backend conectado correctamente ✅");
-    } catch (err) {
-      console.error("Error backend:", err);
-      alert("Error conectando backend ❌");
-    }
-  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await axios.post(
-        "https://localhost:7131/api/Auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const normalizedEmail = email.trim().toLowerCase();
+      const response = await loginRequest({ email: normalizedEmail, password });
+      const token = response.token;
 
-      const token = response.data.token || response.data.Token;
+      if (!token) {
+        setError(t("login.errors.noToken"));
+        return;
+      }
+
+      const resolvedRole = response.role;
+
+      if (!resolvedRole) {
+        setError(t("login.errors.noRole"));
+        return;
+      }
 
       localStorage.setItem("token", token);
+      localStorage.setItem("role", resolvedRole);
 
-      if (role === "admin") navigate("/admin");
-      if (role === "worker") navigate("/worker");
-      if (role === "family") navigate("/family");
+      if (resolvedRole === "admin") navigate("/admin");
+      if (resolvedRole === "worker") navigate("/worker");
+      if (resolvedRole === "family") navigate("/family");
+
+      if (resolvedRole === "client") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        setError(t("login.errors.clientDisabled"));
+      }
     } catch (err) {
       console.error(err);
-      setError("Email o contraseña incorrectos");
+
+      if (axios.isAxiosError(err)) {
+        if (!err.response) {
+          setError(t("login.errors.noServer"));
+          return;
+        }
+
+        if (err.response.status === 401 || err.response.status === 400) {
+          setError(t("login.errors.invalidCredentials"));
+          return;
+        }
+      }
+
+      setError(t("login.errors.generic"));
     }
   }
 
@@ -57,12 +74,10 @@ export default function Login() {
           </p>
         </div>
 
-        <h2 className="text-3xl font-bold text-slate-800 text-center">
-          Acceder
-        </h2>
+        <h2 className="text-3xl font-bold text-slate-800 text-center">Bienvenido</h2>
 
         <p className="text-gray-500 text-center mt-3">
-          Inicia sesión en tu cuenta
+          {t("login.subtitle")}
         </p>
 
         {error && (
@@ -74,7 +89,7 @@ export default function Login() {
         <form onSubmit={handleLogin} className="mt-8 space-y-5">
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("login.email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-5 py-4 rounded-2xl border border-slate-200"
@@ -82,33 +97,21 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="Contraseña"
+            placeholder={t("login.password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-5 py-4 rounded-2xl border border-slate-200"
           />
 
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full px-5 py-4 rounded-2xl border border-slate-200"
-          >
-            <option value="admin">Administradora</option>
-            <option value="worker">Trabajador</option>
-            <option value="family">Familia</option>
-          </select>
-
           <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-bold text-lg transition">
-            Entrar
+            {t("common.login")}
           </button>
 
-          <button
-            type="button"
-            onClick={testBackend}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg transition"
-          >
-            Test Backend
-          </button>
+          <p className="text-center text-sm text-slate-500">
+            <Link to="/reset-password" className="font-semibold text-[#0B4EA2] hover:underline">
+              {t("login.forgotPassword")}
+            </Link>
+          </p>
         </form>
       </div>
     </div>

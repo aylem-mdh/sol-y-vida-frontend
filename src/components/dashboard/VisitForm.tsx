@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createVisit,
   updateVisit,
@@ -34,6 +35,7 @@ export default function VisitForm({
   visit,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
 
   const [clients, setClients] = useState<Client[]>([]);
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -83,6 +85,10 @@ export default function VisitForm({
   }
 
   async function save() {
+    if (!form.fecha || !form.clientId || !form.workerId) {
+      alert(t("forms.visit.errors.required"));
+      return;
+    }
 
     const dto = {
       fecha: form.fecha,
@@ -102,6 +108,10 @@ export default function VisitForm({
 
       onSaved();
 
+    } catch (error) {
+      console.error(error);
+      alert(t("forms.visit.errors.save"));
+
     } finally {
       setLoading(false);
     }
@@ -109,7 +119,7 @@ export default function VisitForm({
 
   return (
 
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
       <input
         type="datetime-local"
@@ -126,7 +136,7 @@ export default function VisitForm({
         className="border rounded-xl p-3"
       >
 
-        <option value="">Selecciona un cliente</option>
+        <option value="">{t("forms.visit.selectClient")}</option>
 
         {clients.map(client=>(
           <option
@@ -146,7 +156,7 @@ export default function VisitForm({
         className="border rounded-xl p-3"
       >
 
-        <option value="">Selecciona un trabajador</option>
+        <option value="">{t("forms.visit.selectWorker")}</option>
 
         {workers.map(worker=>(
           <option
@@ -163,7 +173,7 @@ export default function VisitForm({
         name="observaciones"
         value={form.observaciones}
         onChange={change}
-        placeholder="Observaciones"
+        placeholder={t("forms.common.notes")}
         className="border rounded-xl p-3 col-span-2 min-h-[120px]"
       />
 
@@ -175,10 +185,10 @@ export default function VisitForm({
           className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-2xl font-bold"
         >
           {loading
-            ? "Guardando..."
+            ? t("forms.common.saving")
             : visit
-            ? "Guardar cambios"
-            : "Crear visita"}
+            ? t("forms.common.saveChanges")
+            : t("forms.visit.save")}
         </button>
 
       </div>

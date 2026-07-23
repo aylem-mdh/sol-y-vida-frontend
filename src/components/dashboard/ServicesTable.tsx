@@ -1,19 +1,29 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Service } from "../../services/serviceService";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   services: Service[];
   onDelete: (id: number) => void;
   onEdit: (service: Service) => void;
+  searchTerm?: string;
+  onSearchTermChange?: (value: string) => void;
+  hideSearchInput?: boolean;
 }
 
 export default function ServicesTable({
   services,
   onDelete,
   onEdit,
+  searchTerm,
+  onSearchTermChange,
+  hideSearchInput = false,
 }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const effectiveSearch = searchTerm ?? search;
+  const handleSearchChange = onSearchTermChange ?? setSearch;
 
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
@@ -23,9 +33,9 @@ export default function ServicesTable({
         service.descripcion
       ).toLowerCase();
 
-      return text.includes(search.toLowerCase());
+      return text.includes(effectiveSearch.toLowerCase());
     });
-  }, [services, search]);
+  }, [services, effectiveSearch]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -34,32 +44,35 @@ export default function ServicesTable({
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Servicios
+            {t("tables.services.title")}
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona todos los servicios.
+            {t("tables.services.subtitle")}
           </p>
         </div>
 
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar servicio..."
-          className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
-        />
+        {!hideSearchInput && (
+          <input
+            value={effectiveSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder={t("tables.services.search")}
+            className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
+          />
+        )}
 
       </div>
 
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px]">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Servicio</th>
-            <th>Descripción</th>
-            <th>Precio/Hora</th>
-            <th>Estado</th>
-            <th className="text-center">Acciones</th>
+            <th className="px-8 py-4">{t("tables.services.service")}</th>
+            <th>{t("tables.common.description")}</th>
+            <th>{t("tables.services.pricePerHour")}</th>
+            <th>{t("tables.common.status")}</th>
+            <th className="text-center">{t("tables.common.actions")}</th>
           </tr>
         </thead>
 
@@ -89,7 +102,7 @@ export default function ServicesTable({
                       : "bg-red-100 text-red-700"
                   }`}
                 >
-                  {service.activo ? "Activo" : "Inactivo"}
+                  {service.activo ? t("tables.common.active") : t("tables.common.inactive")}
                 </span>
 
               </td>
@@ -126,7 +139,7 @@ export default function ServicesTable({
                 colSpan={5}
                 className="text-center py-12 text-gray-500"
               >
-                No hay servicios registrados.
+                {t("tables.services.empty")}
               </td>
             </tr>
           )}
@@ -134,6 +147,7 @@ export default function ServicesTable({
         </tbody>
 
       </table>
+      </div>
 
     </div>
   );

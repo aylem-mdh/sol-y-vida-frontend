@@ -1,117 +1,85 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertTriangle,
+  Bell,
+  Calendar,
+  FileText,
+  HeartHandshake,
+  MessageSquare,
+  MonitorCheck,
+  User,
+  Users,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 
 export default function Worker() {
-  return (
-    <div className="flex bg-slate-100 min-h-screen">
-      <Sidebar />
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
-      <main className="flex-1 p-8">
+  const modules = useMemo(
+    () => [
+      { label: t("sidebar.agenda"), path: "/visits", icon: Calendar },
+      { label: t("sidebar.myServices"), path: "/services", icon: HeartHandshake },
+      { label: t("sidebar.assignedClients"), path: "/clients", icon: Users },
+      { label: t("sidebar.reports"), path: "/reports", icon: FileText },
+      { label: t("sidebar.incidents"), path: "/incidents", icon: AlertTriangle },
+      { label: t("sidebar.maintenance"), path: "/maintenance", icon: MonitorCheck },
+      { label: t("sidebar.messages"), path: "/complaints", icon: MessageSquare },
+      { label: t("sidebar.notifications"), path: "/notifications", icon: Bell },
+      { label: t("sidebar.profile"), path: "/settings", icon: User },
+    ],
+    [t]
+  );
+
+  const filteredModules = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) {
+      return modules;
+    }
+
+    return modules.filter((module) => module.label.toLowerCase().includes(query));
+  }, [modules, search]);
+
+  return (
+    <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
+      <Sidebar role="worker" />
+
+      <main className="flex-1 p-4 pt-16 sm:p-6 sm:pt-20 lg:p-8 lg:pt-8">
         <Topbar
-          title="Bienvenida 👋"
-          subtitle="Aquí tienes tu agenda y próximas visitas."
-          name="María García"
-          role="Trabajadora"
+          title={t("sidebar.dashboard")}
+          subtitle={t("workerPage.topbar.subtitle")}
+          name={t("profiles.workerName")}
+          role={t("roles.worker")}
+          notificationPath="/notifications"
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder={t("workerPage.topbar.searchPlaceholder")}
         />
 
-        <section className="grid grid-cols-4 gap-6 mt-8">
-          {[
-            ["4", "Visitas hoy"],
-            ["32h", "Horas semanales"],
-            ["98%", "Puntualidad"],
-            ["4.9", "Valoración"],
-          ].map(([value, label]) => (
-            <div key={label} className="bg-white rounded-3xl shadow-sm p-6">
-              <h2 className="text-4xl font-bold text-[#0B4EA2]">{value}</h2>
-              <p className="text-gray-500 mt-2">{label}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="grid grid-cols-3 gap-6 mt-8">
-          <div className="col-span-2 bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Agenda de hoy
-            </h3>
-
-            <div className="space-y-4">
-              {[
-                ["08:00", "Carmen López", "Torremolinos"],
-                ["11:00", "Antonio Ruiz", "Benalmádena"],
-                ["15:00", "María Sánchez", "Fuengirola"],
-              ].map(([time, client, zone]) => (
-                <div
-                  key={time}
-                  className="flex justify-between items-center bg-slate-50 rounded-2xl p-5"
-                >
-                  <div>
-                    <p className="font-bold text-lg">{time}</p>
-                    <p className="text-gray-700">{client}</p>
-                    <p className="text-sm text-gray-500">{zone}</p>
-                  </div>
-
-                  <button className="bg-orange-500 text-white px-5 py-3 rounded-xl font-semibold">
-                    Check-in
-                  </button>
-                </div>
-              ))}
-            </div>
+        <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
+          <div className="flex flex-col gap-3">
+            {filteredModules.map(({ label, path, icon: Icon }) => (
+              <button
+                key={`${label}-${path}`}
+                onClick={() => navigate(path)}
+                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] px-4 py-4 text-left font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8]"
+              >
+                <Icon className="h-5 w-5 text-[#0F9E98]" />
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800">
-              Próxima visita
-            </h3>
-
-            <div className="mt-8">
-              <p className="text-5xl">🏠</p>
-              <p className="text-2xl font-bold mt-4">Carmen López</p>
-              <p className="text-gray-500 mt-2">Torremolinos</p>
-
-              <div className="mt-6 bg-blue-50 rounded-2xl p-5">
-                <p className="font-semibold">Hora</p>
-                <p className="text-2xl text-[#0B4EA2] font-bold">08:00</p>
-              </div>
+          {filteredModules.length === 0 && (
+            <div className="mt-4 rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#4B5563]">
+              {t("workerPage.noResults")}
             </div>
-          </div>
-        </section>
-
-        <section className="grid grid-cols-2 gap-6 mt-8">
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Documentos
-            </h3>
-
-            <div className="space-y-4">
-              <div className="bg-slate-50 rounded-2xl p-4">📄 Nómina Junio</div>
-              <div className="bg-slate-50 rounded-2xl p-4">📄 Contrato</div>
-              <div className="bg-slate-50 rounded-2xl p-4">📄 PRL</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Acciones rápidas
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              <button className="bg-blue-50 rounded-2xl p-4 font-semibold">
-                Reportar incidencia
-              </button>
-
-              <button className="bg-orange-50 rounded-2xl p-4 font-semibold">
-                Subir fotos
-              </button>
-
-              <button className="bg-blue-50 rounded-2xl p-4 font-semibold">
-                Ver ruta
-              </button>
-
-              <button className="bg-orange-50 rounded-2xl p-4 font-semibold">
-                Contactar admin
-              </button>
-            </div>
-          </div>
+          )}
         </section>
       </main>
     </div>

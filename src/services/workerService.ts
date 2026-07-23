@@ -1,14 +1,4 @@
-import axios from "axios";
-
-const API = "https://localhost:7131/api";
-
-function getHeaders() {
-  const token = localStorage.getItem("token");
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import api from "./api";
 
 export interface Worker {
   id: number;
@@ -21,24 +11,13 @@ export interface Worker {
 }
 
 export async function getWorkers() {
-  const response = await axios.get<Worker[]>(
-    `${API}/Workers`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.get<Worker[]>("/Workers");
 
   return response.data;
 }
 
 export async function createWorker(worker: any) {
-  const response = await axios.post(
-    `${API}/Workers`,
-    worker,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.post("/Workers", worker);
 
   return response.data;
 }
@@ -47,20 +26,9 @@ export async function updateWorker(
   id: number,
   worker: any
 ) {
-  await axios.put(
-    `${API}/Workers/${id}`,
-    worker,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.put(`/Workers/${id}`, worker);
 }
 
 export async function deleteWorker(id: number) {
-  await axios.delete(
-    `${API}/Workers/${id}`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.delete(`/Workers/${id}`);
 }

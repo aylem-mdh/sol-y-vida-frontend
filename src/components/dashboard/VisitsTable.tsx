@@ -1,19 +1,31 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Visit } from "../../services/visitService";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   visits: Visit[];
   onDelete: (id: number) => void;
   onEdit: (visit: Visit) => void;
+  canEdit?: boolean;
+  searchTerm?: string;
+  onSearchTermChange?: (value: string) => void;
+  hideSearchInput?: boolean;
 }
 
 export default function VisitsTable({
   visits,
   onDelete,
   onEdit,
+  canEdit = true,
+  searchTerm,
+  onSearchTermChange,
+  hideSearchInput = false,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState("");
+  const effectiveSearch = searchTerm ?? search;
+  const handleSearchChange = onSearchTermChange ?? setSearch;
 
   const filteredVisits = useMemo(() => {
     return visits.filter((visit) => {
@@ -27,9 +39,9 @@ export default function VisitsTable({
         visit.fecha
       ).toLowerCase();
 
-      return text.includes(search.toLowerCase());
+      return text.includes(effectiveSearch.toLowerCase());
     });
-  }, [visits, search]);
+  }, [visits, effectiveSearch]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -38,32 +50,35 @@ export default function VisitsTable({
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Visitas
+            {t("tables.visits.title")}
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona todas las visitas.
+            {t("tables.visits.subtitle")}
           </p>
         </div>
 
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar visita..."
-          className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
-        />
+        {!hideSearchInput && (
+          <input
+            value={effectiveSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder={t("tables.visits.search")}
+            className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
+          />
+        )}
 
       </div>
 
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[860px]">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Cliente</th>
-            <th>Trabajador</th>
-            <th>Fecha</th>
-            <th>Observaciones</th>
-            <th className="text-center">Acciones</th>
+            <th className="px-8 py-4">{t("tables.clients.client")}</th>
+            <th>{t("tables.workers.title")}</th>
+            <th>{t("tables.visits.date")}</th>
+            <th>{t("tables.visits.notes")}</th>
+            <th className="text-center">{t("tables.common.actions")}</th>
           </tr>
         </thead>
 
@@ -85,7 +100,9 @@ export default function VisitsTable({
               </td>
 
               <td>
-                {new Date(visit.fecha).toLocaleString()}
+                {new Date(visit.fecha).toLocaleString(
+                  i18n.language === "es" ? "es-ES" : i18n.language === "fr" ? "fr-FR" : i18n.language === "de" ? "de-DE" : "en-US"
+                )}
               </td>
 
               <td>
@@ -94,6 +111,7 @@ export default function VisitsTable({
 
               <td>
 
+                {canEdit ? (
                 <div className="flex justify-center gap-3">
 
                   <button
@@ -111,6 +129,9 @@ export default function VisitsTable({
                   </button>
 
                 </div>
+                ) : (
+                  <div className="text-center text-xs font-semibold text-[#0F9E98]">{t("tables.common.readOnly")}</div>
+                )}
 
               </td>
 
@@ -124,7 +145,7 @@ export default function VisitsTable({
                 colSpan={5}
                 className="text-center py-12 text-gray-500"
               >
-                No hay visitas registradas.
+                {t("tables.visits.empty")}
               </td>
             </tr>
           )}
@@ -132,6 +153,7 @@ export default function VisitsTable({
         </tbody>
 
       </table>
+      </div>
 
     </div>
   );

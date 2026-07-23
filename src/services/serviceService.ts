@@ -1,14 +1,4 @@
-import axios from "axios";
-
-const API = "https://localhost:7131/api";
-
-function getHeaders() {
-  const token = localStorage.getItem("token");
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import api from "./api";
 
 export interface Service {
   id: number;
@@ -20,24 +10,13 @@ export interface Service {
 }
 
 export async function getServices() {
-  const response = await axios.get<Service[]>(
-    `${API}/Services`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.get<Service[]>("/Services");
 
   return response.data;
 }
 
 export async function createService(service: any) {
-  const response = await axios.post(
-    `${API}/Services`,
-    service,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.post("/Services", service);
 
   return response.data;
 }
@@ -46,20 +25,9 @@ export async function updateService(
   id: number,
   service: any
 ) {
-  await axios.put(
-    `${API}/Services/${id}`,
-    service,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.put(`/Services/${id}`, service);
 }
 
 export async function deleteService(id: number) {
-  await axios.delete(
-    `${API}/Services/${id}`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.delete(`/Services/${id}`);
 }

@@ -1,19 +1,29 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { FamilyMember } from "../../services/familyMemberService";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   familyMembers: FamilyMember[];
   onDelete: (id: number) => void;
   onEdit: (member: FamilyMember) => void;
+  searchTerm?: string;
+  onSearchTermChange?: (value: string) => void;
+  hideSearchInput?: boolean;
 }
 
 export default function FamilyMembersTable({
   familyMembers,
   onDelete,
   onEdit,
+  searchTerm,
+  onSearchTermChange,
+  hideSearchInput = false,
 }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const effectiveSearch = searchTerm ?? search;
+  const handleSearchChange = onSearchTermChange ?? setSearch;
 
   const filtered = useMemo(() => {
     return familyMembers.filter((member) => {
@@ -29,9 +39,9 @@ export default function FamilyMembersTable({
         (member.email ?? "")
       ).toLowerCase();
 
-      return text.includes(search.toLowerCase());
+      return text.includes(effectiveSearch.toLowerCase());
     });
-  }, [familyMembers, search]);
+  }, [familyMembers, effectiveSearch]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -40,33 +50,36 @@ export default function FamilyMembersTable({
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Familiares
+            {t("tables.familyMembers.title")}
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona los familiares de los clientes.
+            {t("tables.familyMembers.subtitle")}
           </p>
         </div>
 
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar familiar..."
-          className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
-        />
+        {!hideSearchInput && (
+          <input
+            value={effectiveSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder={t("tables.familyMembers.search")}
+            className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
+          />
+        )}
 
       </div>
 
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[820px]">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Nombre</th>
-            <th>Parentesco</th>
-            <th>Teléfono</th>
+            <th className="px-8 py-4">{t("tables.common.name")}</th>
+            <th>{t("tables.familyMembers.relationship")}</th>
+            <th>{t("tables.common.phone")}</th>
             <th>Email</th>
-            <th>Principal</th>
-            <th className="text-center">Acciones</th>
+            <th>{t("tables.familyMembers.primary")}</th>
+            <th className="text-center">{t("tables.common.actions")}</th>
           </tr>
         </thead>
 
@@ -98,7 +111,7 @@ export default function FamilyMembersTable({
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {member.esContactoPrincipal ? "Sí" : "No"}
+                  {member.esContactoPrincipal ? t("common.yes") : t("common.no")}
                 </span>
 
               </td>
@@ -135,7 +148,7 @@ export default function FamilyMembersTable({
                 colSpan={6}
                 className="text-center py-10 text-gray-500"
               >
-                No hay familiares registrados.
+                {t("tables.familyMembers.empty")}
               </td>
             </tr>
           )}
@@ -143,6 +156,7 @@ export default function FamilyMembersTable({
         </tbody>
 
       </table>
+      </div>
 
     </div>
   );

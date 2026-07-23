@@ -1,14 +1,4 @@
-import axios from "axios";
-
-const API = "https://localhost:7131/api";
-
-function getHeaders() {
-  const token = localStorage.getItem("token");
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import api from "./api";
 
 export interface Visit {
   id: number;
@@ -20,27 +10,45 @@ export interface Visit {
 
   cliente: string;
   trabajador: string;
+
+  estado?: string;
+  startedAt?: string;
+  endedAt?: string;
+  startLatitude?: number;
+  startLongitude?: number;
+  endLatitude?: number;
+  endLongitude?: number;
+  careChecklistCompleted?: boolean;
+  careNotes?: string;
+  assistanceReport?: string;
+  visibleToFamily?: boolean;
+}
+
+export interface StartVisitPayload {
+  latitude: number;
+  longitude: number;
+}
+
+export interface FinishVisitPayload {
+  latitude: number;
+  longitude: number;
+  hygieneCompleted: boolean;
+  medicationCompleted: boolean;
+  nutritionCompleted: boolean;
+  mobilityCompleted: boolean;
+  assistanceReport: string;
+  careNotes?: string;
+  visibleToFamily: boolean;
 }
 
 export async function getVisits() {
-  const response = await axios.get<Visit[]>(
-    `${API}/Visits`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.get<Visit[]>("/Visits");
 
   return response.data;
 }
 
 export async function createVisit(visit: any) {
-  const response = await axios.post(
-    `${API}/Visits`,
-    visit,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.post("/Visits", visit);
 
   return response.data;
 }
@@ -49,20 +57,19 @@ export async function updateVisit(
   id: number,
   visit: any
 ) {
-  await axios.put(
-    `${API}/Visits/${id}`,
-    visit,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.put(`/Visits/${id}`, visit);
 }
 
 export async function deleteVisit(id: number) {
-  await axios.delete(
-    `${API}/Visits/${id}`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.delete(`/Visits/${id}`);
+}
+
+export async function startVisit(id: number, payload: StartVisitPayload) {
+  const response = await api.post(`/Visits/${id}/start`, payload);
+  return response.data;
+}
+
+export async function finishVisit(id: number, payload: FinishVisitPayload) {
+  const response = await api.post(`/Visits/${id}/finish`, payload);
+  return response.data;
 }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Client {
   id: number;
@@ -20,14 +21,25 @@ interface Props {
   clients: Client[];
   onDelete: (id: number) => void;
   onEdit: (client: Client) => void;
+  canManage?: boolean;
+  searchTerm?: string;
+  onSearchTermChange?: (value: string) => void;
+  hideSearchInput?: boolean;
 }
 
 export default function ClientsTable({
   clients,
   onDelete,
   onEdit,
+  canManage = true,
+  searchTerm,
+  onSearchTermChange,
+  hideSearchInput = false,
 }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const effectiveSearch = searchTerm ?? search;
+  const handleSearchChange = onSearchTermChange ?? setSearch;
 
   const filteredClients = useMemo(() => {
     return clients.filter((client) => {
@@ -43,9 +55,9 @@ export default function ClientsTable({
         client.email
       ).toLowerCase();
 
-      return text.includes(search.toLowerCase());
+      return text.includes(effectiveSearch.toLowerCase());
     });
-  }, [clients, search]);
+  }, [clients, effectiveSearch]);
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -56,34 +68,37 @@ export default function ClientsTable({
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            Clientes recientes
+            {t("tables.clients.title")}
           </h2>
 
           <p className="text-gray-500 text-sm mt-1">
-            Gestiona todos los clientes de Sol y Vida.
+            {t("tables.clients.subtitle")}
           </p>
         </div>
 
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar cliente..."
-          className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
-        />
+        {!hideSearchInput && (
+          <input
+            value={effectiveSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder={t("tables.clients.search")}
+            className="w-72 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]"
+          />
+        )}
 
       </div>
 
       {/* TABLA */}
 
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px]">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
-            <th className="px-8 py-4">Cliente</th>
-            <th className="py-4">Ciudad</th>
-            <th className="py-4">Teléfono</th>
-            <th className="py-4">Estado</th>
-            <th className="py-4 text-center">Acciones</th>
+            <th className="px-8 py-4">{t("tables.clients.client")}</th>
+            <th className="py-4">{t("tables.common.city")}</th>
+            <th className="py-4">{t("tables.common.phone")}</th>
+            <th className="py-4">{t("tables.common.status")}</th>
+            <th className="py-4 text-center">{t("tables.common.actions")}</th>
           </tr>
         </thead>
 
@@ -125,32 +140,36 @@ export default function ClientsTable({
                       : "bg-red-100 text-red-700"
                   }`}
                 >
-                  {client.activo ? "Activo" : "Inactivo"}
+                  {client.activo ? t("tables.common.active") : t("tables.common.inactive")}
                 </span>
 
               </td>
 
               <td>
 
-                <div className="flex justify-center gap-3">
+                {canManage ? (
+                  <div className="flex justify-center gap-3">
 
-                  <button
-                    onClick={() => onEdit(client)}
-                    className="w-10 h-10 rounded-xl bg-blue-100 hover:bg-[#0B4EA2] text-[#0B4EA2] hover:text-white transition flex items-center justify-center"
-                    title="Editar"
-                  >
-                    <Pencil size={18} />
-                  </button>
+                    <button
+                      onClick={() => onEdit(client)}
+                      className="w-10 h-10 rounded-xl bg-blue-100 hover:bg-[#0B4EA2] text-[#0B4EA2] hover:text-white transition flex items-center justify-center"
+                      title={t("tables.common.edit")}
+                    >
+                      <Pencil size={18} />
+                    </button>
 
-                  <button
-                    onClick={() => onDelete(client.id)}
-                    className="w-10 h-10 rounded-xl bg-red-100 hover:bg-red-500 text-red-600 hover:text-white transition flex items-center justify-center"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                    <button
+                      onClick={() => onDelete(client.id)}
+                      className="w-10 h-10 rounded-xl bg-red-100 hover:bg-red-500 text-red-600 hover:text-white transition flex items-center justify-center"
+                      title={t("tables.common.delete")}
+                    >
+                      <Trash2 size={18} />
+                    </button>
 
-                </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-xs font-semibold text-[#0F9E98]">{t("tables.common.readOnly")}</div>
+                )}
 
               </td>
 
@@ -166,7 +185,7 @@ export default function ClientsTable({
                 colSpan={5}
                 className="text-center py-12 text-gray-500"
               >
-                No se encontraron clientes.
+                {t("tables.clients.empty")}
               </td>
 
             </tr>
@@ -176,6 +195,7 @@ export default function ClientsTable({
         </tbody>
 
       </table>
+      </div>
 
     </div>
   );

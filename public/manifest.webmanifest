@@ -1,0 +1,21 @@
+{
+  "name": "Sol y Vida Care",
+  "short_name": "Sol y Vida",
+  "description": "Plataforma de coordinación y seguimiento para atención domiciliaria profesional.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7FCFB",
+  "theme_color": "#0F9E98",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

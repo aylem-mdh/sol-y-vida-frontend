@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createFamilyMember,
   updateFamilyMember,
   type FamilyMember,
 } from "../../services/familyMemberService";
+import { getClients } from "../../services/clientService";
+
+interface ClientOption {
+  id: number;
+  nombre: string;
+  apellidos: string;
+}
 
 interface Props {
   familyMember?: FamilyMember | null;
@@ -14,7 +22,9 @@ export default function FamilyMemberForm({
   familyMember,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState<ClientOption[]>([]);
 
   const [form, setForm] = useState({
     nombre: "",
@@ -26,6 +36,10 @@ export default function FamilyMemberForm({
     observaciones: "",
     clientId: 1,
   });
+
+  useEffect(() => {
+    loadClients();
+  }, []);
 
   useEffect(() => {
     if (familyMember) {
@@ -42,9 +56,24 @@ export default function FamilyMemberForm({
     }
   }, [familyMember]);
 
+  async function loadClients() {
+    try {
+      const data = await getClients();
+      setClients(data);
+      if (data.length > 0) {
+        setForm((current) => ({
+          ...current,
+          clientId: current.clientId || data[0].id,
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   function change(
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) {
     const { name, value, type, checked } =
@@ -62,8 +91,8 @@ export default function FamilyMemberForm({
   }
 
   async function save() {
-    if (!form.nombre || !form.apellidos) {
-      alert("Completa los campos obligatorios.");
+    if (!form.nombre || !form.apellidos || !form.parentesco || !form.telefono || !form.clientId) {
+      alert(t("forms.familyMember.errors.required"));
       return;
     }
 
@@ -79,18 +108,18 @@ export default function FamilyMemberForm({
       onSaved();
     } catch (error) {
       console.error(error);
-      alert("Ha ocurrido un error.");
+      alert(t("forms.common.errors.generic"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
       <input
         name="nombre"
-        placeholder="Nombre"
+        placeholder={t("forms.common.name")}
         value={form.nombre}
         onChange={change}
         className="border rounded-xl p-3"
@@ -98,7 +127,7 @@ export default function FamilyMemberForm({
 
       <input
         name="apellidos"
-        placeholder="Apellidos"
+        placeholder={t("forms.common.lastName")}
         value={form.apellidos}
         onChange={change}
         className="border rounded-xl p-3"
@@ -106,7 +135,7 @@ export default function FamilyMemberForm({
 
       <input
         name="parentesco"
-        placeholder="Parentesco"
+        placeholder={t("forms.familyMember.relationship")}
         value={form.parentesco}
         onChange={change}
         className="border rounded-xl p-3"
@@ -114,7 +143,7 @@ export default function FamilyMemberForm({
 
       <input
         name="telefono"
-        placeholder="Teléfono"
+        placeholder={t("forms.common.phone")}
         value={form.telefono}
         onChange={change}
         className="border rounded-xl p-3"
@@ -122,24 +151,28 @@ export default function FamilyMemberForm({
 
       <input
         name="email"
-        placeholder="Email"
+        placeholder={t("forms.common.email")}
         value={form.email}
         onChange={change}
         className="border rounded-xl p-3"
       />
 
-      <input
-        type="number"
+      <select
         name="clientId"
-        placeholder="ID Cliente"
         value={form.clientId}
         onChange={change}
         className="border rounded-xl p-3"
-      />
+      >
+        {clients.map((client) => (
+          <option key={client.id} value={client.id}>
+            {client.nombre} {client.apellidos}
+          </option>
+        ))}
+      </select>
 
       <textarea
         name="observaciones"
-        placeholder="Observaciones"
+        placeholder={t("forms.common.notes")}
         value={form.observaciones}
         onChange={change}
         className="border rounded-xl p-3 col-span-2 min-h-[100px]"
@@ -153,7 +186,7 @@ export default function FamilyMemberForm({
           onChange={change}
         />
 
-        Contacto principal
+        {t("forms.familyMember.primaryContact")}
       </label>
 
       <div className="col-span-2 flex justify-end">
@@ -164,10 +197,10 @@ export default function FamilyMemberForm({
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-bold"
         >
           {loading
-            ? "Guardando..."
+            ? t("forms.common.saving")
             : familyMember
-            ? "Guardar cambios"
-            : "Crear familiar"}
+            ? t("forms.common.saveChanges")
+            : t("forms.familyMember.save")}
         </button>
 
       </div>

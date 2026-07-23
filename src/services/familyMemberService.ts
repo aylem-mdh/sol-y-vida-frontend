@@ -1,14 +1,4 @@
-import axios from "axios";
-
-const API = "https://localhost:7131/api";
-
-function getHeaders() {
-  const token = localStorage.getItem("token");
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import api from "./api";
 
 export interface FamilyMember {
   id: number;
@@ -23,24 +13,13 @@ export interface FamilyMember {
 }
 
 export async function getFamilyMembers() {
-  const response = await axios.get<FamilyMember[]>(
-    `${API}/FamilyMembers`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.get<FamilyMember[]>("/FamilyMembers");
 
   return response.data;
 }
 
 export async function createFamilyMember(data: any) {
-  const response = await axios.post(
-    `${API}/FamilyMembers`,
-    data,
-    {
-      headers: getHeaders(),
-    }
-  );
+  const response = await api.post("/FamilyMembers", data);
 
   return response.data;
 }
@@ -49,20 +28,9 @@ export async function updateFamilyMember(
   id: number,
   data: any
 ) {
-  await axios.put(
-    `${API}/FamilyMembers/${id}`,
-    data,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.put(`/FamilyMembers/${id}`, data);
 }
 
 export async function deleteFamilyMember(id: number) {
-  await axios.delete(
-    `${API}/FamilyMembers/${id}`,
-    {
-      headers: getHeaders(),
-    }
-  );
+  await api.delete(`/FamilyMembers/${id}`);
 }

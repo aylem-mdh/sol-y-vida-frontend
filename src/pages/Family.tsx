@@ -1,148 +1,84 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  FileText,
+  FolderOpen,
+  MessageSquare,
+  Phone,
+  ShieldCheck,
+  Star,
+  User,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 
 export default function Family() {
-  return (
-    <div className="flex bg-slate-100 min-h-screen">
-      <Sidebar />
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const role = (localStorage.getItem("role") === "client" ? "client" : "family") as "client" | "family";
+  const [search, setSearch] = useState("");
 
-      <main className="flex-1 p-8">
+  const modules = useMemo(
+    () => [
+      { label: t("familyPage.cards.familyStatus"), path: "/reports", icon: ShieldCheck },
+      { label: t("familyPage.cards.nextVisits"), path: "/reports", icon: Calendar },
+      { label: t("sidebar.reports"), path: "/reports", icon: FileText },
+      { label: t("sidebar.documentation"), path: "/documentation", icon: FolderOpen },
+      { label: t("sidebar.messages"), path: "/complaints", icon: MessageSquare },
+      { label: t("familyPage.actions.contact"), path: "/contact", icon: Phone },
+      { label: "Valoraciones", path: "/complaints", icon: Star },
+      { label: t("sidebar.profile"), path: "/settings", icon: User },
+    ],
+    [t]
+  );
+
+  const filteredModules = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) {
+      return modules;
+    }
+
+    return modules.filter((module) => module.label.toLowerCase().includes(query));
+  }, [modules, search]);
+
+  return (
+    <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
+      <Sidebar role={role} />
+
+      <main className="flex-1 p-4 pt-16 sm:p-6 sm:pt-20 lg:p-8 lg:pt-8">
         <Topbar
-          title="Bienvenidos 👋"
-          subtitle="Consulta el estado y seguimiento del servicio."
-          name="Familia López"
-          role="Familia"
+          title={t("sidebar.dashboard")}
+          subtitle={t("familyPage.topbar.subtitleFamily")}
+          name={t("profiles.familyName")}
+          role={t("roles.family")}
+          notificationPath="/notifications"
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder={t("familyPage.topbar.searchPlaceholder")}
         />
 
-        {/* Stats */}
-        <section className="grid grid-cols-4 gap-6 mt-8">
-          {[
-            ["12", "Visitas este mes"],
-            ["4.9", "Valoración"],
-            ["98%", "Puntualidad"],
-            ["24h", "Soporte"],
-          ].map(([value, label]) => (
-            <div key={label} className="bg-white rounded-3xl shadow-sm p-6">
-              <h2 className="text-4xl font-bold text-[#0B4EA2]">{value}</h2>
-              <p className="text-gray-500 mt-2">{label}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* Estado + Próxima visita */}
-        <section className="grid grid-cols-3 gap-6 mt-8">
-          <div className="col-span-2 bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Estado del familiar
-            </h3>
-
-            <div className="space-y-5">
-              <div className="bg-green-50 rounded-2xl p-5">
-                <p className="font-semibold text-green-700">Estado general</p>
-                <p className="mt-2 text-gray-700">
-                  Carmen se encuentra estable, tranquila y de buen ánimo.
-                </p>
-              </div>
-
-              <div className="bg-blue-50 rounded-2xl p-5">
-                <p className="font-semibold text-[#0B4EA2]">Comidas</p>
-                <p className="mt-2 text-gray-700">
-                  Desayuno y almuerzo completados correctamente.
-                </p>
-              </div>
-
-              <div className="bg-orange-50 rounded-2xl p-5">
-                <p className="font-semibold text-orange-600">Medicación</p>
-                <p className="mt-2 text-gray-700">
-                  Medicación administrada a las 08:30.
-                </p>
-              </div>
-            </div>
+        <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
+          <div className="flex flex-col gap-3">
+            {filteredModules.map(({ label, path, icon: Icon }) => (
+              <button
+                key={`${label}-${path}`}
+                onClick={() => navigate(path)}
+                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] px-4 py-4 text-left font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8]"
+              >
+                <Icon className="h-5 w-5 text-[#0F9E98]" />
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800">
-              Próxima visita
-            </h3>
-
-            <div className="mt-8">
-              <p className="text-5xl">👩‍⚕️</p>
-              <p className="text-2xl font-bold mt-4">María García</p>
-              <p className="text-gray-500 mt-2">Cuidadora asignada</p>
-
-              <div className="mt-6 bg-blue-50 rounded-2xl p-5">
-                <p className="font-semibold">Hora</p>
-                <p className="text-2xl text-[#0B4EA2] font-bold">18:00</p>
-              </div>
+          {filteredModules.length === 0 && (
+            <div className="mt-4 rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#4B5563]">
+              {t("familyPage.noResults")}
             </div>
-          </div>
-        </section>
-
-        {/* Actualizaciones + Fotos */}
-        <section className="grid grid-cols-2 gap-6 mt-8">
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Últimas actualizaciones
-            </h3>
-
-            <div className="space-y-4">
-              <div className="bg-slate-50 rounded-2xl p-4">
-                ✅ Visita completada correctamente
-              </div>
-
-              <div className="bg-slate-50 rounded-2xl p-4">
-                🍽 Comida servida y completada
-              </div>
-
-              <div className="bg-slate-50 rounded-2xl p-4">
-                💊 Medicación administrada
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Fotos recientes
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 h-32 rounded-2xl flex items-center justify-center text-4xl">
-                📷
-              </div>
-
-              <div className="bg-orange-50 h-32 rounded-2xl flex items-center justify-center text-4xl">
-                📷
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Bottom */}
-        <section className="grid grid-cols-2 gap-6 mt-8">
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Mensajes
-            </h3>
-
-            <div className="bg-slate-50 rounded-2xl p-5">
-              <p className="font-semibold">María García</p>
-              <p className="text-gray-600 mt-2">
-                Todo ha ido bien durante la visita de hoy.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6">
-              Valorar servicio
-            </h3>
-
-            <p className="text-orange-500 text-4xl mb-6">★★★★★</p>
-
-            <button className="w-full bg-orange-500 text-white py-4 rounded-2xl font-semibold">
-              Dejar valoración
-            </button>
-          </div>
+          )}
         </section>
       </main>
     </div>

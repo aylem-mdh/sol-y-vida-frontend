@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createWorker,
   updateWorker,
@@ -14,6 +15,7 @@ export default function WorkerForm({
   worker,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -52,7 +54,7 @@ export default function WorkerForm({
       !form.telefono ||
       !form.email
     ) {
-      alert("Rellena los campos obligatorios.");
+      alert(t("forms.worker.errors.required"));
       return;
     }
 
@@ -68,18 +70,18 @@ export default function WorkerForm({
       onSaved();
     } catch (error) {
       console.error(error);
-      alert("Ha ocurrido un error.");
+      alert(t("forms.common.errors.generic"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
       <input
         name="nombre"
-        placeholder="Nombre"
+        placeholder={t("forms.common.name")}
         value={form.nombre}
         onChange={change}
         className="border rounded-xl p-3"
@@ -87,7 +89,7 @@ export default function WorkerForm({
 
       <input
         name="apellidos"
-        placeholder="Apellidos"
+        placeholder={t("forms.common.lastName")}
         value={form.apellidos}
         onChange={change}
         className="border rounded-xl p-3"
@@ -95,7 +97,7 @@ export default function WorkerForm({
 
       <input
         name="dni"
-        placeholder="DNI"
+        placeholder={t("forms.common.idNumber")}
         value={form.dni}
         onChange={change}
         className="border rounded-xl p-3"
@@ -103,7 +105,7 @@ export default function WorkerForm({
 
       <input
         name="telefono"
-        placeholder="Teléfono"
+        placeholder={t("forms.common.phone")}
         value={form.telefono}
         onChange={change}
         className="border rounded-xl p-3"
@@ -111,7 +113,7 @@ export default function WorkerForm({
 
       <input
         name="email"
-        placeholder="Email"
+        placeholder={t("forms.common.email")}
         value={form.email}
         onChange={change}
         className="border rounded-xl p-3"
@@ -119,7 +121,7 @@ export default function WorkerForm({
 
       <input
         name="especialidad"
-        placeholder="Especialidad"
+        placeholder={t("forms.worker.specialty")}
         value={form.especialidad}
         onChange={change}
         className="border rounded-xl p-3"
@@ -133,10 +135,10 @@ export default function WorkerForm({
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-bold"
         >
           {loading
-            ? "Guardando..."
+            ? t("forms.common.saving")
             : worker
-            ? "Guardar cambios"
-            : "Crear trabajador"}
+            ? t("forms.common.saveChanges")
+            : t("forms.worker.save")}
         </button>
 
       </div>
