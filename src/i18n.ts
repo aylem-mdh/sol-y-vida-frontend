@@ -142,6 +142,7 @@ const resources = {
       },
 
       footer: {
+        partnerName: "VITALY",
         vitalyTitle: "Prevención de Riesgos Laborales y Vigilancia de la Salud",
         vitalyText:
           "Mantenemos una colaboración estratégica con VITALY para la gestión de la Prevención de Riesgos Laborales (PRL) y la Vigilancia de la Salud. Esta alianza garantiza el cumplimiento normativo, la protección de nuestro equipo profesional y la mejora continua de la calidad asistencial que ofrecemos a nuestros usuarios.",
@@ -199,6 +200,111 @@ const resources = {
           date: "Fecha",
           notes: "Observaciones",
           empty: "No se encontraron resultados."
+        }
+      },
+      loginPublic: {
+        welcome: "Bienvenido"
+      },
+
+      publicHome: {
+        hero: {
+          badge: "CUIDADO PROFESIONAL A DOMICILIO",
+          lead: "Somos una empresa especializada en la atención y acompañamiento de personas mayores en la Costa del Sol.",
+          description1:
+            "Ofrecemos servicios adaptados a las necesidades de cada familia, con personal cualificado y seleccionado cuidadosamente para garantizar un trato humano, respetuoso y profesional.",
+          description2:
+            "Nuestro equipo acompaña con respeto, empatía y una visión integral para que cada persona se sienta acompañada, segura y valorada.",
+          imageAlt: "Profesional de Sol y Vida Cuidados"
+        },
+        presentation: {
+          label: "Presentación",
+          title1: "Atención cercana,",
+          title2: "humana y profesional.",
+          description1:
+            "En Sol y Vida Cuidados creemos que el cuidado de las personas mayores debe basarse en la cercanía, la confianza y la empatía. Por eso, diseñamos nuestros servicios para adaptarse a cada situación y a cada persona.",
+          description2:
+            "Nuestros profesionales acompañan con sensibilidad, ofreciendo apoyo práctico, emocional y sanitario cuando se necesita, siempre con respeto por la dignidad y la autonomía."
+        },
+        reasons: {
+          title: "¿Por qué elegirnos?",
+          reason1: "Atención personalizada",
+          reason2: "Personal cualificado",
+          reason3: "Confianza y seguridad"
+        },
+        services: {
+          card1: {
+            title: "Acompañamiento y compañía",
+            description:
+              "Compañía, conversación y apoyo diario para que cada día se viva con mayor tranquilidad y bienestar."
+          },
+          card2: {
+            title: "Ayuda a domicilio",
+            description:
+              "Asistencia práctica en casa para tareas cotidianas y un entorno más seguro y ordenado."
+          },
+          card3: {
+            title: "Acompañamiento médico y hospitalario",
+            description:
+              "Apoyo y supervisión en los cuidados de salud, siempre con respeto y profesionalidad."
+          },
+          card4: {
+            title: "Respiro familiar",
+            description:
+              "Ofrecemos apoyo para que las familias puedan recuperar tiempo y energía con confianza."
+          }
+        },
+        contact: {
+          title: "Estamos aquí para ayudarte",
+          address: "Paseo del Colorado, 7 · Torremolinos",
+          description:
+            "Escríbenos y te responderemos con gusto para conocer tus necesidades y explicarte cómo podemos ayudarte."
+        }
+      },
+
+      publicAbout: {
+        hero: {
+          description1:
+            "En Sol y Vida Cuidados creemos que el mejor cuidado nace de la cercanía, el respeto y la confianza.",
+          description2:
+            "Acompañamos a las personas mayores y a sus familias con un trato humano, profesional y completamente personalizado, adaptándonos a las necesidades de cada situación.",
+          more: "Más sobre nosotros"
+        },
+        history: {
+          title: "Nuestra historia",
+          description1:
+            "Sol y Vida Cuidados nace con el objetivo de ofrecer un servicio de atención domiciliaria cercano, profesional y personalizado para personas mayores y sus familias en la Costa del Sol.",
+          description2:
+            "Creemos que cada persona merece ser atendida con respeto, empatía y dedicación, adaptándonos siempre a sus necesidades."
+        },
+        mission: {
+          title: "Cuidado profesional con valor humano",
+          card1: {
+            title: "Atención humana",
+            description:
+              "Ofrecemos un trato cercano y personalizado, poniendo siempre a la persona en el centro."
+          },
+          card2: {
+            title: "Confianza",
+            description:
+              "Trabajamos con profesionales cualificados para ofrecer tranquilidad y seguridad a las familias."
+          },
+          card3: {
+            title: "Calidad de vida",
+            description:
+              "Nuestro objetivo es mejorar el bienestar y la autonomía de las personas mayores en su propio hogar."
+          }
+        },
+        reasons: {
+          label: "¿Por qué elegirnos?",
+          title: "Compromiso real con cada familia",
+          reason1: "Atención personalizada",
+          reason2: "Personal cualificado",
+          reason3: "Cercanía y confianza",
+          reason4: "Compromiso con las familias"
+        },
+        cta: {
+          title: "¿Hablamos?",
+          description: "Si deseas conocer más sobre nuestros servicios, estaremos encantados de ayudarte."
         }
       },
 
@@ -843,6 +949,112 @@ const resources = {
         }
       },
 
+      loginPublic: {
+        welcome: "Welcome"
+      },
+
+      publicHome: {
+        hero: {
+          badge: "PROFESSIONAL HOME CARE",
+          lead: "We are a company specialized in the care and support of older people on the Costa del Sol.",
+          description1:
+            "We offer services tailored to each family's needs, with qualified and carefully selected staff to ensure respectful, human and professional care.",
+          description2:
+            "Our team accompanies each person with respect, empathy and a comprehensive approach so they feel supported, safe and valued.",
+          imageAlt: "Sol y Vida Cuidados professional"
+        },
+        presentation: {
+          label: "Introduction",
+          title1: "Close care,",
+          title2: "human and professional.",
+          description1:
+            "At Sol y Vida Cuidados we believe elder care should be based on closeness, trust and empathy. That is why we design our services to adapt to every person and situation.",
+          description2:
+            "Our professionals provide sensitive support, offering practical, emotional and health assistance whenever needed, always respecting dignity and autonomy."
+        },
+        reasons: {
+          title: "Why choose us?",
+          reason1: "Personalized care",
+          reason2: "Qualified staff",
+          reason3: "Trust and safety"
+        },
+        services: {
+          card1: {
+            title: "Companionship",
+            description:
+              "Daily company, conversation and support so each day is lived with greater calm and wellbeing."
+          },
+          card2: {
+            title: "Home assistance",
+            description:
+              "Practical support at home for everyday tasks and a safer, more organized environment."
+          },
+          card3: {
+            title: "Medical and hospital accompaniment",
+            description:
+              "Support and supervision in health care, always with respect and professionalism."
+          },
+          card4: {
+            title: "Family respite",
+            description:
+              "We provide support so families can recover time and energy with confidence."
+          }
+        },
+        contact: {
+          title: "We are here to help you",
+          address: "Paseo del Colorado, 7 · Torremolinos",
+          description:
+            "Write to us and we will gladly respond to learn about your needs and explain how we can help."
+        }
+      },
+
+      publicAbout: {
+        hero: {
+          description1:
+            "At Sol y Vida Cuidados we believe the best care is born from closeness, respect and trust.",
+          description2:
+            "We accompany older people and their families with a human, professional and fully personalized approach, adapting to each situation.",
+          more: "More about us"
+        },
+        history: {
+          title: "Our history",
+          description1:
+            "Sol y Vida Cuidados was created to provide close, professional and personalized home care services for older people and their families on the Costa del Sol.",
+          description2:
+            "We believe every person deserves to be cared for with respect, empathy and dedication, always adapting to their needs."
+        },
+        mission: {
+          title: "Professional care with human value",
+          card1: {
+            title: "Human care",
+            description:
+              "We provide close and personalized support, always placing the person at the center."
+          },
+          card2: {
+            title: "Trust",
+            description:
+              "We work with qualified professionals to provide peace of mind and security to families."
+          },
+          card3: {
+            title: "Quality of life",
+            description:
+              "Our goal is to improve wellbeing and autonomy of older adults in their own home."
+          }
+        },
+        reasons: {
+          label: "Why choose us?",
+          title: "Real commitment to every family",
+          reason1: "Personalized care",
+          reason2: "Qualified staff",
+          reason3: "Closeness and trust",
+          reason4: "Commitment to families"
+        },
+        cta: {
+          title: "Shall we talk?",
+          description: "If you want to know more about our services, we will be delighted to help you."
+        }
+      },
+
       sidebar: {
         dashboard: "Dashboard",
         workers: "Workers",
@@ -881,6 +1093,7 @@ const resources = {
       },
 
       footer: {
+        partnerName: "VITALY",
         vitalyTitle: "Occupational Risk Prevention and Health Surveillance",
         vitalyText:
           "We maintain a strategic partnership with VITALY for Occupational Risk Prevention (PRL) and Health Surveillance management. This alliance ensures regulatory compliance, protection of our professional team, and continuous improvement of the quality of care we provide to our users.",
@@ -1495,6 +1708,9 @@ const resources = {
         yes: "Oui",
         no: "Non"
       },
+      about: {
+        mission: "Notre mission"
+      },
       login: {
         subtitle: "Accedez a votre espace prive Sol y Vida Cuidados.",
         email: "E-mail",
@@ -1507,6 +1723,109 @@ const resources = {
           noServer: "Connexion au serveur impossible. Verifiez que le backend est actif.",
           invalidCredentials: "E-mail ou mot de passe incorrect.",
           generic: "Connexion impossible pour le moment. Reessayez."
+        }
+      },
+      loginPublic: {
+        welcome: "Bienvenue"
+      },
+      publicHome: {
+        hero: {
+          badge: "SOINS PROFESSIONNELS A DOMICILE",
+          lead: "Nous sommes une entreprise specialisee dans l'accompagnement et les soins des personnes agees sur la Costa del Sol.",
+          description1:
+            "Nous proposons des services adaptes aux besoins de chaque famille, avec un personnel qualifie et soigneusement selectionne pour garantir un accompagnement humain, respectueux et professionnel.",
+          description2:
+            "Notre equipe accompagne avec respect, empathie et une vision globale afin que chaque personne se sente accompagnee, en securite et valorisee.",
+          imageAlt: "Professionnel de Sol y Vida Cuidados"
+        },
+        presentation: {
+          label: "Presentation",
+          title1: "Un accompagnement proche,",
+          title2: "humain et professionnel.",
+          description1:
+            "Chez Sol y Vida Cuidados, nous croyons que l'accompagnement des personnes agees doit reposer sur la proximite, la confiance et l'empathie. C'est pourquoi nous adaptons nos services a chaque situation et a chaque personne.",
+          description2:
+            "Nos professionnels accompagnent avec sensibilite, en offrant un soutien pratique, emotionnel et sanitaire lorsque c'est necessaire, toujours dans le respect de la dignite et de l'autonomie."
+        },
+        reasons: {
+          title: "Pourquoi nous choisir ?",
+          reason1: "Attention personnalisee",
+          reason2: "Personnel qualifie",
+          reason3: "Confiance et securite"
+        },
+        services: {
+          card1: {
+            title: "Accompagnement et compagnie",
+            description:
+              "Compagnie quotidienne, conversation et soutien pour vivre chaque jour avec plus de serenite et de bien-etre."
+          },
+          card2: {
+            title: "Aide a domicile",
+            description:
+              "Aide pratique a la maison pour les taches quotidiennes et un environnement plus sur et mieux organise."
+          },
+          card3: {
+            title: "Accompagnement medical et hospitalier",
+            description:
+              "Soutien et supervision des soins de sante, toujours avec respect et professionnalisme."
+          },
+          card4: {
+            title: "Repit familial",
+            description:
+              "Nous apportons un soutien pour que les familles puissent retrouver du temps et de l'energie en toute confiance."
+          }
+        },
+        contact: {
+          title: "Nous sommes la pour vous aider",
+          address: "Paseo del Colorado, 7 · Torremolinos",
+          description:
+            "Ecrivez-nous et nous vous repondrons avec plaisir pour comprendre vos besoins et vous expliquer comment nous pouvons vous aider."
+        }
+      },
+      publicAbout: {
+        hero: {
+          description1:
+            "Chez Sol y Vida Cuidados, nous croyons que le meilleur accompagnement nait de la proximite, du respect et de la confiance.",
+          description2:
+            "Nous accompagnons les personnes agees et leurs familles avec une approche humaine, professionnelle et entierement personnalisee, adaptee a chaque situation.",
+          more: "En savoir plus sur nous"
+        },
+        history: {
+          title: "Notre histoire",
+          description1:
+            "Sol y Vida Cuidados est ne avec l'objectif d'offrir un service d'accompagnement a domicile proche, professionnel et personnalise pour les personnes agees et leurs familles sur la Costa del Sol.",
+          description2:
+            "Nous croyons que chaque personne merite d'etre accompagnee avec respect, empathie et dedication, en s'adaptant toujours a ses besoins."
+        },
+        mission: {
+          title: "Un accompagnement professionnel a valeur humaine",
+          card1: {
+            title: "Attention humaine",
+            description:
+              "Nous offrons un accompagnement proche et personnalise, en plaçant toujours la personne au centre."
+          },
+          card2: {
+            title: "Confiance",
+            description:
+              "Nous travaillons avec des professionnels qualifies pour offrir serenite et securite aux familles."
+          },
+          card3: {
+            title: "Qualite de vie",
+            description:
+              "Notre objectif est d'ameliorer le bien-etre et l'autonomie des personnes agees a leur domicile."
+          }
+        },
+        reasons: {
+          label: "Pourquoi nous choisir ?",
+          title: "Un engagement reel pour chaque famille",
+          reason1: "Attention personnalisee",
+          reason2: "Personnel qualifie",
+          reason3: "Proximite et confiance",
+          reason4: "Engagement envers les familles"
+        },
+        cta: {
+          title: "On en parle ?",
+          description: "Si vous souhaitez en savoir plus sur nos services, nous serons ravis de vous aider."
         }
       },
       sidebar: {
@@ -1545,6 +1864,7 @@ const resources = {
         notifications: "Notifications"
       },
       footer: {
+        partnerName: "VITALY",
         vitalyTitle: "Prevention des risques professionnels et surveillance de la sante",
         vitalyText:
           "Nous maintenons un partenariat strategique avec VITALY pour la gestion de la prevention des risques professionnels et de la surveillance de la sante.",
@@ -1604,6 +1924,12 @@ const resources = {
         }
       },
       services: {
+        title: "Nos services",
+        subtitle: "Un accompagnement personnalise pour chaque besoin.",
+        card1: "Accompagnement et compagnie",
+        card2: "Aide a domicile",
+        card3: "Accompagnement medical",
+        card4: "Repit familial",
         publicDesc1:
           "Un accompagnement proche au quotidien, favorisant le bien-etre emotionnel, l'autonomie et la serenite a domicile.",
         publicDesc2:
@@ -2170,6 +2496,9 @@ const resources = {
         yes: "Ja",
         no: "Nein"
       },
+      about: {
+        mission: "Unsere Mission"
+      },
       login: {
         subtitle: "Greifen Sie auf Ihren privaten Sol y Vida Cuidados Bereich zu.",
         email: "E-Mail",
@@ -2182,6 +2511,109 @@ const resources = {
           noServer: "Verbindung zum Server fehlgeschlagen. Prufen Sie, ob das Backend lauft.",
           invalidCredentials: "E-Mail oder Passwort ist falsch.",
           generic: "Anmeldung derzeit nicht moglich. Bitte erneut versuchen."
+        }
+      },
+      loginPublic: {
+        welcome: "Willkommen"
+      },
+      publicHome: {
+        hero: {
+          badge: "PROFESSIONELLE HÄUSLICHE PFLEGE",
+          lead: "Wir sind ein Unternehmen, das auf die Betreuung und Begleitung alterer Menschen an der Costa del Sol spezialisiert ist.",
+          description1:
+            "Wir bieten auf die Bedurfnisse jeder Familie zugeschnittene Dienstleistungen mit qualifiziertem und sorgfaltig ausgewahltem Personal fur eine menschliche, respektvolle und professionelle Betreuung.",
+          description2:
+            "Unser Team begleitet mit Respekt, Empathie und einem ganzheitlichen Ansatz, damit sich jede Person begleitet, sicher und wertgeschatzt fuhlt.",
+          imageAlt: "Fachkraft von Sol y Vida Cuidados"
+        },
+        presentation: {
+          label: "Vorstellung",
+          title1: "Nahe Betreuung,",
+          title2: "menschlich und professionell.",
+          description1:
+            "Bei Sol y Vida Cuidados glauben wir, dass die Betreuung alterer Menschen auf Nahe, Vertrauen und Empathie beruhen sollte. Deshalb gestalten wir unsere Leistungen individuell fur jede Situation und Person.",
+          description2:
+            "Unsere Fachkrafte begleiten sensibel und bieten praktische, emotionale und gesundheitliche Unterstutzung, immer mit Respekt fur Wurde und Autonomie."
+        },
+        reasons: {
+          title: "Warum uns wahlen?",
+          reason1: "Personliche Betreuung",
+          reason2: "Qualifiziertes Personal",
+          reason3: "Vertrauen und Sicherheit"
+        },
+        services: {
+          card1: {
+            title: "Begleitung und Gesellschaft",
+            description:
+              "Tagliche Gesellschaft, Gesprach und Unterstutzung, damit jeder Tag mit mehr Ruhe und Wohlbefinden erlebt wird."
+          },
+          card2: {
+            title: "Hilfe zu Hause",
+            description:
+              "Praktische Hilfe im Haushalt fur alltagliche Aufgaben und eine sichere, geordnete Umgebung."
+          },
+          card3: {
+            title: "Medizinische und klinische Begleitung",
+            description:
+              "Unterstutzung und Begleitung bei gesundheitlicher Versorgung, stets mit Respekt und Professionalitat."
+          },
+          card4: {
+            title: "Entlastung fur Familien",
+            description:
+              "Wir bieten Unterstutzung, damit Familien mit Vertrauen Zeit und Energie zuruckgewinnen konnen."
+          }
+        },
+        contact: {
+          title: "Wir sind hier, um Ihnen zu helfen",
+          address: "Paseo del Colorado, 7 · Torremolinos",
+          description:
+            "Schreiben Sie uns, und wir antworten Ihnen gern, um Ihre Bedurfnisse zu verstehen und zu erklaren, wie wir helfen konnen."
+        }
+      },
+      publicAbout: {
+        hero: {
+          description1:
+            "Bei Sol y Vida Cuidados glauben wir, dass die beste Betreuung aus Nahe, Respekt und Vertrauen entsteht.",
+          description2:
+            "Wir begleiten altere Menschen und ihre Familien mit einem menschlichen, professionellen und vollstandig personalisierten Ansatz, angepasst an jede Situation.",
+          more: "Mehr uber uns"
+        },
+        history: {
+          title: "Unsere Geschichte",
+          description1:
+            "Sol y Vida Cuidados wurde mit dem Ziel gegrundet, einen nahen, professionellen und personalisierten hauslichen Betreuungsservice fur altere Menschen und ihre Familien an der Costa del Sol anzubieten.",
+          description2:
+            "Wir glauben, dass jeder Mensch Betreuung mit Respekt, Empathie und Hingabe verdient, immer angepasst an seine Bedurfnisse."
+        },
+        mission: {
+          title: "Professionelle Betreuung mit menschlichem Wert",
+          card1: {
+            title: "Menschliche Betreuung",
+            description:
+              "Wir bieten eine nahe und personalisierte Begleitung und stellen die Person stets in den Mittelpunkt."
+          },
+          card2: {
+            title: "Vertrauen",
+            description:
+              "Wir arbeiten mit qualifizierten Fachkraften, um Familien Sicherheit und Ruhe zu geben."
+          },
+          card3: {
+            title: "Lebensqualitat",
+            description:
+              "Unser Ziel ist es, das Wohlbefinden und die Autonomie alterer Menschen im eigenen Zuhause zu verbessern."
+          }
+        },
+        reasons: {
+          label: "Warum uns wahlen?",
+          title: "Echtes Engagement fur jede Familie",
+          reason1: "Personliche Betreuung",
+          reason2: "Qualifiziertes Personal",
+          reason3: "Nahe und Vertrauen",
+          reason4: "Engagement fur Familien"
+        },
+        cta: {
+          title: "Sprechen wir?",
+          description: "Wenn Sie mehr uber unsere Dienstleistungen erfahren mochten, helfen wir Ihnen gerne weiter."
         }
       },
       sidebar: {
@@ -2220,6 +2652,7 @@ const resources = {
         notifications: "Benachrichtigungen"
       },
       footer: {
+        partnerName: "VITALY",
         vitalyTitle: "Arbeitsschutz und Gesundheitsuberwachung",
         vitalyText:
           "Wir pflegen eine strategische Zusammenarbeit mit VITALY fur Arbeitsschutz und Gesundheitsuberwachung.",
@@ -2279,6 +2712,12 @@ const resources = {
         }
       },
       services: {
+        title: "Unsere Leistungen",
+        subtitle: "Personalisierte Betreuung fur jeden Bedarf.",
+        card1: "Begleitung und Gesellschaft",
+        card2: "Hilfe zu Hause",
+        card3: "Medizinische Begleitung",
+        card4: "Familienentlastung",
         publicDesc1:
           "Nahe alltagliche Betreuung, die emotionales Wohlbefinden, Selbststandigkeit und Ruhe zu Hause fordert.",
         publicDesc2:

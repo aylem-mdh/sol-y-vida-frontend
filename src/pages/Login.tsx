@@ -68,13 +68,13 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-[#072B61] via-[#0B4EA2] to-[#2563EB] flex items-center justify-center p-6">
       <div className="w-full max-w-[520px] bg-white rounded-[32px] shadow-2xl p-10">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-[#0B4EA2]">Sol y Vida</h1>
+          <h1 className="text-4xl font-bold text-[#0B4EA2]">{t("branding.name")}</h1>
           <p className="text-orange-500 font-semibold tracking-wide mt-2">
-            CUIDADOS
+            {t("branding.suffix").toUpperCase()}
           </p>
         </div>
 
-        <h2 className="text-3xl font-bold text-slate-800 text-center">Bienvenido</h2>
+        <h2 className="text-3xl font-bold text-slate-800 text-center">{t("loginPublic.welcome")}</h2>
 
         <p className="text-gray-500 text-center mt-3">
           {t("login.subtitle")}

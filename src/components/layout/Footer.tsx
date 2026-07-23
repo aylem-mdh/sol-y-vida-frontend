@@ -12,7 +12,7 @@ export default function Footer() {
             <ShieldCheck className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-black">VITALY</h2>
+            <h2 className="text-2xl font-bold text-black">{t("footer.partnerName")}</h2>
             <p className="mt-2 text-base font-semibold text-black sm:text-lg">
               {t("footer.vitalyTitle")}
             </p>
