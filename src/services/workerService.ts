@@ -10,6 +10,11 @@ export interface Worker {
   especialidad: string;
 }
 
+export interface CreateWorkerWithAccountResult {
+  worker: Worker;
+  activationToken: string;
+}
+
 export async function getWorkers() {
   const response = await api.get<Worker[]>("/Workers");
 
@@ -17,7 +22,7 @@ export async function getWorkers() {
 }
 
 export async function createWorker(worker: any) {
-  const response = await api.post("/Workers", worker);
+  const response = await api.post<CreateWorkerWithAccountResult>("/Workers", worker);
 
   return response.data;
 }

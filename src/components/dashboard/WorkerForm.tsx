@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   createWorker,
+  type CreateWorkerWithAccountResult,
   updateWorker,
   type Worker,
 } from "../../services/workerService";
@@ -64,7 +65,11 @@ export default function WorkerForm({
       if (worker) {
         await updateWorker(worker.id, form);
       } else {
-        await createWorker(form);
+        const result: CreateWorkerWithAccountResult = await createWorker(form);
+        const activationLink = `${window.location.origin}/activate-account?token=${encodeURIComponent(result.activationToken)}`;
+        window.alert(
+          `Cuenta de trabajador creada. Comparte este enlace de activacion con el trabajador:\n\n${activationLink}\n\nToken: ${result.activationToken}`
+        );
       }
 
       onSaved();
