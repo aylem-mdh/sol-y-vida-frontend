@@ -1,5 +1,5 @@
 import { Bell, Clock3, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getNotifications } from "../../services/notificationService";
@@ -29,6 +29,36 @@ export default function Topbar({
   const resolvedSearchPlaceholder = searchPlaceholder ?? t("reportsPage.searchPlaceholder");
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const displayName = useMemo(() => {
+    const fallbackName = name?.trim();
+    const token = window.localStorage.getItem("token");
+
+    if (!token) {
+      return fallbackName || "";
+    }
+
+    try {
+      const payloadPart = token.split(".")[1];
+      if (!payloadPart) {
+        return fallbackName || "";
+      }
+
+      const base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+      const payloadJson = window.atob(padded);
+      const claims = JSON.parse(payloadJson) as Record<string, unknown>;
+
+      const tokenName = [
+        claims.name,
+        claims.unique_name,
+        claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+      ].find((value) => typeof value === "string" && value.trim().length > 0) as string | undefined;
+
+      return tokenName?.trim() || fallbackName || "";
+    } catch {
+      return fallbackName || "";
+    }
+  }, [name]);
   const hour = new Date().getHours();
 
   const greeting =
@@ -73,7 +103,7 @@ export default function Topbar({
           <h1 className="text-3xl font-bold text-[#1F2937] sm:text-4xl">{title}</h1>
           <p className="mt-2 max-w-2xl text-sm text-[#4B5563] sm:text-base">{subtitle}</p>
           <p className="mt-3 text-sm font-semibold text-[#0F9E98] sm:text-base">
-            {greeting}, {name}
+            {greeting}, {displayName}
           </p>
         </div>
 
@@ -116,10 +146,10 @@ export default function Topbar({
 
           <div className="flex items-center gap-3 rounded-2xl border border-[#D8EFEA] bg-white px-3 py-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0F9E98] text-sm font-bold text-white">
-              {name.charAt(0)}
+              {displayName.charAt(0)}
             </div>
             <div>
-              <p className="text-sm font-bold text-[#1F2937]">{name}</p>
+              <p className="text-sm font-bold text-[#1F2937]">{displayName}</p>
               <p className="text-xs text-[#6B7280]">{role}</p>
             </div>
           </div>
