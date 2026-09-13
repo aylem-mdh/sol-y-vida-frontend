@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import {
   createClient,
   updateClient,
@@ -69,6 +70,34 @@ export default function ClientForm({
     });
   }
 
+  function getDetailedError(err: unknown): string {
+    if (!axios.isAxiosError(err)) {
+      return t("forms.common.errors.generic");
+    }
+
+    const status = err.response?.status;
+    const data = err.response?.data as
+      | { message?: string; detail?: string; title?: string; errors?: Record<string, string[]>; traceId?: string }
+      | undefined;
+
+    const validationErrors = data?.errors
+      ? Object.entries(data.errors)
+          .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+          .join(" | ")
+      : "";
+
+    const parts = [
+      data?.message,
+      data?.title,
+      data?.detail,
+      validationErrors,
+      status ? `HTTP ${status}` : "",
+      data?.traceId ? `TraceId: ${data.traceId}` : "",
+    ].filter(Boolean);
+
+    return parts.length > 0 ? parts.join(" | ") : t("forms.common.errors.generic");
+  }
+
   async function save() {
     setError("");
 
@@ -103,8 +132,13 @@ export default function ClientForm({
 
       setForm(emptyClient);
     } catch (err) {
-      console.error(err);
-      setError(t("forms.common.errors.generic"));
+      console.error("Client create/update failed", {
+        payload: form,
+        assignedWorkerIdType: typeof form.assignedWorkerId,
+        assignedWorkerIdValue: form.assignedWorkerId,
+        error: err,
+      });
+      setError(getDetailedError(err));
     } finally {
       setLoading(false);
     }
