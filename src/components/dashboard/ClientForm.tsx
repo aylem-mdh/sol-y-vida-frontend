@@ -55,12 +55,6 @@ export default function ClientForm({
     try {
       const data = await getWorkers();
       setWorkers(data);
-      if (data.length > 0) {
-        setForm((current) => ({
-          ...current,
-          assignedWorkerId: current.assignedWorkerId ?? data[0].id,
-        }));
-      }
     } catch (workerError) {
       console.error(workerError);
     }
@@ -71,7 +65,7 @@ export default function ClientForm({
 
     setForm({
       ...form,
-      [name]: name === "assignedWorkerId" ? Number(value) : value,
+      [name]: name === "assignedWorkerId" ? (value === "" ? null : Number(value)) : value,
     });
   }
 
@@ -88,8 +82,7 @@ export default function ClientForm({
       !form.ciudad ||
       !form.codigoPostal ||
       !form.telefono ||
-      !form.email ||
-      !form.assignedWorkerId
+      !form.email
     ) {
       setError(t("forms.client.errors.required"));
       return;
@@ -211,18 +204,31 @@ export default function ClientForm({
           className="border rounded-xl p-3"
         />
 
-        <select
-          name="assignedWorkerId"
-          value={form.assignedWorkerId ?? ""}
-          onChange={change}
-          className="border rounded-xl p-3"
-        >
-          {workers.map((worker) => (
-            <option key={worker.id} value={worker.id}>
-              {worker.nombre} {worker.apellidos}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="assignedWorkerId" className="text-sm font-medium text-slate-700">
+            {t("forms.client.assignedWorker")}
+          </label>
+
+          <select
+            id="assignedWorkerId"
+            name="assignedWorkerId"
+            value={form.assignedWorkerId ?? ""}
+            onChange={change}
+            className="border rounded-xl p-3"
+          >
+            <option value="">
+              {workers.length > 0
+                ? t("forms.client.unassigned")
+                : t("forms.client.noWorkers")}
             </option>
-          ))}
-        </select>
+
+            {workers.map((worker) => (
+              <option key={worker.id} value={worker.id}>
+                {worker.nombre} {worker.apellidos}
+              </option>
+            ))}
+          </select>
+        </div>
 
       </div>
 

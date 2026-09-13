@@ -352,6 +352,9 @@ const resources = {
           newTitle: "Nuevo cliente",
           editTitle: "Editar cliente",
           socialSecurity: "Numero Seguridad Social",
+          assignedWorker: "Trabajador asignado",
+          unassigned: "Sin asignar",
+          noWorkers: "Sin trabajadores disponibles",
           save: "Guardar cliente",
           errors: {
             required: "Rellena todos los campos obligatorios del cliente."
@@ -1198,6 +1201,9 @@ const resources = {
           newTitle: "New client",
           editTitle: "Edit client",
           socialSecurity: "Social Security Number",
+          assignedWorker: "Assigned worker",
+          unassigned: "Unassigned",
+          noWorkers: "No workers available",
           save: "Save client",
           errors: {
             required: "Complete all required client fields."
@@ -1987,6 +1993,9 @@ const resources = {
           newTitle: "Nouveau client",
           editTitle: "Modifier le client",
           socialSecurity: "Numero de securite sociale",
+          assignedWorker: "Intervenant assigne",
+          unassigned: "Aucun intervenant assigne",
+          noWorkers: "Aucun intervenant disponible",
           save: "Enregistrer le client",
           errors: {
             required: "Completez tous les champs obligatoires du client."
@@ -2775,6 +2784,9 @@ const resources = {
           newTitle: "Neuer Kunde",
           editTitle: "Kunde bearbeiten",
           socialSecurity: "Sozialversicherungsnummer",
+          assignedWorker: "Zugewiesener Mitarbeitender",
+          unassigned: "Nicht zugewiesen",
+          noWorkers: "Keine Mitarbeitenden verfugbar",
           save: "Kunde speichern",
           errors: {
             required: "Bitte alle Pflichtfelder des Kunden ausfullen."
