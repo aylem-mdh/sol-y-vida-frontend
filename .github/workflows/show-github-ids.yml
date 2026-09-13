@@ -1,0 +1,13 @@
+name: Show GitHub IDs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  show-ids:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show IDs
+        run: |
+          echo "Organization ID: ${{ github.repository_owner_id }}"
+          echo "Repository ID: ${{ github.repository_id }}"
