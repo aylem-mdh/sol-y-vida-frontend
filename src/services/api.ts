@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "https://localhost:7131/api" : undefined);
+const PROD_API_URL = "https://solyvida-api-c0akbkcac3fzc2fv.swedencentral-01.azurewebsites.net/api";
+
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "https://localhost:7131/api" : PROD_API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
