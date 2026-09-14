@@ -13,6 +13,45 @@ export interface Worker {
 export interface CreateWorkerWithAccountResult {
   worker: Worker;
   activationToken: string;
+  activationLink?: string;
+}
+
+type RawCreateWorkerWithAccountResult = {
+  worker?: Worker;
+  Worker?: Worker;
+  activationToken?: string;
+  ActivationToken?: string;
+  token?: string;
+  activation_token?: string;
+  activationLink?: string;
+  ActivationLink?: string;
+};
+
+function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): CreateWorkerWithAccountResult {
+  const worker = raw.worker ?? raw.Worker;
+  const activationLink = raw.activationLink ?? raw.ActivationLink;
+  const tokenFromResponse = raw.activationToken ?? raw.ActivationToken ?? raw.token ?? raw.activation_token;
+
+  let activationToken = tokenFromResponse ?? "";
+
+  if (!activationToken && activationLink) {
+    try {
+      const parsed = new URL(activationLink, window.location.origin);
+      activationToken = parsed.searchParams.get("token") ?? "";
+    } catch {
+      activationToken = "";
+    }
+  }
+
+  if (!worker || !activationToken) {
+    throw new Error("Respuesta invalida al crear trabajadora.");
+  }
+
+  return {
+    worker,
+    activationToken,
+    activationLink,
+  };
 }
 
 export async function getWorkers() {
@@ -22,9 +61,9 @@ export async function getWorkers() {
 }
 
 export async function createWorker(worker: any) {
-  const response = await api.post<CreateWorkerWithAccountResult>("/Workers", worker);
+  const response = await api.post<RawCreateWorkerWithAccountResult>("/Workers", worker);
 
-  return response.data;
+  return normalizeCreateWorkerResult(response.data);
 }
 
 export async function updateWorker(

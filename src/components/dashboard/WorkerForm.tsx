@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import {
   createWorker,
   type CreateWorkerWithAccountResult,
@@ -18,6 +19,7 @@ export default function WorkerForm({
 }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [activationLink, setActivationLink] = useState("");
   const [activationToken, setActivationToken] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
@@ -63,7 +65,22 @@ export default function WorkerForm({
     }
   }
 
+  function getDetailedError(err: unknown): string {
+    if (!axios.isAxiosError(err)) {
+      return t("forms.common.errors.generic");
+    }
+
+    const data = err.response?.data as { message?: string; detail?: string; title?: string } | undefined;
+    return data?.message || data?.detail || data?.title || t("forms.common.errors.generic");
+  }
+
   async function save() {
+    if (loading) {
+      return;
+    }
+
+    setError("");
+
     if (
       !form.nombre ||
       !form.apellidos ||
@@ -79,21 +96,42 @@ export default function WorkerForm({
 
       if (worker) {
         await updateWorker(worker.id, form);
-        onSaved({ close: true });
+        await onSaved({ close: true });
       } else {
         const result: CreateWorkerWithAccountResult = await createWorker(form);
-        const url = new URL("/activate-account", window.location.origin);
-        url.searchParams.set("token", result.activationToken);
+        const activationToken = result.activationToken;
+        const activationLink = result.activationLink ?? `${window.location.origin}/activate-account?token=${activationToken}`;
 
-        const safeActivationLink = url.toString().replace(/\s+/g, "");
-        setActivationLink(safeActivationLink);
-        setActivationToken(result.activationToken);
+        let tokenFromLink = "";
+        try {
+          tokenFromLink = new URL(activationLink, window.location.origin).searchParams.get("token") ?? "";
+        } catch {
+          tokenFromLink = "";
+        }
+
+        if (import.meta.env.DEV && tokenFromLink !== activationToken) {
+          setError("Error de coherencia: el token del enlace no coincide con el token recibido.");
+          console.error("ACTIVATION_TOKEN_MISMATCH", {
+            activationToken,
+            tokenFromLink,
+            activationLink,
+          });
+        }
+
+        setActivationLink(activationLink);
+        setActivationToken(activationToken);
         setCopyMessage("");
-        onSaved({ close: false });
+
+        try {
+          await onSaved({ close: false });
+        } catch (refreshError) {
+          console.error(refreshError);
+          setError("Trabajadora creada, pero no se pudo refrescar la lista.");
+        }
       }
     } catch (error) {
       console.error(error);
-      alert(t("forms.common.errors.generic"));
+      setError(getDetailedError(error));
     } finally {
       setLoading(false);
     }
@@ -101,6 +139,12 @@ export default function WorkerForm({
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+      {error && (
+        <div className="col-span-2 rounded-xl bg-red-100 p-3 text-sm font-semibold text-red-700">
+          {error}
+        </div>
+      )}
 
       <input
         name="nombre"
