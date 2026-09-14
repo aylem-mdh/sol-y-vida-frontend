@@ -41,16 +41,6 @@ export default function ClientsTable({
   const effectiveSearch = searchTerm ?? search;
   const handleSearchChange = onSearchTermChange ?? setSearch;
 
-  function openClientDetails(rawId: number) {
-    const clientId = Number(rawId);
-
-    if (!Number.isInteger(clientId) || clientId <= 0) {
-      return;
-    }
-
-    window.location.href = `/clients/${clientId}`;
-  }
-
   const filteredClients = useMemo(() => {
     return clients.filter((client) => {
       const text = (
@@ -128,8 +118,17 @@ export default function ClientsTable({
                   {Number.isInteger(Number(client.id)) && Number(client.id) > 0 ? (
                     <button
                       type="button"
-                      onClick={() => openClientDetails(client.id)}
-                      className="font-semibold text-slate-800 hover:text-[#0F9E98] hover:underline text-left transition"
+                      onClick={() => {
+                        console.log("CLIENT_CLICK", client);
+
+                        if (!Number.isInteger(Number(client.id)) || Number(client.id) <= 0) {
+                          console.log("ID FALTANTE", client);
+                          return;
+                        }
+
+                        window.location.assign(`/clients/${Number(client.id)}`);
+                      }}
+                      className="relative z-10 pointer-events-auto cursor-pointer font-semibold text-slate-800 hover:text-[#0F9E98] hover:underline text-left transition"
                       title={t("pages.clients.details.view")}
                     >
                       {client.nombre} {client.apellidos}
