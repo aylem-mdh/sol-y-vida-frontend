@@ -61,7 +61,19 @@ export async function getWorkers() {
 }
 
 export async function createWorker(worker: any) {
-  const response = await api.post<RawCreateWorkerWithAccountResult>("/Workers", worker);
+  const requestId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  console.log("WORKER_CREATE_REQUEST", { requestId, email: worker?.email });
+
+  const response = await api.post<RawCreateWorkerWithAccountResult>("/Workers", worker, {
+    headers: {
+      "X-Client-Request-Id": requestId,
+    },
+  });
+
+  console.log("WORKER_CREATE_RESPONSE", { requestId, status: response.status });
 
   return normalizeCreateWorkerResult(response.data);
 }

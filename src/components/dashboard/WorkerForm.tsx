@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
@@ -25,6 +25,7 @@ export default function WorkerForm({
   const [activationLink, setActivationLink] = useState("");
   const [activationToken, setActivationToken] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+  const submitLockRef = useRef(false);
 
   const [form, setForm] = useState({
     nombre: "",
@@ -77,7 +78,7 @@ export default function WorkerForm({
     const message = (data?.message || data?.detail || data?.title || "").toLowerCase();
     const duplicatedEmail =
       status === 409
-      || ((status === 400 || status === 422) && (message.includes("existe") || message.includes("email") || message.includes("duplicate") || message.includes("duplic")));
+      || ((status === 400 || status === 422) && (message.includes("existe") || message.includes("email") || message.includes("duplicate") || message.includes("duplic") || message.includes("usuario ya existe")));
 
     if (duplicatedEmail) {
       return "No se ha creado el trabajador porque ya existe una cuenta con este email.";
@@ -87,9 +88,12 @@ export default function WorkerForm({
   }
 
   async function save() {
-    if (loading) {
+    if (loading || submitLockRef.current) {
+      console.log("WORKER_CREATE_SKIPPED", { reason: "locked" });
       return;
     }
+
+    submitLockRef.current = true;
 
     setErrorMessage("");
     setSuccessMessage("");
@@ -165,6 +169,7 @@ export default function WorkerForm({
       setErrorMessage(getDetailedError(error));
     } finally {
       setLoading(false);
+      submitLockRef.current = false;
     }
   }
 
