@@ -9,7 +9,7 @@ import {
 
 interface Props {
   worker?: Worker | null;
-  onSaved: () => void;
+  onSaved: (options?: { close?: boolean }) => void;
 }
 
 export default function WorkerForm({
@@ -18,6 +18,9 @@ export default function WorkerForm({
 }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [activationLink, setActivationLink] = useState("");
+  const [activationToken, setActivationToken] = useState("");
+  const [copyMessage, setCopyMessage] = useState("");
 
   const [form, setForm] = useState({
     nombre: "",
@@ -48,6 +51,18 @@ export default function WorkerForm({
     });
   }
 
+  async function copyActivationLink() {
+    try {
+      await navigator.clipboard.writeText(activationLink);
+      setCopyMessage("Enlace copiado correctamente");
+      window.setTimeout(() => setCopyMessage(""), 2200);
+    } catch (error) {
+      console.error(error);
+      setCopyMessage(t("forms.common.errors.generic"));
+      window.setTimeout(() => setCopyMessage(""), 2200);
+    }
+  }
+
   async function save() {
     if (
       !form.nombre ||
@@ -64,15 +79,18 @@ export default function WorkerForm({
 
       if (worker) {
         await updateWorker(worker.id, form);
+        onSaved({ close: true });
       } else {
         const result: CreateWorkerWithAccountResult = await createWorker(form);
-        const activationLink = `${window.location.origin}/activate-account?token=${encodeURIComponent(result.activationToken)}`;
-        window.alert(
-          `Cuenta de trabajador creada. Comparte este enlace de activacion con el trabajador:\n\n${activationLink}\n\nToken: ${result.activationToken}`
-        );
-      }
+        const url = new URL("/activate-account", window.location.origin);
+        url.searchParams.set("token", result.activationToken);
 
-      onSaved();
+        const safeActivationLink = url.toString().replace(/\s+/g, "");
+        setActivationLink(safeActivationLink);
+        setActivationToken(result.activationToken);
+        setCopyMessage("");
+        onSaved({ close: false });
+      }
     } catch (error) {
       console.error(error);
       alert(t("forms.common.errors.generic"));
@@ -147,6 +165,46 @@ export default function WorkerForm({
         </button>
 
       </div>
+
+      {activationLink && (
+        <div className="col-span-2 mt-2 rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] p-4">
+          <p className="text-sm font-semibold text-slate-800">
+            Cuenta de trabajador creada. Comparte este enlace de activacion con el trabajador:
+          </p>
+
+          <textarea
+            readOnly
+            value={activationLink}
+            rows={3}
+            onFocus={(event) => event.currentTarget.select()}
+            className="mt-3 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-700"
+          />
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={copyActivationLink}
+              className="rounded-xl bg-[#0F9E98] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0B817C]"
+            >
+              Copiar enlace
+            </button>
+
+            <button
+              type="button"
+              onClick={() => window.open(activationLink, "_blank", "noopener,noreferrer")}
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              Abrir enlace
+            </button>
+          </div>
+
+          {copyMessage && (
+            <p className="mt-2 text-sm font-semibold text-[#0F9E98]">{copyMessage}</p>
+          )}
+
+          <p className="mt-2 break-all text-xs text-slate-500">Token: {activationToken}</p>
+        </div>
+      )}
 
     </div>
   );

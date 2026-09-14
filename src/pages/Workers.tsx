@@ -111,9 +111,12 @@ export default function Workers() {
         >
           <WorkerForm
             worker={selectedWorker}
-            onSaved={async () => {
+            onSaved={async (options) => {
               await loadWorkers();
-              closeModal();
+
+              if (options?.close ?? true) {
+                closeModal();
+              }
             }}
           />
         </Modal>

@@ -7,6 +7,7 @@ import Topbar from "../components/dashboard/Topbar";
 import ClientForm from "../components/dashboard/ClientForm";
 import Modal from "../components/ui/Modal";
 import { getClientById, type Client } from "../services/clientService";
+import { getWorkers, type Worker } from "../services/workerService";
 
 export default function ClientDetails() {
   const { t } = useTranslation();
@@ -19,15 +20,33 @@ export default function ClientDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [workers, setWorkers] = useState<Worker[]>([]);
 
   const clientId = useMemo(() => Number(id), [id]);
   const backToClientsLabel = "Volver a clientes";
   const clientNotFoundLabel = "Cliente no encontrado";
   const invalidClientIdLabel = "ID de cliente no válido";
 
+  const assignedWorkerName = useMemo(() => {
+    if (!client || client.assignedWorkerId === null || client.assignedWorkerId === undefined) {
+      return "Sin trabajador asignado";
+    }
+
+    const matchedWorker = workers.find((worker) => worker.id === client.assignedWorkerId);
+    if (!matchedWorker) {
+      return "Trabajador no encontrado";
+    }
+
+    return `${matchedWorker.nombre} ${matchedWorker.apellidos}`;
+  }, [client, workers]);
+
   useEffect(() => {
     void loadClient();
   }, [clientId]);
+
+  useEffect(() => {
+    void loadWorkers();
+  }, []);
 
   async function loadClient() {
     setLoading(true);
@@ -51,6 +70,16 @@ export default function ClientDetails() {
       setClient(null);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadWorkers() {
+    try {
+      const data = await getWorkers();
+      setWorkers(data);
+    } catch (workerError) {
+      console.error(workerError);
+      setWorkers([]);
     }
   }
 
@@ -211,12 +240,8 @@ export default function ClientDetails() {
                   <h3 className="mb-4 text-lg font-bold text-slate-800">{t("pages.clients.details.assignment")}</h3>
                   <dl className="grid grid-cols-1 gap-3 text-sm text-slate-700 sm:grid-cols-2">
                     <div>
-                      <dt className="font-semibold text-slate-500">{t("pages.clients.details.assignedWorkerId")}</dt>
-                      <dd>
-                        {client.assignedWorkerId === null || client.assignedWorkerId === undefined
-                          ? t("pages.clients.details.noAssignedWorker")
-                          : client.assignedWorkerId}
-                      </dd>
+                      <dt className="font-semibold text-slate-500">Trabajadora asignada</dt>
+                      <dd>{assignedWorkerName}</dd>
                     </div>
                   </dl>
                 </article>
