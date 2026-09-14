@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 interface Client {
   id: number;
@@ -37,6 +38,7 @@ export default function ClientsTable({
   hideSearchInput = false,
 }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const effectiveSearch = searchTerm ?? search;
   const handleSearchChange = onSearchTermChange ?? setSearch;
@@ -115,9 +117,14 @@ export default function ClientsTable({
 
                 <div>
 
-                  <p className="font-semibold text-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/clients/${client.id}`)}
+                    className="font-semibold text-slate-800 hover:text-[#0F9E98] hover:underline text-left transition"
+                    title={t("pages.clients.details.view")}
+                  >
                     {client.nombre} {client.apellidos}
-                  </p>
+                  </button>
 
                   <p className="text-sm text-gray-500">
                     {client.email}

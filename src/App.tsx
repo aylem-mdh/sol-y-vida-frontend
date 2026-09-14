@@ -2,11 +2,13 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import CookieBanner from "./components/cookies/CookieBanner";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Clients = lazy(() => import("./pages/Clients"));
+const ClientDetails = lazy(() => import("./pages/ClientDetails"));
 const Workers = lazy(() => import("./pages/Workers"));
 const Visits = lazy(() => import("./pages/Visits"));
 const Services = lazy(() => import("./pages/Services"));
@@ -25,10 +27,14 @@ const Notifications = lazy(() => import("./pages/Notifications"));
 const Budgets = lazy(() => import("./pages/Budgets"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Complaints = lazy(() => import("./pages/Complaints"));
+const LegalNotice = lazy(() => import("./pages/LegalNotice"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 
 function App() {
   return (
     <BrowserRouter>
+      <CookieBanner />
       <Suspense fallback={<div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)]" />}>
         <Routes>
 
@@ -39,12 +45,16 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/aviso-legal" element={<LegalNotice />} />
+          <Route path="/privacidad" element={<PrivacyPolicy />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
 
           {/* Dashboard */}
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><Admin /></ProtectedRoute>} />
 
           {/* CRUDs */}
           <Route path="/clients" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Clients /></ProtectedRoute>} />
+          <Route path="/clients/:id" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><ClientDetails /></ProtectedRoute>} />
           <Route path="/workers" element={<ProtectedRoute allowedRoles={["admin"]}><Workers /></ProtectedRoute>} />
           <Route path="/services" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Services /></ProtectedRoute>} />
           <Route path="/visits" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Visits /></ProtectedRoute>} />
