@@ -11,7 +11,7 @@ import { getClientById, type Client } from "../services/clientService";
 export default function ClientDetails() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const role = localStorage.getItem("role") === "worker" ? "worker" : "admin";
   const isAdmin = role === "admin";
 
