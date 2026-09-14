@@ -19,7 +19,9 @@ export default function WorkerForm({
 }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [warningMessage, setWarningMessage] = useState("");
   const [activationLink, setActivationLink] = useState("");
   const [activationToken, setActivationToken] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
@@ -67,11 +69,21 @@ export default function WorkerForm({
 
   function getDetailedError(err: unknown): string {
     if (!axios.isAxiosError(err)) {
-      return t("forms.common.errors.generic");
+      return "No se ha podido crear el trabajador. Intentalo de nuevo.";
     }
 
+    const status = err.response?.status;
     const data = err.response?.data as { message?: string; detail?: string; title?: string } | undefined;
-    return data?.message || data?.detail || data?.title || t("forms.common.errors.generic");
+    const message = (data?.message || data?.detail || data?.title || "").toLowerCase();
+    const duplicatedEmail =
+      status === 409
+      || ((status === 400 || status === 422) && (message.includes("existe") || message.includes("email") || message.includes("duplicate") || message.includes("duplic")));
+
+    if (duplicatedEmail) {
+      return "No se ha creado el trabajador porque ya existe una cuenta con este email.";
+    }
+
+    return "No se ha podido crear el trabajador. Intentalo de nuevo.";
   }
 
   async function save() {
@@ -79,7 +91,12 @@ export default function WorkerForm({
       return;
     }
 
-    setError("");
+    setErrorMessage("");
+    setSuccessMessage("");
+    setWarningMessage("");
+    setActivationLink("");
+    setActivationToken("");
+    setCopyMessage("");
 
     if (
       !form.nombre ||
@@ -87,7 +104,7 @@ export default function WorkerForm({
       !form.telefono ||
       !form.email
     ) {
-      alert(t("forms.worker.errors.required"));
+      setErrorMessage(t("forms.worker.errors.required"));
       return;
     }
 
@@ -96,11 +113,13 @@ export default function WorkerForm({
 
       if (worker) {
         await updateWorker(worker.id, form);
+        setSuccessMessage("Trabajadora actualizada correctamente.");
         await onSaved({ close: true });
       } else {
         const result: CreateWorkerWithAccountResult = await createWorker(form);
         const activationToken = result.activationToken;
-        const activationLink = result.activationLink ?? `${window.location.origin}/activate-account?token=${activationToken}`;
+        const activationLinkFromToken = `${window.location.origin}/activate-account?token=${activationToken}`;
+        const activationLink = result.activationLink ?? activationLinkFromToken;
 
         let tokenFromLink = "";
         try {
@@ -110,14 +129,21 @@ export default function WorkerForm({
         }
 
         if (import.meta.env.DEV && tokenFromLink !== activationToken) {
-          setError("Error de coherencia: el token del enlace no coincide con el token recibido.");
+          setErrorMessage("Error de coherencia: el token del enlace no coincide con el token recibido.");
+          setSuccessMessage("");
+          setWarningMessage("");
+          setActivationLink("");
+          setActivationToken("");
           console.error("ACTIVATION_TOKEN_MISMATCH", {
             activationToken,
             tokenFromLink,
             activationLink,
           });
+          return;
         }
 
+        setErrorMessage("");
+        setSuccessMessage("Cuenta de trabajador creada.");
         setActivationLink(activationLink);
         setActivationToken(activationToken);
         setCopyMessage("");
@@ -126,12 +152,17 @@ export default function WorkerForm({
           await onSaved({ close: false });
         } catch (refreshError) {
           console.error(refreshError);
-          setError("Trabajadora creada, pero no se pudo refrescar la lista.");
+          setWarningMessage("Trabajadora creada, pero no se pudo refrescar la lista.");
         }
       }
     } catch (error) {
       console.error(error);
-      setError(getDetailedError(error));
+      setSuccessMessage("");
+      setWarningMessage("");
+      setActivationLink("");
+      setActivationToken("");
+      setCopyMessage("");
+      setErrorMessage(getDetailedError(error));
     } finally {
       setLoading(false);
     }
@@ -140,9 +171,21 @@ export default function WorkerForm({
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-      {error && (
+      {errorMessage && (
         <div className="col-span-2 rounded-xl bg-red-100 p-3 text-sm font-semibold text-red-700">
-          {error}
+          {errorMessage}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="col-span-2 rounded-xl bg-[#ECFAF8] p-3 text-sm font-semibold text-[#0F9E98]">
+          {successMessage}
+        </div>
+      )}
+
+      {warningMessage && (
+        <div className="col-span-2 rounded-xl bg-[#FFF5E8] p-3 text-sm font-semibold text-[#9A5A13]">
+          {warningMessage}
         </div>
       )}
 
