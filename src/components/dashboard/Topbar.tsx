@@ -1,8 +1,9 @@
-import { Bell, Clock3, Search } from "lucide-react";
+import { Bell, Clock3, LogOut, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getNotifications } from "../../services/notificationService";
+import { clearSession } from "../../services/authService";
 
 type Props = {
   title: string;
@@ -67,6 +68,11 @@ export default function Topbar({
       : hour < 20
       ? t("topbar.goodAfternoon")
       : t("topbar.goodEvening");
+
+  function logout() {
+    clearSession();
+    navigate("/login");
+  }
 
   useEffect(() => {
     let mounted = true;
@@ -153,6 +159,15 @@ export default function Topbar({
               <p className="text-xs text-[#6B7280]">{role}</p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={logout}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#F7D7AA] bg-[#FFF5E8] px-4 py-2.5 text-sm font-semibold text-[#9A5A13] transition duration-300 hover:bg-[#FDEFD8]"
+          >
+            <LogOut size={16} />
+            {t("common.logout")}
+          </button>
 
           <select
             value={i18n.language}
