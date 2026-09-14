@@ -16,16 +16,47 @@ export interface Client {
   assignedWorkerId?: number | null;
 }
 
-export async function getClients() {
-  const response = await api.get<Client[]>("/Clients");
+type RawClient = Partial<Client> & {
+  Id?: number;
+  idCliente?: number;
+  IdCliente?: number;
+  clientId?: number;
+  ClientId?: number;
+};
 
-  return response.data;
+function normalizeClient(raw: RawClient): Client {
+  const rawId = raw.id ?? raw.Id ?? raw.idCliente ?? raw.IdCliente ?? raw.clientId ?? raw.ClientId;
+
+  return {
+    id: Number(rawId),
+    nombre: String(raw.nombre ?? ""),
+    apellidos: String(raw.apellidos ?? ""),
+    fechaNacimiento: String(raw.fechaNacimiento ?? ""),
+    dni: String(raw.dni ?? ""),
+    numeroSeguridadSocial: String(raw.numeroSeguridadSocial ?? ""),
+    direccion: String(raw.direccion ?? ""),
+    ciudad: String(raw.ciudad ?? ""),
+    codigoPostal: String(raw.codigoPostal ?? ""),
+    telefono: String(raw.telefono ?? ""),
+    email: String(raw.email ?? ""),
+    activo: Boolean(raw.activo),
+    assignedWorkerId:
+      raw.assignedWorkerId === null || raw.assignedWorkerId === undefined
+        ? null
+        : Number(raw.assignedWorkerId),
+  };
+}
+
+export async function getClients() {
+  const response = await api.get<RawClient[]>("/Clients");
+
+  return response.data.map(normalizeClient);
 }
 
 export async function getClientById(id: number): Promise<Client> {
-  const response = await api.get<Client>(`/Clients/${id}`);
+  const response = await api.get<RawClient>(`/Clients/${id}`);
 
-  return response.data;
+  return normalizeClient(response.data);
 }
 
 export async function createClient(client: Omit<Client, "id" | "activo">) {

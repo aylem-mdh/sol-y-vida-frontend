@@ -21,6 +21,9 @@ export default function ClientDetails() {
   const [showForm, setShowForm] = useState(false);
 
   const clientId = useMemo(() => Number(id), [id]);
+  const backToClientsLabel = "Volver a clientes";
+  const clientNotFoundLabel = "Cliente no encontrado";
+  const invalidClientIdLabel = "ID de cliente no válido";
 
   useEffect(() => {
     void loadClient();
@@ -30,8 +33,8 @@ export default function ClientDetails() {
     setLoading(true);
     setError("");
 
-    if (!Number.isInteger(clientId) || clientId <= 0) {
-      setError(t("pages.clients.details.notFound"));
+    if (!id || !Number.isInteger(clientId) || clientId <= 0) {
+      setError(invalidClientIdLabel);
       setLoading(false);
       return;
     }
@@ -41,7 +44,7 @@ export default function ClientDetails() {
       setClient(data);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 404) {
-        setError(t("pages.clients.details.notFound"));
+        setError(clientNotFoundLabel);
       } else {
         setError(t("pages.clients.details.loadError"));
       }
@@ -107,7 +110,7 @@ export default function ClientDetails() {
                 onClick={() => navigate("/clients")}
                 className="mt-4 rounded-xl bg-slate-200 px-5 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-300"
               >
-                {t("pages.clients.details.backToClients")}
+                {backToClientsLabel}
               </button>
             </div>
           )}
@@ -136,7 +139,7 @@ export default function ClientDetails() {
                     onClick={() => navigate("/clients")}
                     className="rounded-2xl bg-slate-200 px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-300"
                   >
-                    {t("pages.clients.details.backToClients")}
+                    {backToClientsLabel}
                   </button>
 
                   {isAdmin && (
