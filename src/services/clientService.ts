@@ -22,6 +22,12 @@ export async function getClients() {
   return response.data;
 }
 
+export async function getClientById(id: number): Promise<Client> {
+  const response = await api.get<Client>(`/Clients/${id}`);
+
+  return response.data;
+}
+
 export async function createClient(client: Omit<Client, "id" | "activo">) {
   const response = await api.post("/Clients", client);
 

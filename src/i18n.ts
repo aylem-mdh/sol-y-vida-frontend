@@ -409,7 +409,22 @@ const resources = {
           title: "Clientes",
           subtitle: "Gestiona todos los clientes.",
           new: "Nuevo cliente",
-          edit: "Editar cliente"
+          edit: "Editar cliente",
+          details: {
+            view: "Ver ficha",
+            title: "Ficha del cliente",
+            subtitle: "Consulta la informacion principal del cliente y su asignacion.",
+            loading: "Cargando ficha del cliente...",
+            loadError: "No se pudo cargar la ficha del cliente.",
+            notFound: "El cliente no existe o no tienes permisos para verlo.",
+            backToClients: "Volver a clientes",
+            personalData: "Datos personales",
+            birthDate: "Fecha de nacimiento",
+            contactData: "Contacto",
+            assignment: "Asignacion",
+            assignedWorkerId: "Trabajador asignado (ID)",
+            noAssignedWorker: "Sin trabajador asignado"
+          }
         },
         familyMembers: {
           title: "Familiares",
@@ -1258,7 +1273,22 @@ const resources = {
           title: "Clients",
           subtitle: "Manage all clients.",
           new: "New client",
-          edit: "Edit client"
+          edit: "Edit client",
+          details: {
+            view: "View profile",
+            title: "Client profile",
+            subtitle: "Review the main client information and assignment.",
+            loading: "Loading client profile...",
+            loadError: "Could not load the client profile.",
+            notFound: "Client not found or access denied.",
+            backToClients: "Back to clients",
+            personalData: "Personal data",
+            birthDate: "Date of birth",
+            contactData: "Contact",
+            assignment: "Assignment",
+            assignedWorkerId: "Assigned worker (ID)",
+            noAssignedWorker: "No assigned worker"
+          }
         },
         familyMembers: {
           title: "Family members",
@@ -2049,7 +2079,22 @@ const resources = {
           title: "Clients",
           subtitle: "Gerez tous les clients.",
           new: "Nouveau client",
-          edit: "Modifier le client"
+          edit: "Modifier le client",
+          details: {
+            view: "Voir la fiche",
+            title: "Fiche client",
+            subtitle: "Consultez les informations principales du client et son affectation.",
+            loading: "Chargement de la fiche client...",
+            loadError: "Impossible de charger la fiche client.",
+            notFound: "Client introuvable ou acces refuse.",
+            backToClients: "Retour aux clients",
+            personalData: "Donnees personnelles",
+            birthDate: "Date de naissance",
+            contactData: "Contact",
+            assignment: "Affectation",
+            assignedWorkerId: "Intervenant assigne (ID)",
+            noAssignedWorker: "Aucun intervenant assigne"
+          }
         },
         familyMembers: {
           title: "Proches",
@@ -2840,7 +2885,22 @@ const resources = {
           title: "Kunden",
           subtitle: "Verwalten Sie alle Kunden.",
           new: "Neuer Kunde",
-          edit: "Kunde bearbeiten"
+          edit: "Kunde bearbeiten",
+          details: {
+            view: "Profil anzeigen",
+            title: "Kundenprofil",
+            subtitle: "Prufen Sie die wichtigsten Kundendaten und die Zuweisung.",
+            loading: "Kundenprofil wird geladen...",
+            loadError: "Kundenprofil konnte nicht geladen werden.",
+            notFound: "Kunde nicht gefunden oder kein Zugriff.",
+            backToClients: "Zuruck zu Kunden",
+            personalData: "Personliche Daten",
+            birthDate: "Geburtsdatum",
+            contactData: "Kontakt",
+            assignment: "Zuweisung",
+            assignedWorkerId: "Zugewiesene Fachkraft (ID)",
+            noAssignedWorker: "Keine Fachkraft zugewiesen"
+          }
         },
         familyMembers: {
           title: "Angehorige",
