@@ -27,6 +27,19 @@ export default function VisitsTable({
   const effectiveSearch = searchTerm ?? search;
   const handleSearchChange = onSearchTermChange ?? setSearch;
 
+  function getLocale() {
+    return i18n.language === "es" ? "es-ES" : i18n.language === "fr" ? "fr-FR" : i18n.language === "de" ? "de-DE" : "en-US";
+  }
+
+  function formatVisitDate(value: string) {
+    return new Intl.DateTimeFormat(getLocale(), {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+  }
+
   const filteredVisits = useMemo(() => {
     return visits.filter((visit) => {
       const text = (
@@ -69,7 +82,60 @@ export default function VisitsTable({
 
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="md:hidden p-4 space-y-3">
+        {filteredVisits.map((visit) => {
+          const startTime = visit.startedAt ? formatVisitDate(visit.startedAt) : null;
+          const endTime = visit.endedAt ? formatVisitDate(visit.endedAt) : null;
+
+          return (
+            <article key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-base font-semibold text-[#1F2937]">{visit.cliente}</p>
+                  <p className="mt-1 text-sm text-[#4B5563]">{formatVisitDate(visit.fecha)}</p>
+                </div>
+                <span className="rounded-full bg-[#ECFAF8] px-3 py-1 text-xs font-semibold text-[#0F9E98]">
+                  {visit.estado ?? t("pages.visits.scheduled")}
+                </span>
+              </div>
+
+              <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-[#4B5563] sm:grid-cols-2">
+                <p><span className="font-semibold text-[#1F2937]">{t("pages.visits.worker")}:</span> {visit.trabajador}</p>
+                {startTime && <p><span className="font-semibold text-[#1F2937]">{t("pages.visits.startedAt")}:</span> {startTime}</p>}
+                {endTime && <p><span className="font-semibold text-[#1F2937]">{t("pages.visits.endedAt")}:</span> {endTime}</p>}
+                {visit.observaciones && <p className="sm:col-span-2 line-clamp-3"><span className="font-semibold text-[#1F2937]">{t("pages.visits.notes")}:</span> {visit.observaciones}</p>}
+              </div>
+
+              {canEdit ? (
+                <div className="mt-4 flex justify-end gap-3">
+                  <button
+                    onClick={() => onEdit(visit)}
+                    className="inline-flex items-center justify-center rounded-xl bg-blue-100 px-4 py-2 text-sm font-semibold text-[#0B4EA2] transition hover:bg-[#0B4EA2] hover:text-white"
+                  >
+                    {t("tables.common.edit")}
+                  </button>
+                  <button
+                    onClick={() => onDelete(visit.id)}
+                    className="inline-flex items-center justify-center rounded-xl bg-red-100 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-500 hover:text-white"
+                  >
+                    {t("tables.common.delete")}
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-4 text-right text-xs font-semibold text-[#0F9E98]">{t("tables.common.readOnly")}</div>
+              )}
+            </article>
+          );
+        })}
+
+        {filteredVisits.length === 0 && (
+          <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
+            {t("tables.visits.empty")}
+          </div>
+        )}
+      </div>
+
+      <div className="hidden md:block overflow-x-auto">
       <table className="w-full min-w-[860px]">
 
         <thead className="bg-slate-50">

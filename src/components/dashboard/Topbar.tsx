@@ -107,6 +107,19 @@ export default function Topbar({
     };
   }, [notificationPath]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("language", i18n.language);
+    }
+  }, [i18n.language]);
+
+  function changeLanguage(language: string) {
+    void i18n.changeLanguage(language);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("language", language);
+    }
+  }
+
   return (
     <header className="rounded-[28px] border border-[#D8EFEA] bg-white/95 px-5 py-5 shadow-[0_18px_42px_rgba(15,25,30,0.08)] backdrop-blur-sm sm:px-7 sm:py-6 lg:px-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -178,7 +191,7 @@ export default function Topbar({
 
           <select
             value={i18n.language}
-            onChange={(event) => i18n.changeLanguage(event.target.value)}
+            onChange={(event) => changeLanguage(event.target.value)}
             className="rounded-2xl border border-[#D8EFEA] bg-white px-3 py-2.5 text-xs font-semibold text-[#1F2937] outline-none"
             aria-label={t("common.language")}
           >
