@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
@@ -13,11 +13,13 @@ import {
   startVisit,
   type Visit,
 } from "../services/visitService";
+import { getCurrentUserIdFromToken } from "../utils/authClaims";
 
 export default function Visits() {
   const { t, i18n } = useTranslation();
   const role = localStorage.getItem("role") === "worker" ? "worker" : "admin";
   const isAdmin = role === "admin";
+  const currentUserId = getCurrentUserIdFromToken();
   const [visits, setVisits] = useState<Visit[]>([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -135,6 +137,14 @@ export default function Visits() {
     }
   }
 
+  const visibleVisits = useMemo(() => {
+    if (role !== "worker" || currentUserId == null) {
+      return visits;
+    }
+
+    return visits.filter((visit) => visit.workerId === currentUserId);
+  }, [currentUserId, role, visits]);
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
       <Sidebar role={role} />
@@ -166,7 +176,7 @@ export default function Visits() {
           </div>
 
           <VisitsTable
-            visits={visits}
+            visits={visibleVisits}
             onDelete={removeVisit}
             onEdit={editVisit}
             canEdit={isAdmin}
@@ -180,7 +190,7 @@ export default function Visits() {
           <section className="mt-6 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
             <h3 className="text-xl font-bold text-[#1F2937]">{t("pages.visits.operation")}</h3>
             <div className="mt-4 space-y-3">
-              {visits.slice(0, 5).map((visit) => (
+              {visibleVisits.slice(0, 5).map((visit) => (
                 <article key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>

@@ -194,14 +194,14 @@ export default function Incidents() {
             <h3 className="text-xl font-bold text-[#1F2937]">{t("incidentsPage.actionsTitle")}</h3>
             <div className="mt-5 space-y-3">
               <button
-                onClick={() => navigate("/visits")}
+                onClick={() => navigate(role === "admin" ? "/visits" : "/agenda")}
                 className="flex w-full items-center justify-between rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] px-4 py-3.5 text-left"
               >
                 <span className="flex items-center gap-2 text-sm font-semibold text-[#1F2937]"><CalendarClock className="h-4 w-4 text-[#0F9E98]" /> {t("incidentsPage.reviewVisits")}</span>
                 <span className="text-xs font-semibold text-[#0F9E98]">{t("reportsPage.actions.open")}</span>
               </button>
               <button
-                onClick={() => navigate(role === "admin" ? "/clients" : "/worker#agenda")}
+                onClick={() => navigate(role === "admin" ? "/clients" : "/agenda")}
                 className="flex w-full items-center justify-between rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] px-4 py-3.5 text-left"
               >
                 <span className="flex items-center gap-2 text-sm font-semibold text-[#1F2937]"><ClipboardList className="h-4 w-4 text-[#0F9E98]" /> {t("incidentsPage.careFollowup")}</span>

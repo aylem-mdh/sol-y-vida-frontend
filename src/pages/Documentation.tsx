@@ -21,7 +21,7 @@ const documentsByRole: Record<DashboardRole, Array<{ title: string; description:
     { title: "Familiares registrados", description: "Accede a los contactos familiares y seguimiento.", path: "/family-members" },
   ],
   worker: [
-    { title: "Agenda profesional", description: "Accede a tus visitas y organización diaria.", path: "/worker#agenda" },
+    { title: "Agenda profesional", description: "Accede a tu planificación diaria.", path: "/agenda" },
     { title: "Documentación PRL", description: "Material operativo y cumplimiento interno.", path: "/contact" },
     { title: "Incidencias y seguimiento", description: "Consulta observaciones y actuaciones pendientes.", path: "/incidents" },
   ],

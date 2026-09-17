@@ -46,7 +46,7 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.settings", path: "/settings", icon: Settings },
   ],
   worker: [
-    { labelKey: "sidebar.agenda", path: "/visits", icon: Calendar },
+    { labelKey: "sidebar.agenda", path: "/agenda", icon: Calendar },
     { labelKey: "sidebar.myServices", path: "/services", icon: HeartHandshake },
     { labelKey: "sidebar.assignedClients", path: "/clients", icon: Users },
     { labelKey: "sidebar.incidents", path: "/incidents", icon: ShieldAlert },

@@ -20,7 +20,7 @@ export default function Worker() {
 
   const modules = useMemo(
     () => [
-      { label: t("sidebar.agenda"), path: "/visits", icon: Calendar },
+      { label: t("sidebar.agenda"), path: "/agenda", icon: Calendar },
       { label: t("sidebar.myServices"), path: "/services", icon: HeartHandshake },
       { label: t("sidebar.assignedClients"), path: "/clients", icon: Users },
       { label: t("sidebar.incidents"), path: "/incidents", icon: AlertTriangle },

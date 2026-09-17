@@ -7,6 +7,7 @@ import CookieBanner from "./components/cookies/CookieBanner";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Agenda = lazy(() => import("./pages/Agenda"));
 const Clients = lazy(() => import("./pages/Clients"));
 const ClientDetails = lazy(() => import("./pages/ClientDetails"));
 const Workers = lazy(() => import("./pages/Workers"));
@@ -51,6 +52,7 @@ function App() {
 
           {/* Dashboard */}
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><Admin /></ProtectedRoute>} />
+          <Route path="/agenda" element={<ProtectedRoute allowedRoles={["worker"]}><Agenda /></ProtectedRoute>} />
 
           {/* CRUDs */}
           <Route path="/clients" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Clients /></ProtectedRoute>} />
