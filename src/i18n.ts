@@ -35,29 +35,28 @@ const resources = {
         schedule: "Horario",
         scheduleValue: "Lunes a Domingo · 24h",
         sendMessage: "Envíanos un mensaje",
-      agendaPage: {
-        title: "Agenda",
-        subtitle: "Calendario mensual con tus servicios programados y el estado de cada día.",
-        openVisitLog: "Abrir registro de visitas",
-        visibleServices: "Servicios visibles",
-        todayServices: "Servicios de hoy",
-        upcomingServices: "Próximos servicios",
-        previousMonth: "Mes anterior",
-        nextMonth: "Mes siguiente",
-        free: "Libre",
-        dayServices: "Servicios del día",
-        noDayVisits: "No hay servicios programados para este día.",
-        upcomingList: "Próximos servicios",
-        scheduled: "Programado",
-        client: "Cliente",
-        time: "Horario",
-        status: "Estado",
-        address: "Dirección",
-        notes: "Observaciones",
-        openVisitDetails: "Abrir registro de visita",
-        noUpcoming: "No hay servicios próximos.",
-        searchPlaceholder: "Buscar cliente, fecha o observación"
+        name: "Nombre",
+        message: "¿Cómo podemos ayudarte?",
+        send: "Enviar mensaje"
       },
+
+      services: {
+        title: "Nuestros Servicios",
+        subtitle: "Cuidado personalizado para cada necesidad.",
+        card1: "Acompañamiento y compañía",
+        card1Desc: "Compañía diaria, paseos y apoyo emocional.",
+        publicDesc1:
+          "Atencion cercana para el dia a dia, promoviendo bienestar emocional, autonomia y tranquilidad en el hogar.",
+        card2: "Ayuda a domicilio",
+        card2Desc: "Apoyo en higiene, movilidad y tareas básicas.",
+        publicDesc2:
+          "Apoyo profesional en tareas cotidianas y cuidados basicos para mantener una rutina segura y confortable.",
+        card3: "Acompañamiento médico",
+        card3Desc: "Asistencia en consultas y hospitales.",
+        publicDesc3:
+          "Asistencia en consultas, pruebas y procesos hospitalarios, con seguimiento humano y atencion personalizada.",
+        card4: "Respiro familiar",
+        card4Desc: "Cuidamos mientras tú descansas.",
         publicDesc4:
           "Servicio pensado para aliviar la carga del entorno familiar y garantizar continuidad asistencial con confianza.",
         publicDescription:
@@ -134,6 +133,7 @@ const resources = {
         openVisitDetails: "Abrir registro de visita",
         noUpcoming: "No hay servicios próximos.",
         searchPlaceholder: "Buscar cliente, fecha o observación"
+      },
       },
 
       topbar: {
@@ -212,29 +212,29 @@ const resources = {
         hero: {
           badge: "CUIDADO PROFESIONAL A DOMICILIO",
           lead: "Somos una empresa especializada en la atención y acompañamiento de personas mayores en la Costa del Sol.",
-        agendaPage: {
-          title: "Agenda",
-          subtitle: "Monatskalender mit deinen geplanten Diensten und dem Status jedes Tages.",
-          openVisitLog: "Besuchsprotokoll öffnen",
-          visibleServices: "Sichtbare Dienste",
-          todayServices: "Heutige Dienste",
-          upcomingServices: "Anstehende Dienste",
-          previousMonth: "Vorheriger Monat",
-          nextMonth: "Nächster Monat",
-          free: "Frei",
-          dayServices: "Tagesdienste",
-          noDayVisits: "Für diesen Tag sind keine Dienste geplant.",
-          upcomingList: "Anstehende Dienste",
-          scheduled: "Geplant",
-          client: "Kunde",
-          time: "Uhrzeit",
-          status: "Status",
-          address: "Adresse",
-          notes: "Bemerkungen",
-          openVisitDetails: "Besuchsprotokoll öffnen",
-          noUpcoming: "Keine anstehenden Dienste.",
-          searchPlaceholder: "Kunde, Datum oder Notiz suchen"
+          description1:
+            "Ofrecemos servicios adaptados a las necesidades de cada familia, con personal cualificado y seleccionado cuidadosamente para garantizar un trato humano, respetuoso y profesional.",
+          description2:
+            "Nuestro equipo acompaña con respeto, empatía y una visión integral para que cada persona se sienta acompañada, segura y valorada.",
+          imageAlt: "Profesional de Sol y Vida Cuidados"
         },
+        presentation: {
+          label: "Presentación",
+          title1: "Atención cercana,",
+          title2: "humana y profesional.",
+          description1:
+            "En Sol y Vida Cuidados creemos que el cuidado de las personas mayores debe basarse en la cercanía, la confianza y la empatía. Por eso, diseñamos nuestros servicios para adaptarse a cada situación y a cada persona.",
+          description2:
+            "Nuestros profesionales acompañan con sensibilidad, ofreciendo apoyo práctico, emocional y sanitario cuando se necesita, siempre con respeto por la dignidad y la autonomía."
+        },
+        reasons: {
+          title: "¿Por qué elegirnos?",
+          reason1: "Atención personalizada",
+          reason2: "Personal cualificado",
+          reason3: "Confianza y seguridad"
+        },
+        services: {
+          card1: {
             title: "Acompañamiento y compañía",
             description:
               "Compañía, conversación y apoyo diario para que cada día se viva con mayor tranquilidad y bienestar."
