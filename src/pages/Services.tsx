@@ -9,6 +9,8 @@ import ServicesTable from "../components/dashboard/ServicesTable";
 import ServiceForm from "../components/dashboard/ServiceForm";
 import Modal from "../components/ui/Modal";
 import { deleteService, getServices, type Service } from "../services/serviceService";
+import { getVisits, type Visit } from "../services/visitService";
+import { getCurrentUserIdFromToken } from "../utils/authClaims";
 import {
   ArrowRight,
   BriefcaseMedical,
@@ -18,9 +20,14 @@ import {
 } from "lucide-react";
 
 export default function Services() {
-  const { t } = useTranslation();
-  const isAdmin = localStorage.getItem("token") && localStorage.getItem("role") === "admin";
+  const { t, i18n } = useTranslation();
+  const hasSession = Boolean(localStorage.getItem("token"));
+  const role = localStorage.getItem("role");
+  const isAdmin = hasSession && role === "admin";
+  const isWorker = hasSession && role === "worker";
+  const currentWorkerId = getCurrentUserIdFromToken();
   const [services, setServices] = useState<Service[]>([]);
+  const [assignedVisits, setAssignedVisits] = useState<Visit[]>([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -55,12 +62,33 @@ export default function Services() {
     loadServices();
   }, [isAdmin]);
 
+  useEffect(() => {
+    if (!isWorker) {
+      return;
+    }
+
+    loadAssignedServices();
+  }, [isWorker]);
+
   async function loadServices() {
     try {
       const data = await getServices();
       setServices(data);
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async function loadAssignedServices() {
+    try {
+      const data = await getVisits();
+      const filtered = data
+        .filter((visit) => currentWorkerId == null || visit.workerId === currentWorkerId)
+        .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+      setAssignedVisits(filtered);
+    } catch (error) {
+      console.error(error);
+      setAssignedVisits([]);
     }
   }
 
@@ -77,6 +105,16 @@ export default function Services() {
       alert(t("crud.errors.deleteService"));
     }
   }
+
+  const filteredAssignedVisits = assignedVisits.filter((visit) => {
+    const query = search.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    const text = `${visit.cliente} ${visit.fecha} ${visit.estado ?? ""} ${visit.observaciones ?? ""}`.toLowerCase();
+    return text.includes(query);
+  });
 
   if (isAdmin) {
     return (
@@ -138,6 +176,53 @@ export default function Services() {
               }}
             />
           </Modal>
+        </main>
+      </div>
+    );
+  }
+
+  if (isWorker) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
+        <Sidebar role="worker" />
+
+        <main className="flex-1 p-4 pt-16 sm:p-6 sm:pt-20 lg:p-8 lg:pt-8">
+          <Topbar
+            title={t("sidebar.myServices")}
+            subtitle={t("workerPage.topbar.subtitle")}
+            name={t("profiles.workerName")}
+            role={t("roles.worker")}
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder={t("tables.visits.search")}
+          />
+
+          <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
+            <h2 className="text-2xl font-bold text-[#1F2937]">{t("workerPage.cards.assignedServices")}</h2>
+
+            <div className="mt-5 space-y-3">
+              {filteredAssignedVisits.map((visit) => (
+                  <article key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
+                    <p className="font-semibold text-[#1F2937]">{visit.cliente}</p>
+                    <p className="mt-1 text-sm text-[#4B5563]">{new Date(visit.fecha).toLocaleString(i18n.language === "es" ? "es-ES" : i18n.language === "fr" ? "fr-FR" : i18n.language === "de" ? "de-DE" : "en-US")}</p>
+                    {visit.estado && <p className="mt-1 text-xs font-semibold text-[#0F9E98]">{visit.estado}</p>}
+                    {visit.observaciones && <p className="mt-2 text-sm text-[#4B5563]">{visit.observaciones}</p>}
+                  </article>
+                ))}
+
+              {assignedVisits.length === 0 && (
+                <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
+                  {t("pages.visits.noAssignedVisits")}
+                </div>
+              )}
+
+              {assignedVisits.length > 0 && filteredAssignedVisits.length === 0 && (
+                <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
+                  {t("tables.visits.empty")}
+                </div>
+              )}
+            </div>
+          </section>
         </main>
       </div>
     );

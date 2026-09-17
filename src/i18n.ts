@@ -134,6 +134,32 @@ const resources = {
         }
       },
 
+      agendaPage: {
+        title: "Agenda",
+        subtitle: "Calendario mensual con tus servicios programados y el estado de cada día.",
+        openVisitLog: "Abrir registro de visitas",
+        visibleServices: "Servicios visibles",
+        todayServices: "Servicios de hoy",
+        upcomingServices: "Próximos servicios",
+        previousMonth: "Mes anterior",
+        nextMonth: "Mes siguiente",
+        month: "Mes",
+        today: "Hoy",
+        free: "Libre",
+        dayServices: "Servicios del día",
+        noDayVisits: "No hay servicios programados para este día.",
+        upcomingList: "Próximos servicios",
+        scheduled: "Programado",
+        client: "Cliente",
+        time: "Horario",
+        status: "Estado",
+        address: "Dirección",
+        notes: "Observaciones",
+        openVisitDetails: "Abrir registro de visita",
+        noUpcoming: "No hay servicios próximos.",
+        searchPlaceholder: "Buscar cliente, fecha o observación"
+      },
+
       topbar: {
         goodMorning: "Buenos días",
         goodAfternoon: "Buenas tardes",
@@ -1116,6 +1142,32 @@ const resources = {
         }
       },
 
+      agendaPage: {
+        title: "Agenda",
+        subtitle: "Monthly calendar with your scheduled services and each day's status.",
+        openVisitLog: "Open visits log",
+        visibleServices: "Visible services",
+        todayServices: "Today's services",
+        upcomingServices: "Upcoming services",
+        previousMonth: "Previous month",
+        nextMonth: "Next month",
+        month: "Month",
+        today: "Today",
+        free: "Free",
+        dayServices: "Day services",
+        noDayVisits: "No services scheduled for this day.",
+        upcomingList: "Upcoming services",
+        scheduled: "Scheduled",
+        client: "Client",
+        time: "Time",
+        status: "Status",
+        address: "Address",
+        notes: "Notes",
+        openVisitDetails: "Open visit log",
+        noUpcoming: "No upcoming services.",
+        searchPlaceholder: "Search client, date or note"
+      },
+
       topbar: {
         goodMorning: "Good morning",
         goodAfternoon: "Good afternoon",
@@ -1918,6 +1970,32 @@ const resources = {
           closeMenu: "Fermer le menu",
           closePanel: "Fermer le panneau"
         }
+      },
+
+      agendaPage: {
+        title: "Agenda",
+        subtitle: "Calendrier mensuel avec vos services programmés et l'état de chaque jour.",
+        openVisitLog: "Ouvrir le registre des visites",
+        visibleServices: "Services visibles",
+        todayServices: "Services d'aujourd'hui",
+        upcomingServices: "Services à venir",
+        previousMonth: "Mois précédent",
+        nextMonth: "Mois suivant",
+        month: "Mois",
+        today: "Aujourd'hui",
+        free: "Libre",
+        dayServices: "Services du jour",
+        noDayVisits: "Aucun service programmé pour ce jour.",
+        upcomingList: "Services à venir",
+        scheduled: "Programmé",
+        client: "Client",
+        time: "Horaire",
+        status: "Statut",
+        address: "Adresse",
+        notes: "Observations",
+        openVisitDetails: "Ouvrir le registre de visite",
+        noUpcoming: "Aucun service à venir.",
+        searchPlaceholder: "Rechercher un client, une date ou une note"
       },
       topbar: {
         goodMorning: "Bonjour",
@@ -2737,6 +2815,32 @@ const resources = {
           closeMenu: "Menü schließen",
           closePanel: "Panel schließen"
         }
+      },
+
+      agendaPage: {
+        title: "Agenda",
+        subtitle: "Monatskalender mit deinen geplanten Diensten und dem Status jedes Tages.",
+        openVisitLog: "Besuchsprotokoll öffnen",
+        visibleServices: "Sichtbare Dienste",
+        todayServices: "Heutige Dienste",
+        upcomingServices: "Anstehende Dienste",
+        previousMonth: "Vorheriger Monat",
+        nextMonth: "Nächster Monat",
+        month: "Monat",
+        today: "Heute",
+        free: "Frei",
+        dayServices: "Tagesdienste",
+        noDayVisits: "Für diesen Tag sind keine Dienste geplant.",
+        upcomingList: "Anstehende Dienste",
+        scheduled: "Geplant",
+        client: "Kunde",
+        time: "Uhrzeit",
+        status: "Status",
+        address: "Adresse",
+        notes: "Bemerkungen",
+        openVisitDetails: "Besuchsprotokoll öffnen",
+        noUpcoming: "Keine anstehenden Dienste.",
+        searchPlaceholder: "Kunde, Datum oder Notiz suchen"
       },
       topbar: {
         goodMorning: "Guten Morgen",
