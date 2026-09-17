@@ -49,12 +49,8 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.agenda", path: "/visits", icon: Calendar },
     { labelKey: "sidebar.myServices", path: "/services", icon: HeartHandshake },
     { labelKey: "sidebar.assignedClients", path: "/clients", icon: Users },
-    { labelKey: "sidebar.reports", path: "/reports", icon: FileText },
     { labelKey: "sidebar.incidents", path: "/incidents", icon: ShieldAlert },
-    { labelKey: "sidebar.maintenance", path: "/maintenance", icon: MonitorCheck },
     { labelKey: "sidebar.messages", path: "/complaints", icon: MessageSquare },
-    { labelKey: "sidebar.notifications", path: "/notifications", icon: MessageSquare },
-    { labelKey: "sidebar.documentation", path: "/documentation", icon: FolderOpen },
     { labelKey: "sidebar.profile", path: "/settings", icon: User },
   ],
   client: [

@@ -2,12 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
-  Bell,
   Calendar,
-  FileText,
   HeartHandshake,
   MessageSquare,
-  MonitorCheck,
   User,
   Users,
 } from "lucide-react";
@@ -26,11 +23,8 @@ export default function Worker() {
       { label: t("sidebar.agenda"), path: "/visits", icon: Calendar },
       { label: t("sidebar.myServices"), path: "/services", icon: HeartHandshake },
       { label: t("sidebar.assignedClients"), path: "/clients", icon: Users },
-      { label: t("sidebar.reports"), path: "/reports", icon: FileText },
       { label: t("sidebar.incidents"), path: "/incidents", icon: AlertTriangle },
-      { label: t("sidebar.maintenance"), path: "/maintenance", icon: MonitorCheck },
       { label: t("sidebar.messages"), path: "/complaints", icon: MessageSquare },
-      { label: t("sidebar.notifications"), path: "/notifications", icon: Bell },
       { label: t("sidebar.profile"), path: "/settings", icon: User },
     ],
     [t]
@@ -55,7 +49,6 @@ export default function Worker() {
           subtitle={t("workerPage.topbar.subtitle")}
           name={t("profiles.workerName")}
           role={t("roles.worker")}
-          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("workerPage.topbar.searchPlaceholder")}

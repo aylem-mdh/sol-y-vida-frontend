@@ -75,6 +75,11 @@ export default function Topbar({
   }
 
   useEffect(() => {
+    if (!notificationPath) {
+      setUnreadCount(0);
+      return;
+    }
+
     let mounted = true;
 
     async function loadUnreadCount() {
@@ -100,7 +105,7 @@ export default function Topbar({
       mounted = false;
       window.clearInterval(timer);
     };
-  }, []);
+  }, [notificationPath]);
 
   return (
     <header className="rounded-[28px] border border-[#D8EFEA] bg-white/95 px-5 py-5 shadow-[0_18px_42px_rgba(15,25,30,0.08)] backdrop-blur-sm sm:px-7 sm:py-6 lg:px-8">
@@ -137,18 +142,20 @@ export default function Topbar({
             </div>
           )}
 
-          <button
-            onClick={() => notificationPath && navigate(notificationPath)}
-            className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] text-[#0F9E98] transition duration-300 hover:bg-[#ECFAF8]"
-            aria-label={t("topbar.notifications")}
-          >
-            <Bell size={18} />
-            {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 inline-flex min-h-[1.25rem] min-w-[1.25rem] items-center justify-center rounded-full bg-[#F29A38] px-1 text-[10px] font-bold text-white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </button>
+          {notificationPath && (
+            <button
+              onClick={() => navigate(notificationPath)}
+              className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] text-[#0F9E98] transition duration-300 hover:bg-[#ECFAF8]"
+              aria-label={t("topbar.notifications")}
+            >
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 inline-flex min-h-[1.25rem] min-w-[1.25rem] items-center justify-center rounded-full bg-[#F29A38] px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
 
           <div className="flex items-center gap-3 rounded-2xl border border-[#D8EFEA] bg-white px-3 py-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0F9E98] text-sm font-bold text-white">

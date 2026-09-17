@@ -117,7 +117,7 @@ export default function Complaints() {
           subtitle={t("complaintsPage.subtitle")}
           name={role === "admin" ? t("profiles.adminName") : role === "worker" ? t("profiles.workerName") : t("profiles.familyName")}
           role={role === "admin" ? t("roles.admin") : role === "worker" ? t("roles.worker") : t("roles.family")}
-          notificationPath="/notifications"
+          notificationPath={isAdmin || role === "family" ? "/notifications" : undefined}
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("complaintsPage.searchPlaceholder")}

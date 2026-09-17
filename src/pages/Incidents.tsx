@@ -135,7 +135,7 @@ export default function Incidents() {
           subtitle={t("incidentsPage.subtitle")}
           name={role === "admin" ? t("profiles.adminName") : t("profiles.workerName")}
           role={role === "admin" ? t("roles.admin") : t("roles.worker")}
-          notificationPath="/incidents"
+          notificationPath={role === "admin" ? "/notifications" : undefined}
         />
 
         <section className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">

@@ -60,12 +60,12 @@ function App() {
           <Route path="/visits" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Visits /></ProtectedRoute>} />
           <Route path="/family-members" element={<ProtectedRoute allowedRoles={["admin"]}><FamilyMembers /></ProtectedRoute>} />
           <Route path="/incidents" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Incidents /></ProtectedRoute>} />
-          <Route path="/documentation" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Documentation /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Reports /></ProtectedRoute>} />
+          <Route path="/documentation" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Documentation /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Reports /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Settings /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Notifications /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Notifications /></ProtectedRoute>} />
           <Route path="/budgets" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Budgets /></ProtectedRoute>} />
-          <Route path="/maintenance" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Maintenance /></ProtectedRoute>} />
+          <Route path="/maintenance" element={<ProtectedRoute allowedRoles={["admin"]}><Maintenance /></ProtectedRoute>} />
           <Route path="/complaints" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Complaints /></ProtectedRoute>} />
 
           {/* Otras páginas */}
