@@ -1,5 +1,6 @@
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
+import ReviewsSection from "../components/reviews/ReviewsSection";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -254,6 +255,7 @@ export default function Home() {
         </div>
       </section>
 
+      <ReviewsSection />
       <Footer />
     </div>
   );

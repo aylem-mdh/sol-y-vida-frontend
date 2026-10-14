@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
+import { Navigate } from "react-router-dom";
 import { getFamilyProfile, submitFamilyContactRequest } from "../services/familyPortalService";
 import { useTranslation } from "react-i18next";
 
@@ -17,15 +18,7 @@ export default function Contact() {
   });
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-    if (role !== "family") {
-      return;
-    }
-
-    hydrateFamilyContact();
-  }, [role]);
-
-  async function hydrateFamilyContact() {
+  const hydrateFamilyContact = useCallback(async () => {
     try {
       const profile = await getFamilyProfile();
       setForm((current) => ({
@@ -38,7 +31,21 @@ export default function Contact() {
     } catch (error) {
       console.error(error);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    if (role !== "family") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void hydrateFamilyContact();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [hydrateFamilyContact, role]);
 
   function updateField(name: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
@@ -67,6 +74,10 @@ export default function Contact() {
     } finally {
       setSending(false);
     }
+  }
+
+  if (role === "family" || role === "client") {
+    return <Navigate to="/family/messages" replace />;
   }
 
   return (

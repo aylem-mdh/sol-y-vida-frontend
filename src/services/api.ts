@@ -11,12 +11,30 @@ const api = axios.create({
   },
 });
 
+function clearStoredSession() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  localStorage.removeItem("tokenExpiresAt");
+}
+
+function storedSessionExpired() {
+  const expiresAt = localStorage.getItem("tokenExpiresAt");
+  const expiresAtMs = expiresAt ? Date.parse(expiresAt) : NaN;
+  return Number.isFinite(expiresAtMs) && expiresAtMs <= Date.now();
+}
+
 api.interceptors.request.use((config) => {
+  if (storedSessionExpired()) {
+    clearStoredSession();
+  }
   const token = localStorage.getItem("token");
+  const language = localStorage.getItem("language") ?? "es";
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  config.headers["X-UI-Language"] = language;
 
   return config;
 });
@@ -25,8 +43,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error?.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
+      clearStoredSession();
     }
 
     return Promise.reject(error);
