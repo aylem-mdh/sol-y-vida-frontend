@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
@@ -19,6 +19,7 @@ export default function WorkerForm({
 }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [warningMessage, setWarningMessage] = useState("");
@@ -27,33 +28,33 @@ export default function WorkerForm({
   const [copyMessage, setCopyMessage] = useState("");
   const submitLockRef = useRef(false);
 
-  const [form, setForm] = useState({
-    nombre: "",
-    apellidos: "",
-    dni: "",
-    telefono: "",
-    email: "",
-    especialidad: "",
+  const [form, setForm] = useState(() => {
+    if (!worker) {
+      return {
+        nombre: "",
+        apellidos: "",
+        dni: "",
+        telefono: "",
+        email: "",
+        especialidad: "",
+      };
+    }
+
+    return {
+      nombre: worker.nombre,
+      apellidos: worker.apellidos,
+      dni: worker.dni,
+      telefono: worker.telefono,
+      email: worker.email,
+      especialidad: worker.especialidad,
+    };
   });
 
-  useEffect(() => {
-    if (worker) {
-      setForm({
-        nombre: worker.nombre,
-        apellidos: worker.apellidos,
-        dni: worker.dni,
-        telefono: worker.telefono,
-        email: worker.email,
-        especialidad: worker.especialidad,
-      });
-    }
-  }, [worker]);
-
   function change(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [e.target.name]: e.target.value,
-    });
+    }));
   }
 
   async function copyActivationLink() {
@@ -61,8 +62,7 @@ export default function WorkerForm({
       await navigator.clipboard.writeText(activationLink);
       setCopyMessage("Enlace copiado correctamente");
       window.setTimeout(() => setCopyMessage(""), 2200);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setCopyMessage(t("forms.common.errors.generic"));
       window.setTimeout(() => setCopyMessage(""), 2200);
     }
@@ -88,8 +88,18 @@ export default function WorkerForm({
   }
 
   async function save() {
-    if (loading || submitLockRef.current) {
+    if (loading || saved || submitLockRef.current) {
       console.log("WORKER_CREATE_SKIPPED", { reason: "locked" });
+      return;
+    }
+
+    if (
+      !form.nombre ||
+      !form.apellidos ||
+      !form.telefono ||
+      !form.email
+    ) {
+      setErrorMessage(t("forms.worker.errors.required"));
       return;
     }
 
@@ -102,16 +112,6 @@ export default function WorkerForm({
     setActivationToken("");
     setCopyMessage("");
 
-    if (
-      !form.nombre ||
-      !form.apellidos ||
-      !form.telefono ||
-      !form.email
-    ) {
-      setErrorMessage(t("forms.worker.errors.required"));
-      return;
-    }
-
     try {
       setLoading(true);
 
@@ -122,12 +122,23 @@ export default function WorkerForm({
       } else {
         const result: CreateWorkerWithAccountResult = await createWorker(form);
         const activationToken = result.activationToken;
-        const activationLinkFromToken = `${window.location.origin}/activate-account?token=${activationToken}`;
+
+        if (!activationToken) {
+          setSuccessMessage(result.message ?? "Trabajador creado. La entrega de la invitación está pendiente de configurar.");
+          setSaved(true);
+          await onSaved({ close: false });
+          return;
+        }
+
+        // Token in the fragment: never sent to servers, proxies or Referer headers.
+        const activationLinkFromToken = `${window.location.origin}/activate-account#token=${encodeURIComponent(activationToken)}`;
         const activationLink = result.activationLink ?? activationLinkFromToken;
 
         let tokenFromLink = "";
         try {
-          tokenFromLink = new URL(activationLink, window.location.origin).searchParams.get("token") ?? "";
+          const parsedLink = new URL(activationLink, window.location.origin);
+          tokenFromLink = new URLSearchParams(parsedLink.hash.slice(1)).get("token")
+            ?? parsedLink.searchParams.get("token") ?? "";
         } catch {
           tokenFromLink = "";
         }
@@ -138,16 +149,13 @@ export default function WorkerForm({
           setWarningMessage("");
           setActivationLink("");
           setActivationToken("");
-          console.error("ACTIVATION_TOKEN_MISMATCH", {
-            activationToken,
-            tokenFromLink,
-            activationLink,
-          });
+          console.error("ACTIVATION_TOKEN_MISMATCH");
           return;
         }
 
         setErrorMessage("");
         setSuccessMessage("Cuenta de trabajador creada.");
+        setSaved(true);
         setActivationLink(activationLink);
         setActivationToken(activationToken);
         setCopyMessage("");
@@ -160,7 +168,7 @@ export default function WorkerForm({
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Worker save failed");
       setSuccessMessage("");
       setWarningMessage("");
       setActivationLink("");
@@ -245,7 +253,7 @@ export default function WorkerForm({
       <div className="col-span-2 flex justify-end mt-4">
 
         <button
-          disabled={loading}
+          disabled={loading || saved}
           onClick={save}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-bold"
         >

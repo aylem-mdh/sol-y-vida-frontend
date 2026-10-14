@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -8,12 +8,11 @@ import Topbar from "../components/dashboard/Topbar";
 import ServicesTable from "../components/dashboard/ServicesTable";
 import ServiceForm from "../components/dashboard/ServiceForm";
 import Modal from "../components/ui/Modal";
-import { deleteService, getServices, type Service } from "../services/serviceService";
-import { getVisits, type Visit } from "../services/visitService";
-import { getCurrentUserIdFromToken } from "../utils/authClaims";
+import { deleteService, getServices, getServiceCatalog, type Service, type ServiceCatalogItem } from "../services/serviceService";
 import {
   ArrowRight,
   BriefcaseMedical,
+  Eye,
   HeartHandshake,
   Home as HomeIcon,
   Users,
@@ -25,9 +24,13 @@ export default function Services() {
   const role = localStorage.getItem("role");
   const isAdmin = hasSession && role === "admin";
   const isWorker = hasSession && role === "worker";
-  const currentWorkerId = getCurrentUserIdFromToken();
+  const isClient = hasSession && role === "client";
+  const [catalog, setCatalog] = useState<ServiceCatalogItem[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState(false);
+  const [selectedCatalogItem, setSelectedCatalogItem] = useState<ServiceCatalogItem | null>(null);
   const [services, setServices] = useState<Service[]>([]);
-  const [assignedVisits, setAssignedVisits] = useState<Visit[]>([]);
+  const [assignedServices, setAssignedServices] = useState<Service[]>([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -54,43 +57,73 @@ export default function Services() {
     },
   ];
 
-  useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
-
-    loadServices();
-  }, [isAdmin]);
-
-  useEffect(() => {
-    if (!isWorker) {
-      return;
-    }
-
-    loadAssignedServices();
-  }, [isWorker]);
-
-  async function loadServices() {
+  const loadServices = useCallback(async () => {
     try {
       const data = await getServices();
       setServices(data);
     } catch (error) {
       console.error(error);
     }
-  }
+  }, []);
 
-  async function loadAssignedServices() {
+  const loadAssignedServices = useCallback(async () => {
     try {
-      const data = await getVisits();
-      const filtered = data
-        .filter((visit) => currentWorkerId == null || visit.workerId === currentWorkerId)
-        .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-      setAssignedVisits(filtered);
+      setAssignedServices(await getServices());
     } catch (error) {
       console.error(error);
-      setAssignedVisits([]);
+      setAssignedServices([]);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void loadServices();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isAdmin, loadServices]);
+
+  useEffect(() => {
+    if (!isWorker) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void loadAssignedServices();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isWorker, loadAssignedServices]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    let active = true;
+    async function loadCatalog() {
+      try {
+        setCatalogLoading(true);
+        setCatalogError(false);
+        const data = await getServiceCatalog();
+        if (active) setCatalog(data);
+      } catch {
+        if (active) {
+          setCatalog([]);
+          setCatalogError(true);
+        }
+      } finally {
+        if (active) setCatalogLoading(false);
+      }
+    }
+    void loadCatalog();
+    return () => { active = false; };
+  }, [isClient]);
 
   async function removeService(id: number) {
     if (!window.confirm(t("crud.confirmDeleteService"))) {
@@ -106,15 +139,57 @@ export default function Services() {
     }
   }
 
-  const filteredAssignedVisits = assignedVisits.filter((visit) => {
+  const filteredAssignedServices = assignedServices.filter((service) => {
     const query = search.trim().toLowerCase();
     if (!query) {
       return true;
     }
 
-    const text = `${visit.cliente} ${visit.fecha} ${visit.estado ?? ""} ${visit.observaciones ?? ""}`.toLowerCase();
+    const text = `${service.nombre} ${service.descripcion} ${service.categoria} ${service.frecuencia} ${service.notes}`.toLowerCase();
     return text.includes(query);
   });
+
+  if (isClient) {
+    const query = search.trim().toLowerCase();
+    const visibleCatalog = catalog.filter((item) =>
+      `${item.nombre} ${item.descripcion} ${item.categoria} ${item.frecuencia}`.toLowerCase().includes(query));
+    const formatRate = (rate: number) => new Intl.NumberFormat(i18n.language, { style: "currency", currency: "EUR" }).format(rate);
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
+        <Sidebar role="client" />
+        <main className="min-w-0 flex-1 p-4 pt-16 [overflow-wrap:anywhere] sm:p-6 sm:pt-20 lg:p-8 lg:pt-8 lg:[&_header>div]:flex-col lg:[&_header>div]:items-stretch">
+          <Topbar title={t("serviceCatalog.title")} subtitle={t("serviceCatalog.subtitle")} name={t("profiles.familyName")} role={t("roles.client")} notificationPath="/notifications" searchValue={search} onSearchChange={setSearch} searchPlaceholder={t("tables.services.search")} />
+          <section className="mt-8">
+            <div className="mb-4 lg:hidden">
+              <label htmlFor="catalog-search" className="sr-only">{t("tables.services.search")}</label>
+              <input id="catalog-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("tables.services.search")} className="w-full rounded-md border border-[#D8EFEA] bg-white px-4 py-3 text-sm" />
+            </div>
+            {catalogError ? <p role="alert" className="text-sm text-red-700">{t("serviceCatalog.error")}</p> : (
+              <div className="relative overflow-x-auto border border-[#D8EFEA] bg-white">
+                <table className="w-full min-w-[800px] table-fixed text-left text-sm">
+                  <thead className="bg-[#F7FCFB] text-[#1F2937]">
+                    <tr><th className="w-2/5 p-4">{t("serviceCatalog.service")}</th><th className="p-4">{t("serviceCatalog.category")}</th><th className="p-4">{t("serviceCatalog.rate")}</th><th className="p-4">{t("serviceCatalog.duration")}</th><th className="p-4">{t("serviceCatalog.frequency")}</th><th className="w-16 p-4"><span className="sr-only">{t("serviceCatalog.view")}</span></th></tr>
+                  </thead>
+                  <tbody>
+                    {catalogLoading ? <tr><td colSpan={6} className="p-6 text-[#4B5563]">{t("serviceCatalog.loading")}</td></tr> : visibleCatalog.length === 0 ? <tr><td colSpan={6} className="p-6 text-[#4B5563]">{t("serviceCatalog.empty")}</td></tr> : visibleCatalog.map((item) => (
+                      <tr key={item.id} className="border-t border-[#E3F2EF] text-[#4B5563]">
+                        <td className="max-w-sm p-4"><p className="break-words font-semibold text-[#1F2937]">{item.nombre}</p><p className="mt-1 break-words">{item.descripcion}</p></td>
+                        <td className="p-4">{item.categoria}</td><td className="whitespace-nowrap p-4">{formatRate(item.precioPorHora)}</td><td className="whitespace-nowrap p-4">{item.duracionMinutos} min</td><td className="p-4">{item.frecuencia}</td>
+                        <td className="p-4"><button type="button" onClick={() => setSelectedCatalogItem(item)} aria-label={t("serviceCatalog.view")} title={t("serviceCatalog.view")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#D8EFEA] text-[#0F9E98]"><Eye size={18} /></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          <Modal open={selectedCatalogItem !== null} title={selectedCatalogItem?.nombre ?? t("serviceCatalog.title")} onClose={() => setSelectedCatalogItem(null)}>
+            {selectedCatalogItem && <div className="space-y-4 text-sm text-[#4B5563]"><p className="break-words">{selectedCatalogItem.descripcion}</p><dl className="grid grid-cols-2 gap-3"><dt>{t("serviceCatalog.category")}</dt><dd>{selectedCatalogItem.categoria}</dd><dt>{t("serviceCatalog.rate")}</dt><dd>{formatRate(selectedCatalogItem.precioPorHora)}</dd><dt>{t("serviceCatalog.duration")}</dt><dd>{selectedCatalogItem.duracionMinutos} min</dd><dt>{t("serviceCatalog.frequency")}</dt><dd>{selectedCatalogItem.frecuencia}</dd></dl></div>}
+          </Modal>
+        </main>
+      </div>
+    );
+  }
 
   if (isAdmin) {
     return (
@@ -168,6 +243,7 @@ export default function Services() {
             }}
           >
             <ServiceForm
+              key={selectedService?.id ?? "new-service"}
               service={selectedService}
               onSaved={async () => {
                 await loadServices();
@@ -201,22 +277,23 @@ export default function Services() {
             <h2 className="text-2xl font-bold text-[#1F2937]">{t("workerPage.cards.assignedServices")}</h2>
 
             <div className="mt-5 space-y-3">
-              {filteredAssignedVisits.map((visit) => (
-                  <article key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
-                    <p className="font-semibold text-[#1F2937]">{visit.cliente}</p>
-                    <p className="mt-1 text-sm text-[#4B5563]">{new Date(visit.fecha).toLocaleString(i18n.language === "es" ? "es-ES" : i18n.language === "fr" ? "fr-FR" : i18n.language === "de" ? "de-DE" : "en-US")}</p>
-                    {visit.estado && <p className="mt-1 text-xs font-semibold text-[#0F9E98]">{visit.estado}</p>}
-                    {visit.observaciones && <p className="mt-2 text-sm text-[#4B5563]">{visit.observaciones}</p>}
+              {filteredAssignedServices.map((service) => (
+                  <article key={service.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
+                    <p className="font-semibold text-[#1F2937]">{service.nombre}</p>
+                    <p className="mt-1 text-sm text-[#4B5563]">{service.categoria} · {service.frecuencia} · {service.duracionMinutos} min · {service.precioPorHora.toFixed(2)} EUR/h</p>
+                    {service.startDate && <p className="mt-1 text-xs text-[#6B7280]">{new Date(service.startDate).toLocaleDateString(i18n.language)}</p>}
+                    {service.descripcion && <p className="mt-2 text-sm text-[#4B5563]">{service.descripcion}</p>}
+                    {service.notes && <p className="mt-2 text-sm text-[#4B5563]">{service.notes}</p>}
                   </article>
                 ))}
 
-              {assignedVisits.length === 0 && (
+              {assignedServices.length === 0 && (
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
-                  {t("pages.visits.noAssignedVisits")}
+                  {t("pages.services.noAssignedServices")}
                 </div>
               )}
 
-              {assignedVisits.length > 0 && filteredAssignedVisits.length === 0 && (
+              {assignedServices.length > 0 && filteredAssignedServices.length === 0 && (
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
                   {t("tables.visits.empty")}
                 </div>

@@ -7,6 +7,7 @@ import CookieBanner from "./components/cookies/CookieBanner";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminCalendar = lazy(() => import("./pages/AdminCalendar"));
 const Agenda = lazy(() => import("./pages/Agenda"));
 const Clients = lazy(() => import("./pages/Clients"));
 const ClientDetails = lazy(() => import("./pages/ClientDetails"));
@@ -15,6 +16,10 @@ const Visits = lazy(() => import("./pages/Visits"));
 const Services = lazy(() => import("./pages/Services"));
 const FamilyMembers = lazy(() => import("./pages/FamilyMembers"));
 const Family = lazy(() => import("./pages/Family"));
+const FamilyFollowUp = lazy(() => import("./pages/FamilyFollowUp"));
+const FamilyCalendar = lazy(() => import("./pages/FamilyCalendar"));
+const FamilyReports = lazy(() => import("./pages/FamilyReports"));
+const FamilyMessages = lazy(() => import("./pages/FamilyMessages"));
 const Worker = lazy(() => import("./pages/Worker"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -52,6 +57,7 @@ function App() {
 
           {/* Dashboard */}
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><Admin /></ProtectedRoute>} />
+          <Route path="/calendar" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCalendar /></ProtectedRoute>} />
           <Route path="/agenda" element={<ProtectedRoute allowedRoles={["worker"]}><Agenda /></ProtectedRoute>} />
 
           {/* CRUDs */}
@@ -59,19 +65,24 @@ function App() {
           <Route path="/clients/:id" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><ClientDetails /></ProtectedRoute>} />
           <Route path="/workers" element={<ProtectedRoute allowedRoles={["admin"]}><Workers /></ProtectedRoute>} />
           <Route path="/services" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Services /></ProtectedRoute>} />
+          <Route path="/client/services" element={<ProtectedRoute allowedRoles={["client"]}><Services /></ProtectedRoute>} />
           <Route path="/visits" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Visits /></ProtectedRoute>} />
           <Route path="/family-members" element={<ProtectedRoute allowedRoles={["admin"]}><FamilyMembers /></ProtectedRoute>} />
           <Route path="/incidents" element={<ProtectedRoute allowedRoles={["admin", "worker"]}><Incidents /></ProtectedRoute>} />
-          <Route path="/documentation" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Documentation /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Reports /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Settings /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Notifications /></ProtectedRoute>} />
-          <Route path="/budgets" element={<ProtectedRoute allowedRoles={["admin", "family"]}><Budgets /></ProtectedRoute>} />
+          <Route path="/documentation" element={<ProtectedRoute allowedRoles={["admin", "family", "client"]}><Documentation /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute allowedRoles={["admin", "family", "client"]}><Reports /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute allowedRoles={["admin", "worker", "family", "client"]}><Settings /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute allowedRoles={["admin", "worker", "family", "client"]}><Notifications /></ProtectedRoute>} />
+          <Route path="/budgets" element={<ProtectedRoute allowedRoles={["admin", "family", "client"]}><Budgets /></ProtectedRoute>} />
           <Route path="/maintenance" element={<ProtectedRoute allowedRoles={["admin"]}><Maintenance /></ProtectedRoute>} />
-          <Route path="/complaints" element={<ProtectedRoute allowedRoles={["admin", "worker", "family"]}><Complaints /></ProtectedRoute>} />
+          <Route path="/complaints" element={<ProtectedRoute allowedRoles={["admin", "worker", "family", "client"]}><Complaints /></ProtectedRoute>} />
 
           {/* Otras páginas */}
-          <Route path="/family" element={<ProtectedRoute allowedRoles={["family"]}><Family /></ProtectedRoute>} />
+          <Route path="/family" element={<ProtectedRoute allowedRoles={["family", "client"]}><Family /></ProtectedRoute>} />
+          <Route path="/family/follow-up" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyFollowUp /></ProtectedRoute>} />
+          <Route path="/family/calendar" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyCalendar /></ProtectedRoute>} />
+          <Route path="/family/reports" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyReports /></ProtectedRoute>} />
+          <Route path="/family/messages" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyMessages /></ProtectedRoute>} />
           <Route path="/worker" element={<ProtectedRoute allowedRoles={["worker"]}><Worker /></ProtectedRoute>} />
 
         </Routes>

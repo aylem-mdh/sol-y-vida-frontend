@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function Footer() {
@@ -27,6 +28,41 @@ export default function Footer() {
             >
               {t("footer.moreInfo")}
             </a>
+          </div>
+        </div>
+
+        <div className="mt-8 border-t border-[#FFD4A3] pt-6 text-center text-sm text-black/60">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link
+              to="/aviso-legal"
+              className="font-medium text-black/70 transition hover:text-black"
+            >
+              Aviso Legal
+            </Link>
+            <span className="hidden text-black/30 sm:inline">·</span>
+            <Link
+              to="/privacidad"
+              className="font-medium text-black/70 transition hover:text-black"
+            >
+              Política de Privacidad
+            </Link>
+            <span className="hidden text-black/30 sm:inline">·</span>
+            <Link
+              to="/cookies"
+              className="font-medium text-black/70 transition hover:text-black"
+            >
+              Política de Cookies
+            </Link>
+            <span className="hidden text-black/30 sm:inline">·</span>
+            <button
+              type="button"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("openCookieSettings"))
+              }
+              className="font-medium text-black/70 transition hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F9E98]"
+            >
+              Configurar cookies
+            </button>
           </div>
         </div>
       </div>

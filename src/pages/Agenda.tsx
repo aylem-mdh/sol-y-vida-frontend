@@ -1,12 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Clock3, MapPin } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Clock3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
+import WorkerVisitActionCard from "../components/dashboard/WorkerVisitActionCard";
 import { getVisits, type Visit } from "../services/visitService";
-import { getCurrentUserIdFromToken } from "../utils/authClaims";
+import { finishVisit, startVisit } from "../services/visitService";
+import {
+  getCurrentCoordinates,
+  getGeolocationErrorMessage,
+  getVisitMutationErrorMessage,
+} from "../services/visitCheckInService";
 
 type CalendarDay = {
   key: string | null;
@@ -55,43 +61,6 @@ function formatDateTime(value: string, language: string) {
   }).format(new Date(value));
 }
 
-function translateVisitStatus(status: string | undefined, t: (key: string) => string) {
-  const normalized = (status ?? "").trim().toLowerCase();
-
-  if (!normalized) {
-    return t("agendaPage.scheduled");
-  }
-
-  if (
-    normalized.includes("program") ||
-    normalized.includes("scheduled") ||
-    normalized.includes("planif") ||
-    normalized.includes("geplant")
-  ) {
-    return t("agendaPage.scheduled");
-  }
-
-  if (
-    normalized.includes("inici") ||
-    normalized.includes("start") ||
-    normalized.includes("démarr") ||
-    normalized.includes("gestart")
-  ) {
-    return t("pages.visits.start");
-  }
-
-  if (
-    normalized.includes("final") ||
-    normalized.includes("finish") ||
-    normalized.includes("termin") ||
-    normalized.includes("beendet")
-  ) {
-    return t("pages.visits.finish");
-  }
-
-  return status ?? t("agendaPage.scheduled");
-}
-
 function buildCalendarDays(cursor: Date, visitsByDay: Map<string, Visit[]>) {
   const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
   const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
@@ -131,30 +100,31 @@ export default function Agenda() {
   const [search, setSearch] = useState("");
   const [monthCursor, setMonthCursor] = useState(() => new Date());
   const [selectedDayKey, setSelectedDayKey] = useState(() => toDateKey(new Date()));
+  const [busyVisitId, setBusyVisitId] = useState<number | null>(null);
 
-  const currentUserId = getCurrentUserIdFromToken();
-
-  useEffect(() => {
-    loadVisits();
-  }, []);
-
-  async function loadVisits() {
+  const loadVisits = useCallback(async () => {
     try {
       const data = await getVisits();
       setVisits(data);
     } catch (error) {
       console.error(error);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadVisits();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadVisits]);
 
   const visibleVisits = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     const filtered = visits.filter((visit) => {
-      if (currentUserId != null && visit.workerId !== currentUserId) {
-        return false;
-      }
-
       if (!normalizedSearch) {
         return true;
       }
@@ -165,7 +135,7 @@ export default function Agenda() {
     });
 
     return filtered.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-  }, [currentUserId, search, visits]);
+  }, [search, visits]);
 
   const visitsByDay = useMemo(() => {
     return visibleVisits.reduce((accumulator, visit) => {
@@ -213,6 +183,41 @@ export default function Agenda() {
     const nextCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
     setMonthCursor(nextCursor);
     setSelectedDayKey(toDateKey(nextCursor));
+  }
+
+  async function handleStartVisit(id: number) {
+    try {
+      setBusyVisitId(id);
+      const gps = await getCurrentCoordinates();
+      await startVisit(id, gps);
+      await loadVisits();
+      alert(t("pages.visits.startSuccess"));
+    } catch (error) {
+      console.error(error);
+      const isLocationError = error instanceof GeolocationPositionError || (error instanceof Error && error.message === "gps_not_supported");
+      alert(isLocationError ? getGeolocationErrorMessage(error, t) : getVisitMutationErrorMessage(error, "start", t));
+    } finally {
+      setBusyVisitId(null);
+    }
+  }
+
+  async function handleFinishVisit(id: number, payload: Omit<Parameters<typeof finishVisit>[1], "latitude" | "longitude">) {
+    try {
+      setBusyVisitId(id);
+      const gps = await getCurrentCoordinates();
+      await finishVisit(id, {
+        ...gps,
+        ...payload,
+      });
+      await loadVisits();
+      alert(t("pages.visits.finishSuccess"));
+    } catch (error) {
+      console.error(error);
+      const isLocationError = error instanceof GeolocationPositionError || (error instanceof Error && error.message === "gps_not_supported");
+      alert(isLocationError ? getGeolocationErrorMessage(error, t) : getVisitMutationErrorMessage(error, "finish", t));
+    } finally {
+      setBusyVisitId(null);
+    }
   }
 
   return (
@@ -363,31 +368,20 @@ export default function Agenda() {
                   const visitAddress = (visit as Visit & { direccion?: string; address?: string }).direccion ?? (visit as Visit & { direccion?: string; address?: string }).address;
 
                   return (
-                    <div key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-semibold text-[#1F2937]">{visit.cliente}</p>
-                          <p className="mt-1 text-sm text-[#4B5563]">{formatTime(visit.fecha, i18n.language)} · {translateVisitStatus(visit.estado, t)}</p>
-                        </div>
-                        <span className="rounded-full bg-[#ECFAF8] px-3 py-1 text-xs font-semibold text-[#0F9E98]">
-                          {visit.trabajador}
-                        </span>
-                      </div>
-
-                      {visitAddress && (
-                        <p className="mt-3 flex items-start gap-2 text-sm text-[#4B5563]">
-                          <MapPin className="mt-0.5 h-4 w-4 text-[#0F9E98]" />
-                          <span>{visitAddress}</span>
-                        </p>
-                      )}
-
-                      {visit.observaciones && (
-                        <p className="mt-3 text-sm leading-6 text-[#4B5563]">{visit.observaciones}</p>
-                      )}
+                    <div key={visit.id} className="space-y-3">
+                      <WorkerVisitActionCard
+                        visit={visit}
+                        address={visitAddress}
+                        language={i18n.language}
+                        busy={busyVisitId === visit.id}
+                        onStart={handleStartVisit}
+                        onFinish={handleFinishVisit}
+                        showWorkerName
+                      />
 
                       <button
                         onClick={() => navigate("/visits")}
-                        className="mt-4 inline-flex items-center rounded-2xl border border-[#D8EFEA] bg-white px-4 py-2.5 text-sm font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8]"
+                        className="inline-flex items-center rounded-2xl border border-[#D8EFEA] bg-white px-4 py-2.5 text-sm font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8]"
                       >
                         {t("agendaPage.openVisitDetails")}
                         <ArrowRight className="ml-2 h-4 w-4 text-[#0F9E98]" />

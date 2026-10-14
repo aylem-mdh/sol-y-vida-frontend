@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import {
   createVisit,
   updateVisit,
@@ -40,36 +41,43 @@ export default function VisitForm({
   const [clients, setClients] = useState<Client[]>([]);
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [form, setForm] = useState({
-    fecha: "",
-    observaciones: "",
-    clientId: "",
-    workerId: "",
+  const [form, setForm] = useState(() => {
+    if (!visit) {
+      return {
+        fecha: "",
+        observaciones: "",
+        clientId: "",
+        workerId: "",
+      };
+    }
+
+    return {
+      fecha: visit.fecha.slice(0,16),
+      observaciones: visit.observaciones ?? "",
+      clientId: visit.clientId.toString(),
+      workerId: visit.workerId.toString(),
+    };
   });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (visit) {
-      setForm({
-        fecha: visit.fecha.slice(0,16),
-        observaciones: visit.observaciones ?? "",
-        clientId: visit.clientId.toString(),
-        workerId: visit.workerId.toString(),
-      });
-    }
-  }, [visit]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     const clientsData = await getClients();
     const workersData = await getWorkers();
 
     setClients(clientsData);
     setWorkers(workersData);
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadData();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadData]);
 
   function change(
     e: React.ChangeEvent<
@@ -78,15 +86,17 @@ export default function VisitForm({
       HTMLSelectElement
     >
   ) {
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [e.target.name]: e.target.value,
-    });
+    }));
   }
 
   async function save() {
+    setErrorMessage("");
+
     if (!form.fecha || !form.clientId || !form.workerId) {
-      alert(t("forms.visit.errors.required"));
+      setErrorMessage(t("forms.visit.errors.required"));
       return;
     }
 
@@ -110,7 +120,17 @@ export default function VisitForm({
 
     } catch (error) {
       console.error(error);
-      alert(t("forms.visit.errors.save"));
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data as
+          | { message?: string; detail?: string; title?: string; errors?: Record<string, string[]> }
+          | undefined;
+        const validationErrors = data?.errors
+          ? Object.values(data.errors).flat().join(" ")
+          : "";
+        setErrorMessage(data?.message || data?.detail || validationErrors || data?.title || t("forms.visit.errors.save"));
+      } else {
+        setErrorMessage(t("forms.visit.errors.save"));
+      }
 
     } finally {
       setLoading(false);
@@ -120,6 +140,12 @@ export default function VisitForm({
   return (
 
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+      {errorMessage && (
+        <div role="alert" className="col-span-2 rounded-xl bg-red-100 p-3 text-sm font-semibold text-red-700">
+          {errorMessage}
+        </div>
+      )}
 
       <input
         type="datetime-local"

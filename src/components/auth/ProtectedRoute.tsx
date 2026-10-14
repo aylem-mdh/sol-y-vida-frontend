@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { clearSession, isSessionExpired } from "../../services/authService";
 
 type Role = "admin" | "worker" | "family" | "client";
 
@@ -16,6 +17,8 @@ function getDefaultRoute(role: string | null) {
       return "/worker";
     case "family":
       return "/family";
+    case "client":
+      return "/family";
     default:
       return "/login";
   }
@@ -23,6 +26,9 @@ function getDefaultRoute(role: string | null) {
 
 export default function ProtectedRoute({ children, allowedRoles }: Props) {
   const location = useLocation();
+  if (isSessionExpired()) {
+    clearSession();
+  }
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 

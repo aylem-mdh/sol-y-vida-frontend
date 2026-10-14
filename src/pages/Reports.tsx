@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { BarChart3, ClipboardList, FileText, Users } from "lucide-react";
 
 import Sidebar from "../components/dashboard/Sidebar";
@@ -20,9 +20,11 @@ type DashboardRole = "admin" | "worker" | "family";
 export default function Reports() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const role = (localStorage.getItem("role") === "family"
+  const currentRole = localStorage.getItem("role");
+  const shouldRedirectToFamilyReports = currentRole === "family" || currentRole === "client";
+  const role = (currentRole === "family"
     ? "family"
-    : localStorage.getItem("role") === "worker"
+    : currentRole === "worker"
     ? "worker"
     : "admin") as DashboardRole;
   const [stats, setStats] = useState<AdminDashboardData | null>(null);
@@ -30,25 +32,24 @@ export default function Reports() {
   const [selectedReport, setSelectedReport] = useState<FamilyReport | null>(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (role === "admin" || role === "worker") {
-      loadStats();
+  const loadStats = useCallback(async () => {
+    if (shouldRedirectToFamilyReports) {
       return;
     }
 
-    loadFamilyReports();
-  }, [role]);
-
-  async function loadStats() {
     try {
       const data = await getAdminDashboardData();
       setStats(data);
     } catch (error) {
       console.error(error);
     }
-  }
+  }, [shouldRedirectToFamilyReports]);
 
-  async function loadFamilyReports() {
+  const loadFamilyReports = useCallback(async () => {
+    if (shouldRedirectToFamilyReports) {
+      return;
+    }
+
     try {
       const data = await getFamilyReports();
       setFamilyReports(data);
@@ -56,7 +57,31 @@ export default function Reports() {
     } catch (error) {
       console.error(error);
     }
-  }
+  }, [shouldRedirectToFamilyReports]);
+
+  useEffect(() => {
+    if (shouldRedirectToFamilyReports) {
+      return;
+    }
+
+    if (role === "admin" || role === "worker") {
+      const timer = window.setTimeout(() => {
+        void loadStats();
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timer);
+      };
+    }
+
+    const timer = window.setTimeout(() => {
+      void loadFamilyReports();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadFamilyReports, loadStats, role, shouldRedirectToFamilyReports]);
 
   async function handleDownload(reportId: number) {
     try {
@@ -78,6 +103,10 @@ export default function Reports() {
       `${report.title} ${report.summary} ${report.status} ${report.professional}`.toLowerCase().includes(normalized)
     );
   }, [familyReports, search]);
+
+  if (shouldRedirectToFamilyReports) {
+    return <Navigate to="/family/reports" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">

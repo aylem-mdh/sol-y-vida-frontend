@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   createFamilyMember,
+  type FamilyMemberAccountActionResult,
   updateFamilyMember,
   type FamilyMember,
 } from "../../services/familyMemberService";
@@ -15,7 +16,7 @@ interface ClientOption {
 
 interface Props {
   familyMember?: FamilyMember | null;
-  onSaved: () => void;
+  onSaved: (result?: FamilyMemberAccountActionResult) => void;
 }
 
 export default function FamilyMemberForm({
@@ -25,51 +26,52 @@ export default function FamilyMemberForm({
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<ClientOption[]>([]);
+  const [createPortalAccess, setCreatePortalAccess] = useState(false);
 
-  const [form, setForm] = useState({
-    nombre: "",
-    apellidos: "",
-    parentesco: "",
-    telefono: "",
-    email: "",
-    esContactoPrincipal: false,
-    observaciones: "",
-    clientId: 1,
+  const [form, setForm] = useState(() => {
+    if (!familyMember) {
+      return {
+        nombre: "",
+        apellidos: "",
+        parentesco: "",
+        telefono: "",
+        email: "",
+        esContactoPrincipal: false,
+        observaciones: "",
+        clientId: 0,
+      };
+    }
+
+    return {
+      nombre: familyMember.nombre,
+      apellidos: familyMember.apellidos,
+      parentesco: familyMember.parentesco,
+      telefono: familyMember.telefono,
+      email: familyMember.email ?? "",
+      esContactoPrincipal: familyMember.esContactoPrincipal,
+      observaciones: familyMember.observaciones ?? "",
+      clientId: familyMember.clientId,
+    };
   });
 
-  useEffect(() => {
-    loadClients();
-  }, []);
-
-  useEffect(() => {
-    if (familyMember) {
-      setForm({
-        nombre: familyMember.nombre,
-        apellidos: familyMember.apellidos,
-        parentesco: familyMember.parentesco,
-        telefono: familyMember.telefono,
-        email: familyMember.email ?? "",
-        esContactoPrincipal: familyMember.esContactoPrincipal,
-        observaciones: familyMember.observaciones ?? "",
-        clientId: familyMember.clientId,
-      });
-    }
-  }, [familyMember]);
-
-  async function loadClients() {
+  const loadClients = useCallback(async () => {
     try {
       const data = await getClients();
       setClients(data);
-      if (data.length > 0) {
-        setForm((current) => ({
-          ...current,
-          clientId: current.clientId || data[0].id,
-        }));
-      }
     } catch (error) {
       console.error(error);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadClients();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadClients]);
 
   function change(
     e: React.ChangeEvent<
@@ -79,20 +81,25 @@ export default function FamilyMemberForm({
     const { name, value, type, checked } =
       e.target as HTMLInputElement;
 
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [name]:
         type === "checkbox"
           ? checked
           : name === "clientId"
           ? Number(value)
           : value,
-    });
+    }));
   }
 
   async function save() {
-    if (!form.nombre || !form.apellidos || !form.parentesco || !form.telefono || !form.clientId) {
+    if (!form.nombre || !form.apellidos || !form.parentesco || !form.telefono || form.clientId <= 0) {
       alert(t("forms.familyMember.errors.required"));
+      return;
+    }
+
+    if (!familyMember && createPortalAccess && !form.email.trim()) {
+      alert(t("forms.familyMember.errors.emailRequiredForPortal"));
       return;
     }
 
@@ -101,11 +108,14 @@ export default function FamilyMemberForm({
 
       if (familyMember) {
         await updateFamilyMember(familyMember.id, form);
+        onSaved();
       } else {
-        await createFamilyMember(form);
+        const result = await createFamilyMember({
+          ...form,
+          createPortalAccess,
+        });
+        onSaved(result);
       }
-
-      onSaved();
     } catch (error) {
       console.error(error);
       alert(t("forms.common.errors.generic"));
@@ -157,18 +167,25 @@ export default function FamilyMemberForm({
         className="border rounded-xl p-3"
       />
 
-      <select
-        name="clientId"
-        value={form.clientId}
-        onChange={change}
-        className="border rounded-xl p-3"
-      >
-        {clients.map((client) => (
-          <option key={client.id} value={client.id}>
-            {client.nombre} {client.apellidos}
-          </option>
-        ))}
-      </select>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="family-client" className="text-sm font-semibold text-slate-700">
+          {t("forms.familyMember.clientLinked")}
+        </label>
+        <select
+          id="family-client"
+          name="clientId"
+          value={form.clientId}
+          onChange={change}
+          className="border rounded-xl p-3"
+        >
+          <option value={0}>{t("forms.familyMember.selectClient")}</option>
+          {clients.map((client) => (
+            <option key={client.id} value={client.id}>
+              {client.nombre} {client.apellidos}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <textarea
         name="observaciones"
@@ -188,6 +205,31 @@ export default function FamilyMemberForm({
 
         {t("forms.familyMember.primaryContact")}
       </label>
+
+      <div className="col-span-2 rounded-2xl border-2 border-[#0F9E98] bg-[#F7FCFB] p-4">
+        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-[#0B4EA2]">
+          {t("forms.familyMember.portalAccess.title")}
+        </p>
+        <label className="mt-3 flex items-center gap-3 text-sm font-semibold text-[#1F2937]">
+          <input
+            type="checkbox"
+            checked={createPortalAccess}
+            onChange={(event) => setCreatePortalAccess(event.target.checked)}
+            disabled={Boolean(familyMember)}
+          />
+          {t("forms.familyMember.portalAccess.enable")}
+        </label>
+        {createPortalAccess && !familyMember && (
+          <p className="mt-2 text-sm text-[#374151]">
+            {t("forms.familyMember.portalAccess.hint")}
+          </p>
+        )}
+        {familyMember && (
+          <p className="mt-2 text-xs text-[#6B7280]">
+            {t("forms.familyMember.portalAccess.editHint")}
+          </p>
+        )}
+      </div>
 
       <div className="col-span-2 flex justify-end">
 

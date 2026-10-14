@@ -35,22 +35,29 @@ export default function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", resolvedRole);
+      if (response.expiresAt) {
+        localStorage.setItem("tokenExpiresAt", response.expiresAt);
+      } else {
+        localStorage.removeItem("tokenExpiresAt");
+      }
 
       if (resolvedRole === "admin") navigate("/admin");
       if (resolvedRole === "worker") navigate("/worker");
       if (resolvedRole === "family") navigate("/family");
-
-      if (resolvedRole === "client") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        setError(t("login.errors.clientDisabled"));
-      }
+      if (resolvedRole === "client") navigate("/family");
     } catch (err) {
-      console.error(err);
-
       if (axios.isAxiosError(err)) {
         if (!err.response) {
           setError(t("login.errors.noServer"));
+          return;
+        }
+
+        if (err.response.status === 429) {
+          setError(
+            t("login.errors.tooManyAttempts", {
+              defaultValue: "Demasiados intentos de inicio de sesión. Espera unos minutos e inténtalo de nuevo.",
+            })
+          );
           return;
         }
 

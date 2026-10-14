@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -40,15 +40,7 @@ export default function ClientDetails() {
     return `${matchedWorker.nombre} ${matchedWorker.apellidos}`;
   }, [client, workers]);
 
-  useEffect(() => {
-    void loadClient();
-  }, [clientId]);
-
-  useEffect(() => {
-    void loadWorkers();
-  }, []);
-
-  async function loadClient() {
+  const loadClient = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -71,9 +63,9 @@ export default function ClientDetails() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [clientId, clientNotFoundLabel, id, invalidClientIdLabel, t]);
 
-  async function loadWorkers() {
+  const loadWorkers = useCallback(async () => {
     try {
       const data = await getWorkers();
       setWorkers(data);
@@ -81,7 +73,27 @@ export default function ClientDetails() {
       console.error(workerError);
       setWorkers([]);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadClient();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadClient]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadWorkers();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadWorkers]);
 
   function formatDate(value: string) {
     if (!value) {
@@ -256,6 +268,7 @@ export default function ClientDetails() {
           onClose={() => setShowForm(false)}
         >
           <ClientForm
+            key={client?.id ?? "client-details"}
             client={client}
             onCreated={async () => {
               await loadClient();
