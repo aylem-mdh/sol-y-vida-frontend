@@ -14,6 +14,8 @@ export interface Visit {
   estado?: string;
   startedAt?: string;
   endedAt?: string;
+  startedByUserId?: number;
+  endedByUserId?: number;
   startLatitude?: number;
   startLongitude?: number;
   endLatitude?: number;
@@ -24,6 +26,13 @@ export interface Visit {
   visibleToFamily?: boolean;
 }
 
+export interface VisitUpsertPayload {
+  fecha: string;
+  observaciones: string;
+  clientId: number;
+  workerId: number;
+}
+
 export interface StartVisitPayload {
   latitude: number;
   longitude: number;
@@ -32,10 +41,6 @@ export interface StartVisitPayload {
 export interface FinishVisitPayload {
   latitude: number;
   longitude: number;
-  hygieneCompleted: boolean;
-  medicationCompleted: boolean;
-  nutritionCompleted: boolean;
-  mobilityCompleted: boolean;
   assistanceReport: string;
   careNotes?: string;
   visibleToFamily: boolean;
@@ -47,7 +52,7 @@ export async function getVisits() {
   return response.data;
 }
 
-export async function createVisit(visit: any) {
+export async function createVisit(visit: VisitUpsertPayload) {
   const response = await api.post("/Visits", visit);
 
   return response.data;
@@ -55,7 +60,7 @@ export async function createVisit(visit: any) {
 
 export async function updateVisit(
   id: number,
-  visit: any
+  visit: VisitUpsertPayload
 ) {
   await api.put(`/Visits/${id}`, visit);
 }
