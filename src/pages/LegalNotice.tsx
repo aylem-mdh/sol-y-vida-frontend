@@ -102,10 +102,10 @@ export default function LegalNotice() {
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-[#0F9E98]">Teléfono</p>
                 <a
-                  href="tel:626405477"
+                  href="tel:626406477"
                   className="mt-1 block text-base font-semibold text-[#1F2937] transition hover:text-[#0F9E98]"
                 >
-                  626 405 477
+                  626 406 477
                 </a>
               </div>
               <div>

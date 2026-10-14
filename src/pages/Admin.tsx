@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
-  Bell,
   Calendar,
   ClipboardList,
   FileText,
@@ -39,7 +38,6 @@ export default function Admin() {
       { label: t("sidebar.complaints"), path: "/complaints", icon: ShieldAlert },
       { label: t("sidebar.reviews"), path: "/reviews", icon: ShieldAlert },
       { label: t("sidebar.settings"), path: "/settings", icon: Settings },
-      { label: t("sidebar.notifications"), path: "/notifications", icon: Bell },
     ],
     [t]
   );

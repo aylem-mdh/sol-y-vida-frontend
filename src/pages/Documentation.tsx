@@ -100,6 +100,7 @@ export default function Documentation() {
           subtitle="Repositorio operativo y accesos útiles según el perfil de usuario."
           name={role === "admin" ? "Carmen López" : role === "worker" ? "María García" : "Familia López"}
           role={role === "admin" ? "Administradora" : role === "worker" ? "Trabajadora" : "Familiar"}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder="Buscar documentación"

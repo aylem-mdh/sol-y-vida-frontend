@@ -45,7 +45,6 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.maintenance", path: "/maintenance", icon: MonitorCheck },
     { labelKey: "sidebar.complaints", path: "/complaints", icon: ShieldAlert },
     { labelKey: "sidebar.reviews", path: "/reviews", icon: Star },
-    { labelKey: "sidebar.notifications", path: "/notifications", icon: MessageSquare },
     { labelKey: "sidebar.settings", path: "/settings", icon: Settings },
   ],
   worker: [
@@ -54,7 +53,6 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.assignedClients", path: "/clients", icon: Users },
     { labelKey: "sidebar.incidents", path: "/incidents", icon: ShieldAlert },
     { labelKey: "sidebar.messages", path: "/complaints", icon: MessageSquare },
-    { labelKey: "sidebar.notifications", path: "/notifications", icon: MessageSquare },
     { labelKey: "sidebar.profile", path: "/settings", icon: User },
   ],
   client: [
@@ -62,7 +60,6 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.myServices", path: "/client/services", icon: HeartHandshake },
     { labelKey: "sidebar.calendar", path: "/family/calendar", icon: Calendar },
     { labelKey: "sidebar.budgets", path: "/budgets", icon: ClipboardList },
-    { labelKey: "sidebar.notifications", path: "/notifications", icon: MessageSquare },
     { labelKey: "sidebar.messages", path: "/family/messages", icon: MessageSquare },
     { labelKey: "sidebar.documentation", path: "/documentation", icon: FolderOpen },
     { labelKey: "sidebar.profile", path: "/settings", icon: User },
@@ -72,7 +69,6 @@ const menus: Record<Role, Array<{ labelKey: string; path: string; icon: typeof L
     { labelKey: "sidebar.calendar", path: "/family/calendar", icon: Calendar },
     { labelKey: "sidebar.reports", path: "/family/reports", icon: ClipboardList },
     { labelKey: "sidebar.messages", path: "/family/messages", icon: MessageSquare },
-    { labelKey: "sidebar.notifications", path: "/notifications", icon: MessageSquare },
     { labelKey: "sidebar.documentation", path: "/documentation", icon: FolderOpen },
     { labelKey: "sidebar.profile", path: "/settings", icon: User },
   ],

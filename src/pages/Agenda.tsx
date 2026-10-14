@@ -225,6 +225,7 @@ export default function Agenda() {
           subtitle={t("agendaPage.subtitle")}
           name={t("profiles.workerName")}
           role={t("roles.worker")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("agendaPage.searchPlaceholder")}

@@ -83,6 +83,7 @@ export default function Clients() {
           subtitle={isAdmin ? t("pages.clients.subtitle") : t("workerPage.topbar.subtitle")}
           name={isAdmin ? t("profiles.adminName") : t("profiles.workerName")}
           role={isAdmin ? t("roles.admin") : t("roles.worker")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("tables.clients.search")}

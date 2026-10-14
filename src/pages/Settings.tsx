@@ -73,6 +73,7 @@ export default function Settings() {
           subtitle={t("settingsPage.topbar.subtitle")}
           name={role === "admin" ? t("profiles.adminName") : role === "worker" ? t("profiles.workerName") : t("profiles.familyName")}
           role={role === "admin" ? t("roles.admin") : role === "worker" ? t("roles.worker") : t("roles.family")}
+          notificationPath="/notifications"
         />
 
         <section className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">

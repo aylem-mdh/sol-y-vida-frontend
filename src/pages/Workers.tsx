@@ -71,6 +71,7 @@ export default function Workers() {
           subtitle={t("pages.workers.subtitle")}
           name="Carmen López"
           role={t("roles.admin")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("tables.workers.search")}

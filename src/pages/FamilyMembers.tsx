@@ -74,6 +74,7 @@ export default function FamilyMembers() {
           subtitle={t("pages.familyMembers.subtitle")}
           name="Carmen López"
           role={t("roles.admin")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("tables.familyMembers.search")}

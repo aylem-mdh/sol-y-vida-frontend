@@ -49,6 +49,7 @@ export default function Worker() {
           subtitle={t("workerPage.topbar.subtitle")}
           name={t("profiles.workerName")}
           role={t("roles.worker")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("workerPage.topbar.searchPlaceholder")}

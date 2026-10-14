@@ -122,6 +122,7 @@ export default function ClientDetails() {
           subtitle={isAdmin ? t("pages.clients.details.subtitle") : t("workerPage.topbar.subtitle")}
           name={isAdmin ? t("profiles.adminName") : t("profiles.workerName")}
           role={isAdmin ? t("roles.admin") : t("roles.worker")}
+          notificationPath="/notifications"
         />
 
         <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-5 shadow-[0_16px_40px_rgba(15,25,30,0.08)] sm:p-7">

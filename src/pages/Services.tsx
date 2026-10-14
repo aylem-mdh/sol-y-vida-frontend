@@ -192,6 +192,7 @@ export default function Services() {
             subtitle={t("workerPage.topbar.subtitle")}
             name={t("profiles.workerName")}
             role={t("roles.worker")}
+            notificationPath="/notifications"
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder={t("tables.visits.search")}

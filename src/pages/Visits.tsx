@@ -178,6 +178,7 @@ export default function Visits() {
           subtitle={isAdmin ? t("pages.visits.subtitleAdmin") : t("pages.visits.subtitleWorker")}
           name={isAdmin ? t("profiles.adminName") : t("profiles.workerName")}
           role={isAdmin ? t("roles.admin") : t("roles.worker")}
+          notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
           searchPlaceholder={t("tables.visits.search")}
