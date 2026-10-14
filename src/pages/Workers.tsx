@@ -110,6 +110,7 @@ export default function Workers() {
           onClose={closeModal}
         >
           <WorkerForm
+            key={selectedWorker?.id ?? "new-worker"}
             worker={selectedWorker}
             onSaved={async (options) => {
               await loadWorkers();

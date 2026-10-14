@@ -10,6 +10,16 @@ export interface Complaint {
   resolutionNotes?: string;
   createdAt: string;
   resolvedAt?: string;
+  messages: ComplaintMessage[];
+}
+
+export interface ComplaintMessage {
+  id: number;
+  sentByUserId?: number;
+  sentByRole: string;
+  sentByName: string;
+  message: string;
+  createdAt: string;
 }
 
 export interface CreateComplaintPayload {
@@ -23,6 +33,10 @@ export interface ResolveComplaintPayload {
   resolutionNotes: string;
 }
 
+export interface AddComplaintMessagePayload {
+  message: string;
+}
+
 export async function getComplaints() {
   const response = await api.get<Complaint[]>("/Complaints");
   return response.data;
@@ -34,5 +48,10 @@ export async function createComplaint(payload: CreateComplaintPayload) {
 }
 
 export async function resolveComplaint(id: number, payload: ResolveComplaintPayload) {
-  await api.put(`/Complaints/${id}/resolve`, payload);
+  await api.put(`/Complaints/${id}/status`, payload);
+}
+
+export async function addComplaintMessage(id: number, payload: AddComplaintMessagePayload) {
+  const response = await api.post<ComplaintMessage>(`/Complaints/${id}/messages`, payload);
+  return response.data;
 }

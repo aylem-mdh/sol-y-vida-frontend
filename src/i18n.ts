@@ -91,7 +91,6 @@ const resources = {
         password: "Contraseña",
         forgotPassword: "¿Has olvidado tu contraseña?",
         admin: "Administradora",
-        worker: "Trabajador",
         family: "Familia",
         enter: "Entrar",
         errors: {
@@ -111,6 +110,7 @@ const resources = {
         familyMembers: "Familiares",
         services: "Servicios",
         calendar: "Calendario",
+        visits: "Visitas",
         incidents: "Incidencias",
         documentation: "Documentación",
         reports: "Informes",
@@ -127,11 +127,9 @@ const resources = {
         followUp: "Seguimiento",
         support: "Soporte",
         support24: "Atención continua 24/7",
-        aria: {
-          openMenu: "Abrir menú",
-          closeMenu: "Cerrar menú",
-          closePanel: "Cerrar panel"
-        }
+        openMenu: "Abrir menú",
+        closeMenu: "Cerrar menú",
+        closePanel: "Cerrar panel"
       },
 
       agendaPage: {
@@ -201,6 +199,9 @@ const resources = {
           subtitle: "Gestiona todos los clientes de Sol y Vida.",
           search: "Buscar cliente...",
           client: "Cliente",
+          homeLocation: "Ubicacion domicilio",
+          homeLocationConfigured: "Configurada",
+          homeLocationUnavailable: "No disponible",
           empty: "No se encontraron clientes."
         },
         familyMembers: {
@@ -209,6 +210,7 @@ const resources = {
           search: "Buscar familiar...",
           relationship: "Parentesco",
           primary: "Principal",
+          portalAccess: "Acceso portal",
           empty: "No hay familiares registrados."
         },
         services: {
@@ -337,6 +339,7 @@ const resources = {
       roles: {
         admin: "Administradora",
         worker: "Trabajadora",
+        client: "Cliente",
         family: "Familiar"
       },
 
@@ -381,7 +384,22 @@ const resources = {
           assignedWorker: "Trabajador asignado",
           unassigned: "Sin asignar",
           noWorkers: "Sin trabajadores disponibles",
+          preferredContact: "Canal preferido",
+          preferredPhone: "Telefono",
+          preferredEmail: "Email",
+          notificationsEnabled: "Recibir notificaciones en el portal",
+          createPortalAccess: "Crear acceso al portal del cliente",
           save: "Guardar cliente",
+          homeLocation: {
+            label: "Ubicacion del domicilio",
+            configured: "Ubicacion del domicilio configurada",
+            unavailable: "Ubicacion del domicilio no disponible",
+            warnings: {
+              configured: "Ubicacion del domicilio configurada correctamente.",
+              notFound: "Cliente guardado, pero no se pudo localizar automaticamente el domicilio.",
+              unavailable: "Cliente guardado, pero la geocodificacion del domicilio no esta disponible en este momento."
+            }
+          },
           errors: {
             required: "Rellena todos los campos obligatorios del cliente."
           },
@@ -408,9 +426,18 @@ const resources = {
         familyMember: {
           relationship: "Parentesco",
           primaryContact: "Contacto principal",
+          clientLinked: "Cliente vinculado",
+          selectClient: "Selecciona un cliente",
           save: "Crear familiar",
+          portalAccess: {
+            title: "ACCESO AL PORTAL FAMILIAR",
+            enable: "Crear acceso al portal familiar",
+            hint: "Permite que este familiar acceda a la aplicación con su propio email y contraseña.",
+            editHint: "Para familiares ya creados, usa las acciones de acceso desde la tabla."
+          },
           errors: {
-            required: "Completa los campos obligatorios del familiar."
+            required: "Completa los campos obligatorios del familiar.",
+            emailRequiredForPortal: "Debes indicar email para crear el acceso al portal familiar."
           }
         },
         visit: {
@@ -458,6 +485,25 @@ const resources = {
           new: "Nuevo familiar",
           edit: "Editar familiar"
         },
+        familyMembersAccess: {
+          status: {
+            none: "Sin cuenta",
+            pending: "Invitacion pendiente",
+            active: "Cuenta activa",
+            disabled: "Cuenta desactivada",
+            unknown: "Estado no disponible"
+          },
+          actions: {
+            create: "Crear acceso",
+            resend: "Reenviar invitacion",
+            reset: "Restablecer contrasena",
+            deactivate: "Desactivar acceso"
+          },
+          notices: {
+            activationToken: "Token de activacion",
+            resetToken: "Token de restablecimiento"
+          }
+        },
         services: {
           title: "Servicios",
           subtitle: "Gestiona el catalogo interno de servicios de Sol y Vida Cuidados.",
@@ -482,8 +528,9 @@ const resources = {
           optionalNotes: "Notas opcionales",
           saveAndFinish: "Guardar y finalizar servicio",
           startError: "No se pudo iniciar el servicio. Revisa permisos de ubicacion.",
+          startSuccess: "Check-in realizado correctamente.",
           finishSuccess: "Servicio finalizado e informe asistencial guardado.",
-          finishError: "Completa checklist, informe y permisos GPS para finalizar.",
+          finishError: "Completa el informe asistencial y permisos GPS para finalizar.",
           mobileTitle: "Visitas asignadas",
           client: "Cliente",
           worker: "Trabajadora",
@@ -491,12 +538,54 @@ const resources = {
           status: "Estado",
           startedAt: "Inicio",
           endedAt: "Fin",
+          startedByUser: "Usuario inicio",
+          endedByUser: "Usuario fin",
           address: "Dirección",
           notes: "Observaciones",
           details: "Detalles del servicio",
+          checkInSection: "Check-in",
+          checkOutSection: "Check-out",
+          checkInLocation: "Ubicación de entrada",
+          checkOutLocation: "Ubicación de salida",
+          checkInPending: "Check-in pendiente",
+          checkInDone: "Check-in realizado",
+          checkOutPending: "Check-out pendiente",
+          checkOutCompleted: "Check-out realizado",
+          statusPending: "Pendiente",
+          statusInProgress: "En curso",
+          statusCompleted: "Completada",
+          statusCancelled: "Cancelada",
+          locationRecorded: "Ubicacion registrada",
+          locationMissing: "Ubicacion pendiente",
+          viewLocation: "Ver ubicacion",
+          checkOutNotAvailable: "Check-out no disponible todavía",
+          completedStateHelp: "La visita ya está finalizada y no volverá a solicitar ubicación.",
+          processing: "Procesando...",
+          hideFinishForm: "Ocultar finalización",
+          startCheckIn: "Iniciar check-in",
           startVisit: "Iniciar visita",
           finishVisit: "Finalizar visita",
-          noAssignedVisits: "No tienes visitas asignadas."
+          noAssignedVisits: "No tienes visitas asignadas.",
+          errors: {
+            unauthenticated: "Debes iniciar sesión para registrar el check-in.",
+            forbidden: "No tienes permiso para operar esta visita.",
+            notFound: "La visita no existe o ya no está disponible.",
+            network: "No se pudo contactar con el servidor.",
+            gpsPermissionDenied: "Debes permitir la ubicación para realizar el check-in o check-out.",
+            gpsTimeout: "La ubicación tardó demasiado en responder. Inténtalo de nuevo.",
+            gpsUnavailable: "No se pudo obtener tu ubicación actual.",
+            gpsNotSupported: "Este navegador no permite obtener la ubicación.",
+            gpsGeneric: "No se pudo verificar la ubicación actual.",
+            invalidCoordinates: "La ubicación enviada no es válida.",
+            visitAlreadyStarted: "La visita ya tenía un check-in iniciado.",
+            visitAlreadyFinished: "La visita ya fue finalizada.",
+            visitNotStarted: "Primero debes iniciar el check-in de la visita.",
+            visitAlreadyCompleted: "La visita ya estaba completada.",
+            visitCancelled: "La visita está cancelada y no admite check-in ni check-out.",
+            clientLocationNotConfigured: "No se puede validar la ubicación del domicilio. Contacta con la administración.",
+            visitOutsideAllowedRadius: "Estas demasiado lejos del domicilio del cliente. Distancia actual: {{distance}} m. Radio permitido: {{allowed}} m.",
+            finishRequirements: "Completa el informe asistencial obligatorio antes de finalizar."
+          }
         }
       },
       branding: {
@@ -555,6 +644,7 @@ const resources = {
         },
         cards: {
           assignedServices: "Servicios asignados",
+          noAssignedServices: "No tienes servicios asignados.",
           today: "Hoy",
           nextVisit: "Próxima visita",
           todaySchedule: "Horario de hoy",
@@ -672,6 +762,28 @@ const resources = {
           documentOpen: "No se pudo abrir el documento."
         }
       },
+      familyPortal: {
+        visitStatus: {
+          scheduled: "Programada",
+          inProgress: "En curso",
+          completed: "Completada",
+          cancelled: "Cancelada",
+          unknown: "Sin estado"
+        },
+        statusItems: {
+          nextVisitTitle: "Proxima visita",
+          nextVisitText: "{{date}} con {{professional}}.",
+          lastReportTitle: "Ultimo informe",
+          generalStatusTitle: "Estado general",
+          noNews: "No hay novedades registradas por el momento."
+        },
+        generated: {
+          visitReportTitle: "Informe de visita #{{id}}",
+          checklistCompleted: "Checklist de cuidados completado.",
+          checklistPending: "Checklist de cuidados pendiente de validacion.",
+          noExtraDetails: "Sin detalles adicionales."
+        }
+      },
       reportsPage: {
         topbar: {
           subtitleAdmin: "Seguimiento global de actividad y evolución operativa.",
@@ -751,7 +863,15 @@ const resources = {
         history: "Historial",
         searchPlaceholder: "Buscar notificación",
         pushReady: "Push listo",
+        pushEnabled: "Activadas",
+        pushDisabled: "Pendiente de activar",
+        pushBlocked: "Permiso denegado",
+        pushUnsupported: "Navegador no compatible",
+        pushSectionTitle: "Canal push",
+        pushNotConfigured: "El canal push no está configurado.",
         inApp: "In-app",
+        enablePush: "Activar notificaciones",
+        disablePush: "Desactivar notificaciones",
         markRead: "Marcar leída",
         noResults: "No se encontraron resultados."
       },
@@ -767,6 +887,14 @@ const resources = {
         confirmDelete: "¿Eliminar incidencia?",
         client: "Cliente",
         professional: "Profesional",
+        status: "Estado",
+        statusPending: "Pendiente",
+        statusInReview: "En revisión",
+        statusResolved: "Resuelta",
+        statusClosed: "Cerrada",
+        closureNotes: "Notas de cierre",
+        closureNotesPlaceholder: "Notas opcionales para el cierre",
+        updateStatus: "Actualizar estado",
         actionsTitle: "Acciones operativas",
         reviewVisits: "Revisar visitas",
         careFollowup: "Seguimiento asistencial",
@@ -814,12 +942,15 @@ const resources = {
         subtitle: "Canal de conversaciones para quejas, sugerencias y seguimiento de respuestas.",
         searchPlaceholder: "Buscar conversación",
         newConversation: "Nueva conversación",
+        replyingTo: "Responder: {{subject}}",
+        startAnother: "Nueva conversación",
+        openConversation: "Abrir conversación",
         adminInbox: "Gestión de conversaciones",
         history: "Historial de conversaciones",
         subject: "Asunto",
         description: "Detalle",
         send: "Enviar",
-        save: "Guardar respuesta",
+        updateStatus: "Actualizar estado",
         responseLabel: "Respuesta",
         responsePlaceholder: "Responder al usuario",
         noResults: "No se encontraron resultados.",
@@ -831,10 +962,16 @@ const resources = {
         status: {
           pending: "Pendiente",
           inProgress: "En proceso",
-          resolved: "Resuelta"
+          inReview: "En revision",
+          answered: "Respondida",
+          resolved: "Resuelta",
+          closed: "Cerrada"
         },
+        threadEmpty: "Sin mensajes en el hilo.",
+        messagePlaceholder: "Escribe un mensaje en la conversacion",
         errors: {
           required: "Completa asunto y detalle.",
+          messageRequired: "Escribe un mensaje.",
           send: "No se pudo enviar la conversación.",
           responseRequired: "Añade una respuesta antes de guardar.",
           update: "No se pudo actualizar la conversación."
@@ -846,6 +983,11 @@ const resources = {
         newBudget: "Nuevo presupuesto",
         createBudget: "Crear presupuesto",
         history: "Historial",
+        clientsLoadError: "No se pudieron cargar los clientes.",
+        budgetsLoadError: "Error al cargar los presupuestos.",
+        backendHint: "Revisa la conexión con el backend.",
+        noClientsAvailable: "Debe existir al menos un cliente para crear un presupuesto.",
+        empty: "No hay presupuestos registrados.",
         hours: "Horas",
         hourlyRate: "Precio/hora",
         vat: "IVA %",
@@ -861,7 +1003,29 @@ const resources = {
         noResults: "No se encontraron resultados.",
         errors: {
           required: "Completa cliente, horas y tarifa."
-        }
+        },
+        lines: "Líneas del presupuesto",
+        service: "Servicio",
+        daysPerMonth: "Días al mes",
+        daysShort: "días",
+        kilometers: "Kilómetros",
+        applicablePrice: "Precio aplicable",
+        monthlyLineTotal: "Total mensual de línea",
+        monthlySubtotal: "Subtotal mensual",
+        observations: "Observaciones",
+        addLine: "Añadir línea",
+        removeLine: "Eliminar línea",
+        manageTariffs: "Administrar catálogo de tarifas",
+        basePrice: "Precio base",
+        supplement: "Suplemento inicial",
+        saveTariff: "Guardar tarifa",
+        tariffsError: "No se pudieron cargar o guardar las tarifas.",
+        tariffSaved: "Tarifa guardada correctamente.",
+        tariffSaveInvalid: "Revisa los datos: el precio base y el suplemento deben estar entre 0 y 100.000, y el nombre del servicio personalizado no puede quedar vacío.",
+        tariffSaveUnauthorized: "Tu sesión ha caducado. Vuelve a iniciar sesión para guardar la tarifa.",
+        tariffSaveForbidden: "No tienes permiso para modificar tarifas. Solo la administración puede hacerlo.",
+        tariffSaveServerError: "Error del servidor al guardar la tarifa. Inténtalo de nuevo más tarde.",
+        createError: "No se pudo crear el presupuesto."
       },
       activatePage: {
         title: "Activar cuenta",
@@ -1119,6 +1283,7 @@ const resources = {
         familyMembers: "Family members",
         services: "Services",
         calendar: "Calendar",
+        visits: "Visits",
         incidents: "Incidents",
         documentation: "Documentation",
         reports: "Reports",
@@ -1209,6 +1374,9 @@ const resources = {
           subtitle: "Manage all Sol y Vida clients.",
           search: "Search client...",
           client: "Client",
+          homeLocation: "Home location",
+          homeLocationConfigured: "Configured",
+          homeLocationUnavailable: "Unavailable",
           empty: "No clients found."
         },
         familyMembers: {
@@ -1217,6 +1385,7 @@ const resources = {
           search: "Search family member...",
           relationship: "Relationship",
           primary: "Primary",
+          portalAccess: "Portal access",
           empty: "No family members registered."
         },
         services: {
@@ -1240,6 +1409,7 @@ const resources = {
       roles: {
         admin: "Administrator",
         worker: "Worker",
+        client: "Client",
         family: "Family member"
       },
 
@@ -1284,7 +1454,22 @@ const resources = {
           assignedWorker: "Assigned worker",
           unassigned: "Unassigned",
           noWorkers: "No workers available",
+          preferredContact: "Preferred contact channel",
+          preferredPhone: "Phone",
+          preferredEmail: "Email",
+          notificationsEnabled: "Receive notifications in the portal",
+          createPortalAccess: "Create client portal access",
           save: "Save client",
+          homeLocation: {
+            label: "Home location",
+            configured: "Home location configured",
+            unavailable: "Home location unavailable",
+            warnings: {
+              configured: "Home location configured successfully.",
+              notFound: "Client saved, but the home address could not be geocoded automatically.",
+              unavailable: "Client saved, but home geocoding is not available right now."
+            }
+          },
           errors: {
             required: "Complete all required client fields."
           },
@@ -1311,9 +1496,18 @@ const resources = {
         familyMember: {
           relationship: "Relationship",
           primaryContact: "Primary contact",
+          clientLinked: "Linked client",
+          selectClient: "Select a client",
           save: "Create family member",
+          portalAccess: {
+            title: "FAMILY PORTAL ACCESS",
+            enable: "Create family portal access",
+            hint: "Allows this family member to access the app with their own email and password.",
+            editHint: "For existing family members, use the access actions from the table."
+          },
           errors: {
-            required: "Complete required family member fields."
+            required: "Complete required family member fields.",
+            emailRequiredForPortal: "Email is required to create family portal access."
           }
         },
         visit: {
@@ -1361,6 +1555,25 @@ const resources = {
           new: "New family member",
           edit: "Edit family member"
         },
+        familyMembersAccess: {
+          status: {
+            none: "No account",
+            pending: "Invitation pending",
+            active: "Active account",
+            disabled: "Disabled account",
+            unknown: "Status unavailable"
+          },
+          actions: {
+            create: "Create access",
+            resend: "Resend invitation",
+            reset: "Reset access",
+            deactivate: "Disable access"
+          },
+          notices: {
+            activationToken: "Activation token",
+            resetToken: "Reset token"
+          }
+        },
         services: {
           title: "Services",
           subtitle: "Manage Sol y Vida Cuidados internal services catalog.",
@@ -1385,8 +1598,9 @@ const resources = {
           optionalNotes: "Optional notes",
           saveAndFinish: "Save and finish service",
           startError: "Could not start the service. Check location permissions.",
+          startSuccess: "Check-in completed successfully.",
           finishSuccess: "Service finished and care report saved.",
-          finishError: "Complete checklist, report and GPS permissions to finish.",
+          finishError: "Complete the care report and GPS permissions to finish.",
           mobileTitle: "Assigned visits",
           client: "Client",
           worker: "Care worker",
@@ -1394,12 +1608,54 @@ const resources = {
           status: "Status",
           startedAt: "Started at",
           endedAt: "Ended at",
+          startedByUser: "Started by user",
+          endedByUser: "Ended by user",
           address: "Address",
           notes: "Notes",
           details: "Service details",
+          checkInSection: "Check-in",
+          checkOutSection: "Check-out",
+          checkInLocation: "Start location",
+          checkOutLocation: "End location",
+          checkInPending: "Check-in pending",
+          checkInDone: "Check-in completed",
+          checkOutPending: "Check-out pending",
+          checkOutCompleted: "Check-out completed",
+          statusPending: "Pending",
+          statusInProgress: "In progress",
+          statusCompleted: "Completed",
+          statusCancelled: "Cancelled",
+          locationRecorded: "Location recorded",
+          locationMissing: "Location pending",
+          viewLocation: "View location",
+          checkOutNotAvailable: "Check-out not available yet",
+          completedStateHelp: "This visit is complete and will not request location again.",
+          processing: "Processing...",
+          hideFinishForm: "Hide finish form",
+          startCheckIn: "Start check-in",
           startVisit: "Start visit",
           finishVisit: "Finish visit",
-          noAssignedVisits: "You have no assigned visits."
+          noAssignedVisits: "You have no assigned visits.",
+          errors: {
+            unauthenticated: "You must sign in to register the check-in.",
+            forbidden: "You do not have permission to operate this visit.",
+            notFound: "The visit does not exist or is no longer available.",
+            network: "The server could not be reached.",
+            gpsPermissionDenied: "You must allow location access to perform check-in or check-out.",
+            gpsTimeout: "Location took too long to respond. Please try again.",
+            gpsUnavailable: "Your current location could not be obtained.",
+            gpsNotSupported: "This browser cannot access location.",
+            gpsGeneric: "The current location could not be verified.",
+            invalidCoordinates: "The submitted location is not valid.",
+            visitAlreadyStarted: "This visit already had a started check-in.",
+            visitAlreadyFinished: "This visit has already been finished.",
+            visitNotStarted: "You must start check-in before finishing the visit.",
+            visitAlreadyCompleted: "This visit was already completed.",
+            visitCancelled: "This visit is cancelled and cannot be started or finished.",
+            clientLocationNotConfigured: "The client's home location is not configured. Please contact the administrator.",
+            visitOutsideAllowedRadius: "You are too far from the client's home. Current distance: {{distance}} m. Allowed radius: {{allowed}} m.",
+            finishRequirements: "Complete the mandatory care report before finishing."
+          }
         }
       },
       branding: {
@@ -1458,6 +1714,7 @@ const resources = {
         },
         cards: {
           assignedServices: "Assigned services",
+          noAssignedServices: "You have no assigned services.",
           today: "Today",
           nextVisit: "Next visit",
           todaySchedule: "Today's schedule",
@@ -1575,6 +1832,28 @@ const resources = {
           documentOpen: "Document could not be opened."
         }
       },
+      familyPortal: {
+        visitStatus: {
+          scheduled: "Scheduled",
+          inProgress: "In progress",
+          completed: "Completed",
+          cancelled: "Cancelled",
+          unknown: "No status"
+        },
+        statusItems: {
+          nextVisitTitle: "Next visit",
+          nextVisitText: "{{date}} with {{professional}}.",
+          lastReportTitle: "Latest report",
+          generalStatusTitle: "General status",
+          noNews: "No updates have been recorded yet."
+        },
+        generated: {
+          visitReportTitle: "Visit report #{{id}}",
+          checklistCompleted: "Care checklist completed.",
+          checklistPending: "Care checklist pending validation.",
+          noExtraDetails: "No additional details."
+        }
+      },
       reportsPage: {
         topbar: {
           subtitleAdmin: "Global activity and operational evolution monitoring.",
@@ -1654,7 +1933,15 @@ const resources = {
         history: "History",
         searchPlaceholder: "Search notification",
         pushReady: "Push ready",
+        pushEnabled: "Enabled",
+        pushDisabled: "Pending activation",
+        pushBlocked: "Permission denied",
+        pushUnsupported: "Browser not supported",
+        pushSectionTitle: "Push channel",
+        pushNotConfigured: "Push channel is not configured.",
         inApp: "In-app",
+        enablePush: "Enable notifications",
+        disablePush: "Disable notifications",
         markRead: "Mark as read",
         noResults: "No results found."
       },
@@ -1670,6 +1957,14 @@ const resources = {
         confirmDelete: "Delete incident?",
         client: "Client",
         professional: "Professional",
+        status: "Status",
+        statusPending: "Pending",
+        statusInReview: "In review",
+        statusResolved: "Resolved",
+        statusClosed: "Closed",
+        closureNotes: "Closure notes",
+        closureNotesPlaceholder: "Optional closure notes",
+        updateStatus: "Update status",
         actionsTitle: "Operational actions",
         reviewVisits: "Review visits",
         careFollowup: "Care follow-up",
@@ -1717,12 +2012,15 @@ const resources = {
         subtitle: "Conversation channel for complaints, suggestions and response follow-up.",
         searchPlaceholder: "Search conversation",
         newConversation: "New conversation",
+        replyingTo: "Reply: {{subject}}",
+        startAnother: "New conversation",
+        openConversation: "Open conversation",
         adminInbox: "Conversation management",
         history: "Conversation history",
         subject: "Subject",
         description: "Details",
         send: "Send",
-        save: "Save response",
+        updateStatus: "Update status",
         responseLabel: "Response",
         responsePlaceholder: "Reply to user",
         noResults: "No results found.",
@@ -1734,10 +2032,16 @@ const resources = {
         status: {
           pending: "Pending",
           inProgress: "In progress",
-          resolved: "Resolved"
+          inReview: "In review",
+          answered: "Answered",
+          resolved: "Resolved",
+          closed: "Closed"
         },
+        threadEmpty: "No messages in this thread.",
+        messagePlaceholder: "Write a message in the conversation",
         errors: {
           required: "Complete subject and details.",
+          messageRequired: "Write a message.",
           send: "Conversation could not be sent.",
           responseRequired: "Add a response before saving.",
           update: "Conversation could not be updated."
@@ -1749,6 +2053,11 @@ const resources = {
         newBudget: "New budget",
         createBudget: "Create budget",
         history: "History",
+        clientsLoadError: "Clients could not be loaded.",
+        budgetsLoadError: "Error loading budgets.",
+        backendHint: "Check the backend connection.",
+        noClientsAvailable: "At least one client must exist to create a budget.",
+        empty: "No budgets registered yet.",
         hours: "Hours",
         hourlyRate: "Hourly rate",
         vat: "VAT %",
@@ -1764,7 +2073,29 @@ const resources = {
         noResults: "No results found.",
         errors: {
           required: "Complete client, hours and rate."
-        }
+        },
+        lines: "Budget lines",
+        service: "Service",
+        daysPerMonth: "Days per month",
+        daysShort: "days",
+        kilometers: "Kilometres",
+        applicablePrice: "Applicable price",
+        monthlyLineTotal: "Monthly line total",
+        monthlySubtotal: "Monthly subtotal",
+        observations: "Notes",
+        addLine: "Add line",
+        removeLine: "Remove line",
+        manageTariffs: "Manage tariff catalog",
+        basePrice: "Base price",
+        supplement: "Initial supplement",
+        saveTariff: "Save tariff",
+        tariffsError: "Tariffs could not be loaded or saved.",
+        tariffSaved: "Tariff saved successfully.",
+        tariffSaveInvalid: "Please check the data: base price and supplement must be between 0 and 100,000, and the personalized service name cannot be empty.",
+        tariffSaveUnauthorized: "Your session has expired. Please sign in again to save the tariff.",
+        tariffSaveForbidden: "You do not have permission to modify tariffs. Only administrators can do this.",
+        tariffSaveServerError: "Server error while saving the tariff. Please try again later.",
+        createError: "The budget could not be created."
       },
       activatePage: {
         title: "Activate account",
@@ -1949,6 +2280,7 @@ const resources = {
         familyMembers: "Proches",
         services: "Services",
         calendar: "Calendrier",
+        visits: "Visites",
         incidents: "Incidents",
         documentation: "Documentation",
         reports: "Rapports",
@@ -2036,6 +2368,9 @@ const resources = {
           subtitle: "Gerez tous les clients Sol y Vida.",
           search: "Rechercher un client...",
           client: "Client",
+          homeLocation: "Emplacement du domicile",
+          homeLocationConfigured: "Configure",
+          homeLocationUnavailable: "Indisponible",
           empty: "Aucun client trouve."
         },
         familyMembers: {
@@ -2044,6 +2379,7 @@ const resources = {
           search: "Rechercher un proche...",
           relationship: "Lien",
           primary: "Principal",
+          portalAccess: "Acces portail",
           empty: "Aucun proche enregistre."
         },
         services: {
@@ -2088,6 +2424,7 @@ const resources = {
       roles: {
         admin: "Administratrice",
         worker: "Intervenante",
+        client: "Client",
         family: "Membre de la famille"
       },
       crud: {
@@ -2130,7 +2467,22 @@ const resources = {
           assignedWorker: "Intervenant assigne",
           unassigned: "Aucun intervenant assigne",
           noWorkers: "Aucun intervenant disponible",
+          preferredContact: "Canal de contact prefere",
+          preferredPhone: "Telephone",
+          preferredEmail: "E-mail",
+          notificationsEnabled: "Recevoir des notifications dans le portail",
+          createPortalAccess: "Creer un acces au portail du client",
           save: "Enregistrer le client",
+          homeLocation: {
+            label: "Emplacement du domicile",
+            configured: "Emplacement du domicile configure",
+            unavailable: "Emplacement du domicile indisponible",
+            warnings: {
+              configured: "L'emplacement du domicile a ete configure avec succes.",
+              notFound: "Client enregistre, mais l'adresse du domicile n'a pas pu etre localisee automatiquement.",
+              unavailable: "Client enregistre, mais la geocodification du domicile n'est pas disponible pour le moment."
+            }
+          },
           errors: {
             required: "Completez tous les champs obligatoires du client."
           },
@@ -2157,9 +2509,18 @@ const resources = {
         familyMember: {
           relationship: "Lien",
           primaryContact: "Contact principal",
+          clientLinked: "Client lie",
+          selectClient: "Selectionnez un client",
           save: "Creer le proche",
+          portalAccess: {
+            title: "ACCES AU PORTAIL FAMILIAL",
+            enable: "Creer un acces au portail familial",
+            hint: "Permet a ce proche d'acceder a l'application avec son propre e-mail et mot de passe.",
+            editHint: "Pour les proches existants, utilisez les actions d'acces depuis le tableau."
+          },
           errors: {
-            required: "Completez les champs obligatoires du proche."
+            required: "Completez les champs obligatoires du proche.",
+            emailRequiredForPortal: "L'e-mail est obligatoire pour creer l'acces portail."
           }
         },
         visit: {
@@ -2206,6 +2567,25 @@ const resources = {
           new: "Nouveau proche",
           edit: "Modifier le proche"
         },
+        familyMembersAccess: {
+          status: {
+            none: "Sans compte",
+            pending: "Invitation en attente",
+            active: "Compte actif",
+            disabled: "Compte desactive",
+            unknown: "Statut indisponible"
+          },
+          actions: {
+            create: "Creer l'acces",
+            resend: "Renvoyer l'invitation",
+            reset: "Reinitialiser l'acces",
+            deactivate: "Desactiver l'acces"
+          },
+          notices: {
+            activationToken: "Token d'activation",
+            resetToken: "Token de reinitialisation"
+          }
+        },
         services: {
           title: "Services",
           subtitle: "Gerez le catalogue interne des services de Sol y Vida Cuidados.",
@@ -2230,8 +2610,9 @@ const resources = {
           optionalNotes: "Notes optionnelles",
           saveAndFinish: "Enregistrer et terminer le service",
           startError: "Impossible de demarrer le service. Verifiez les permissions de localisation.",
+          startSuccess: "Check-in effectue avec succes.",
           finishSuccess: "Service termine et rapport de soins enregistre.",
-          finishError: "Completez la checklist, le rapport et les permissions GPS pour terminer.",
+          finishError: "Completez le rapport de soins et les permissions GPS pour terminer.",
           mobileTitle: "Visites attribuees",
           client: "Client",
           worker: "Intervenante",
@@ -2239,12 +2620,54 @@ const resources = {
           status: "Statut",
           startedAt: "Debut",
           endedAt: "Fin",
+          startedByUser: "Utilisateur debut",
+          endedByUser: "Utilisateur fin",
           address: "Adresse",
           notes: "Observations",
           details: "Details du service",
+          checkInSection: "Check-in",
+          checkOutSection: "Check-out",
+          checkInLocation: "Position de debut",
+          checkOutLocation: "Position de fin",
+          checkInPending: "Check-in en attente",
+          checkInDone: "Check-in effectue",
+          checkOutPending: "Check-out en attente",
+          checkOutCompleted: "Check-out effectue",
+          statusPending: "En attente",
+          statusInProgress: "En cours",
+          statusCompleted: "Terminee",
+          statusCancelled: "Annulee",
+          locationRecorded: "Position enregistree",
+          locationMissing: "Position en attente",
+          viewLocation: "Voir l'emplacement",
+          checkOutNotAvailable: "Check-out pas encore disponible",
+          completedStateHelp: "La visite est terminee et ne demandera plus la localisation.",
+          processing: "Traitement...",
+          hideFinishForm: "Masquer la finalisation",
+          startCheckIn: "Demarrer le check-in",
           startVisit: "Demarrer la visite",
           finishVisit: "Terminer la visite",
-          noAssignedVisits: "Vous n'avez aucune visite attribuee."
+          noAssignedVisits: "Vous n'avez aucune visite attribuee.",
+          errors: {
+            unauthenticated: "Vous devez vous connecter pour enregistrer le check-in.",
+            forbidden: "Vous n'avez pas le droit d'agir sur cette visite.",
+            notFound: "La visite n'existe pas ou n'est plus disponible.",
+            network: "Le serveur n'a pas pu etre contacte.",
+            gpsPermissionDenied: "Vous devez autoriser la localisation pour faire le check-in ou le check-out.",
+            gpsTimeout: "La localisation a mis trop de temps a repondre. Reessayez.",
+            gpsUnavailable: "Impossible d'obtenir votre position actuelle.",
+            gpsNotSupported: "Ce navigateur ne permet pas d'obtenir la localisation.",
+            gpsGeneric: "Impossible de verifier la position actuelle.",
+            invalidCoordinates: "La position envoyee n'est pas valide.",
+            visitAlreadyStarted: "La visite avait deja un check-in demarre.",
+            visitAlreadyFinished: "La visite a deja ete terminee.",
+            visitNotStarted: "Vous devez d'abord lancer le check-in de la visite.",
+            visitAlreadyCompleted: "La visite etait deja terminee.",
+            visitCancelled: "La visite est annulee et n'accepte ni check-in ni check-out.",
+            clientLocationNotConfigured: "L'emplacement du domicile du client n'est pas configure. Contactez l'administration.",
+            visitOutsideAllowedRadius: "Vous etes trop loin du domicile du client. Distance actuelle : {{distance}} m. Rayon autorise : {{allowed}} m.",
+            finishRequirements: "Completez le rapport de soins obligatoire avant de terminer."
+          }
         }
       },
       branding: {
@@ -2303,6 +2726,7 @@ const resources = {
         },
         cards: {
           assignedServices: "Services assignes",
+          noAssignedServices: "Vous n'avez aucun service assigne.",
           today: "Aujourd'hui",
           nextVisit: "Prochaine visite",
           todaySchedule: "Planning du jour",
@@ -2420,6 +2844,28 @@ const resources = {
           documentOpen: "Le document n'a pas pu etre ouvert."
         }
       },
+      familyPortal: {
+        visitStatus: {
+          scheduled: "Planifiee",
+          inProgress: "En cours",
+          completed: "Terminee",
+          cancelled: "Annulee",
+          unknown: "Sans statut"
+        },
+        statusItems: {
+          nextVisitTitle: "Prochaine visite",
+          nextVisitText: "{{date}} avec {{professional}}.",
+          lastReportTitle: "Dernier rapport",
+          generalStatusTitle: "Etat general",
+          noNews: "Aucune nouveaute enregistree pour le moment."
+        },
+        generated: {
+          visitReportTitle: "Rapport de visite #{{id}}",
+          checklistCompleted: "Checklist de soins completee.",
+          checklistPending: "Checklist de soins en attente de validation.",
+          noExtraDetails: "Aucun detail supplementaire."
+        }
+      },
       reportsPage: {
         topbar: {
           subtitleAdmin: "Suivi global de l'activite et de l'evolution operationnelle.",
@@ -2499,7 +2945,15 @@ const resources = {
         history: "Historique",
         searchPlaceholder: "Rechercher une notification",
         pushReady: "Push pret",
+        pushEnabled: "Activees",
+        pushDisabled: "En attente d'activation",
+        pushBlocked: "Permission refusee",
+        pushUnsupported: "Navigateur non compatible",
+        pushSectionTitle: "Canal push",
+        pushNotConfigured: "Le canal push n'est pas configure.",
         inApp: "In-app",
+        enablePush: "Activer les notifications",
+        disablePush: "Desactiver les notifications",
         markRead: "Marquer comme lue",
         noResults: "Aucun resultat."
       },
@@ -2515,6 +2969,14 @@ const resources = {
         confirmDelete: "Supprimer l'incident ?",
         client: "Client",
         professional: "Professionnel",
+        status: "Statut",
+        statusPending: "En attente",
+        statusInReview: "En revision",
+        statusResolved: "Resolue",
+        statusClosed: "Fermee",
+        closureNotes: "Notes de cloture",
+        closureNotesPlaceholder: "Notes de cloture facultatives",
+        updateStatus: "Mettre a jour le statut",
         actionsTitle: "Actions operationnelles",
         reviewVisits: "Verifier les visites",
         careFollowup: "Suivi des soins",
@@ -2562,12 +3024,15 @@ const resources = {
         subtitle: "Canal de conversation pour reclamations, suggestions et suivi des reponses.",
         searchPlaceholder: "Rechercher une conversation",
         newConversation: "Nouvelle conversation",
+        replyingTo: "Repondre : {{subject}}",
+        startAnother: "Nouvelle conversation",
+        openConversation: "Ouvrir la conversation",
         adminInbox: "Gestion des conversations",
         history: "Historique des conversations",
         subject: "Sujet",
         description: "Detail",
         send: "Envoyer",
-        save: "Enregistrer la reponse",
+        updateStatus: "Mettre a jour le statut",
         responseLabel: "Reponse",
         responsePlaceholder: "Repondre a l'utilisateur",
         noResults: "Aucun resultat.",
@@ -2579,10 +3044,16 @@ const resources = {
         status: {
           pending: "En attente",
           inProgress: "En cours",
-          resolved: "Resolue"
+          inReview: "En revision",
+          answered: "Repondue",
+          resolved: "Resolue",
+          closed: "Fermee"
         },
+        threadEmpty: "Aucun message dans ce fil.",
+        messagePlaceholder: "Ecrivez un message dans la conversation",
         errors: {
           required: "Completez le sujet et le detail.",
+          messageRequired: "Ecrivez un message.",
           send: "La conversation n'a pas pu etre envoyee.",
           responseRequired: "Ajoutez une reponse avant d'enregistrer.",
           update: "La conversation n'a pas pu etre mise a jour."
@@ -2594,6 +3065,11 @@ const resources = {
         newBudget: "Nouveau budget",
         createBudget: "Creer le budget",
         history: "Historique",
+        clientsLoadError: "Les clients n'ont pas pu etre charges.",
+        budgetsLoadError: "Erreur lors du chargement des budgets.",
+        backendHint: "Verifiez la connexion avec le backend.",
+        noClientsAvailable: "Au moins un client doit exister pour creer un budget.",
+        empty: "Aucun budget enregistre.",
         hours: "Heures",
         hourlyRate: "Prix/heure",
         vat: "TVA %",
@@ -2609,7 +3085,29 @@ const resources = {
         noResults: "Aucun resultat.",
         errors: {
           required: "Completez client, heures et tarif."
-        }
+        },
+        lines: "Lignes du devis",
+        service: "Service",
+        daysPerMonth: "Jours par mois",
+        daysShort: "jours",
+        kilometers: "Kilomètres",
+        applicablePrice: "Prix applicable",
+        monthlyLineTotal: "Total mensuel de la ligne",
+        monthlySubtotal: "Sous-total mensuel",
+        observations: "Observations",
+        addLine: "Ajouter une ligne",
+        removeLine: "Supprimer la ligne",
+        manageTariffs: "Gérer le catalogue des tarifs",
+        basePrice: "Prix de base",
+        supplement: "Supplément initial",
+        saveTariff: "Enregistrer le tarif",
+        tariffsError: "Impossible de charger ou d'enregistrer les tarifs.",
+        tariffSaved: "Tarif enregistré avec succès.",
+        tariffSaveInvalid: "Vérifiez les données : le prix de base et le supplément doivent être compris entre 0 et 100 000, et le nom du service personnalisé ne peut pas être vide.",
+        tariffSaveUnauthorized: "Votre session a expiré. Reconnectez-vous pour enregistrer le tarif.",
+        tariffSaveForbidden: "Vous n'avez pas l'autorisation de modifier les tarifs. Seule l'administration peut le faire.",
+        tariffSaveServerError: "Erreur du serveur lors de l'enregistrement du tarif. Réessayez plus tard.",
+        createError: "Impossible de créer le devis."
       },
       activatePage: {
         title: "Activer le compte",
@@ -2794,6 +3292,7 @@ const resources = {
         familyMembers: "Angehorige",
         services: "Leistungen",
         calendar: "Kalender",
+        visits: "Besuche",
         incidents: "Vorfalle",
         documentation: "Dokumentation",
         reports: "Berichte",
@@ -2881,6 +3380,9 @@ const resources = {
           subtitle: "Verwalten Sie alle Sol y Vida Kunden.",
           search: "Kunde suchen...",
           client: "Kunde",
+          homeLocation: "Standort des Zuhauses",
+          homeLocationConfigured: "Konfiguriert",
+          homeLocationUnavailable: "Nicht verfugbar",
           empty: "Keine Kunden gefunden."
         },
         familyMembers: {
@@ -2889,6 +3391,7 @@ const resources = {
           search: "Angehorige suchen...",
           relationship: "Verhaltnis",
           primary: "Hauptkontakt",
+          portalAccess: "Portalzugang",
           empty: "Keine Angehorigen registriert."
         },
         services: {
@@ -2933,6 +3436,7 @@ const resources = {
       roles: {
         admin: "Administratorin",
         worker: "Mitarbeiterin",
+        client: "Kunde",
         family: "Familienmitglied"
       },
       crud: {
@@ -2975,7 +3479,22 @@ const resources = {
           assignedWorker: "Zugewiesener Mitarbeitender",
           unassigned: "Nicht zugewiesen",
           noWorkers: "Keine Mitarbeitenden verfugbar",
+          preferredContact: "Bevorzugter Kontaktkanal",
+          preferredPhone: "Telefon",
+          preferredEmail: "E-Mail",
+          notificationsEnabled: "Benachrichtigungen im Portal erhalten",
+          createPortalAccess: "Portalzugang fur den Kunden erstellen",
           save: "Kunde speichern",
+          homeLocation: {
+            label: "Standort des Zuhauses",
+            configured: "Standort des Zuhauses konfiguriert",
+            unavailable: "Standort des Zuhauses nicht verfugbar",
+            warnings: {
+              configured: "Der Standort des Zuhauses wurde erfolgreich konfiguriert.",
+              notFound: "Kunde gespeichert, aber die Wohnadresse konnte nicht automatisch lokalisiert werden.",
+              unavailable: "Kunde gespeichert, aber die Geokodierung des Zuhauses ist derzeit nicht verfugbar."
+            }
+          },
           errors: {
             required: "Bitte alle Pflichtfelder des Kunden ausfullen."
           },
@@ -3002,9 +3521,18 @@ const resources = {
         familyMember: {
           relationship: "Verhaltnis",
           primaryContact: "Hauptkontakt",
+          clientLinked: "Verknupfter Kunde",
+          selectClient: "Kunden auswahlen",
           save: "Angehorigen erstellen",
+          portalAccess: {
+            title: "FAMILIENPORTAL-ZUGANG",
+            enable: "Zugang zum Familienportal erstellen",
+            hint: "Ermoglicht diesem Angehorigen den Zugriff auf die App mit eigener E-Mail und eigenem Passwort.",
+            editHint: "Fur bestehende Angehorige die Zugriffsaktionen in der Tabelle verwenden."
+          },
           errors: {
-            required: "Bitte Pflichtfelder des Angehorigen ausfullen."
+            required: "Bitte Pflichtfelder des Angehorigen ausfullen.",
+            emailRequiredForPortal: "Fur den Portalzugang ist eine E-Mail erforderlich."
           }
         },
         visit: {
@@ -3051,6 +3579,25 @@ const resources = {
           new: "Neuer Angehoriger",
           edit: "Angehorigen bearbeiten"
         },
+        familyMembersAccess: {
+          status: {
+            none: "Kein Konto",
+            pending: "Einladung ausstehend",
+            active: "Konto aktiv",
+            disabled: "Konto deaktiviert",
+            unknown: "Status nicht verfugbar"
+          },
+          actions: {
+            create: "Zugang erstellen",
+            resend: "Einladung erneut senden",
+            reset: "Passwort zurucksetzen",
+            deactivate: "Zugang deaktivieren"
+          },
+          notices: {
+            activationToken: "Aktivierungstoken",
+            resetToken: "Zurucksetzen-Token"
+          }
+        },
         services: {
           title: "Leistungen",
           subtitle: "Verwalten Sie den internen Leistungskatalog von Sol y Vida Cuidados.",
@@ -3075,8 +3622,9 @@ const resources = {
           optionalNotes: "Optionale Notizen",
           saveAndFinish: "Speichern und Service beenden",
           startError: "Service konnte nicht gestartet werden. Prufen Sie die Standortberechtigungen.",
+          startSuccess: "Check-in erfolgreich durchgefuhrt.",
           finishSuccess: "Service beendet und Pflegebericht gespeichert.",
-          finishError: "Checklist, Bericht und GPS-Berechtigungen zum Beenden ausfullen.",
+          finishError: "Pflegebericht und GPS-Berechtigungen zum Beenden ausfullen.",
           mobileTitle: "Zugewiesene Besuche",
           client: "Kunde",
           worker: "Betreuerin",
@@ -3084,12 +3632,54 @@ const resources = {
           status: "Status",
           startedAt: "Beginn",
           endedAt: "Ende",
+          startedByUser: "Startbenutzer",
+          endedByUser: "Endbenutzer",
           address: "Adresse",
           notes: "Bemerkungen",
           details: "Servicedetails",
+          checkInSection: "Check-in",
+          checkOutSection: "Check-out",
+          checkInLocation: "Startposition",
+          checkOutLocation: "Endposition",
+          checkInPending: "Check-in ausstehend",
+          checkInDone: "Check-in erfolgt",
+          checkOutPending: "Check-out ausstehend",
+          checkOutCompleted: "Check-out erfolgt",
+          statusPending: "Ausstehend",
+          statusInProgress: "In Bearbeitung",
+          statusCompleted: "Abgeschlossen",
+          statusCancelled: "Storniert",
+          locationRecorded: "Standort erfasst",
+          locationMissing: "Standort ausstehend",
+          viewLocation: "Standort anzeigen",
+          checkOutNotAvailable: "Check-out noch nicht verfugbar",
+          completedStateHelp: "Der Besuch ist abgeschlossen und fordert keine Standortdaten mehr an.",
+          processing: "Wird verarbeitet...",
+          hideFinishForm: "Abschluss ausblenden",
+          startCheckIn: "Check-in starten",
           startVisit: "Besuch starten",
           finishVisit: "Besuch beenden",
-          noAssignedVisits: "Du hast keine zugewiesenen Besuche."
+          noAssignedVisits: "Du hast keine zugewiesenen Besuche.",
+          errors: {
+            unauthenticated: "Sie mussen sich anmelden, um den Check-in zu speichern.",
+            forbidden: "Sie haben keine Berechtigung fur diesen Besuch.",
+            notFound: "Der Besuch existiert nicht oder ist nicht mehr verfugbar.",
+            network: "Der Server konnte nicht erreicht werden.",
+            gpsPermissionDenied: "Sie mussen den Standort erlauben, um Check-in oder Check-out auszufuhren.",
+            gpsTimeout: "Der Standort hat zu lange fur eine Antwort gebraucht. Bitte erneut versuchen.",
+            gpsUnavailable: "Ihr aktueller Standort konnte nicht ermittelt werden.",
+            gpsNotSupported: "Dieser Browser unterstutzt keinen Standortabruf.",
+            gpsGeneric: "Der aktuelle Standort konnte nicht verifiziert werden.",
+            invalidCoordinates: "Der gesendete Standort ist ungueltig.",
+            visitAlreadyStarted: "Der Besuch hatte bereits einen gestarteten Check-in.",
+            visitAlreadyFinished: "Der Besuch wurde bereits beendet.",
+            visitNotStarted: "Sie mussen den Check-in zuerst starten, bevor Sie den Besuch beenden.",
+            visitAlreadyCompleted: "Der Besuch war bereits abgeschlossen.",
+            visitCancelled: "Der Besuch ist storniert und erlaubt keinen Check-in oder Check-out.",
+            clientLocationNotConfigured: "Der Standort des Kundenhaushalts ist nicht konfiguriert. Bitte wenden Sie sich an die Verwaltung.",
+            visitOutsideAllowedRadius: "Sie sind zu weit vom Wohnort des Kunden entfernt. Aktuelle Distanz: {{distance}} m. Erlaubter Radius: {{allowed}} m.",
+            finishRequirements: "Pflichtigen Pflegebericht vor dem Abschluss ausfullen."
+          }
         }
       },
       branding: {
@@ -3148,6 +3738,7 @@ const resources = {
         },
         cards: {
           assignedServices: "Zugewiesene Leistungen",
+          noAssignedServices: "Ihnen sind keine Leistungen zugewiesen.",
           today: "Heute",
           nextVisit: "Nachster Besuch",
           todaySchedule: "Heutiger Zeitplan",
@@ -3265,6 +3856,28 @@ const resources = {
           documentOpen: "Dokument konnte nicht geoffnet werden."
         }
       },
+      familyPortal: {
+        visitStatus: {
+          scheduled: "Geplant",
+          inProgress: "Laufend",
+          completed: "Abgeschlossen",
+          cancelled: "Storniert",
+          unknown: "Kein Status"
+        },
+        statusItems: {
+          nextVisitTitle: "Nachster Besuch",
+          nextVisitText: "{{date}} mit {{professional}}.",
+          lastReportTitle: "Letzter Bericht",
+          generalStatusTitle: "Allgemeiner Status",
+          noNews: "Derzeit sind keine Neuigkeiten erfasst."
+        },
+        generated: {
+          visitReportTitle: "Besuchsbericht #{{id}}",
+          checklistCompleted: "Pflege-Checkliste abgeschlossen.",
+          checklistPending: "Pflege-Checkliste wartet auf Validierung.",
+          noExtraDetails: "Keine zusatzlichen Details."
+        }
+      },
       reportsPage: {
         topbar: {
           subtitleAdmin: "Globale Aktivitats- und Betriebsentwicklung.",
@@ -3344,7 +3957,15 @@ const resources = {
         history: "Verlauf",
         searchPlaceholder: "Benachrichtigung suchen",
         pushReady: "Push bereit",
+        pushEnabled: "Aktiviert",
+        pushDisabled: "Aktivierung ausstehend",
+        pushBlocked: "Berechtigung verweigert",
+        pushUnsupported: "Browser nicht unterstutzt",
+        pushSectionTitle: "Push-Kanal",
+        pushNotConfigured: "Der Push-Kanal ist nicht konfiguriert.",
         inApp: "In-app",
+        enablePush: "Benachrichtigungen aktivieren",
+        disablePush: "Benachrichtigungen deaktivieren",
         markRead: "Als gelesen markieren",
         noResults: "Keine Ergebnisse gefunden."
       },
@@ -3360,6 +3981,14 @@ const resources = {
         confirmDelete: "Vorfall loschen?",
         client: "Kunde",
         professional: "Fachkraft",
+        status: "Status",
+        statusPending: "Ausstehend",
+        statusInReview: "In Prufung",
+        statusResolved: "Gelost",
+        statusClosed: "Geschlossen",
+        closureNotes: "Abschlussnotizen",
+        closureNotesPlaceholder: "Optionale Abschlussnotizen",
+        updateStatus: "Status aktualisieren",
         actionsTitle: "Betriebliche Aktionen",
         reviewVisits: "Besuche prufen",
         careFollowup: "Pflege-Nachverfolgung",
@@ -3407,12 +4036,15 @@ const resources = {
         subtitle: "Gesprachekanal fur Beschwerden, Vorschlage und Antwortverfolgung.",
         searchPlaceholder: "Gesprach suchen",
         newConversation: "Neues Gesprach",
+        replyingTo: "Antworten: {{subject}}",
+        startAnother: "Neues Gesprach",
+        openConversation: "Gesprach offnen",
         adminInbox: "Gesprachsverwaltung",
         history: "Gesprachsverlauf",
         subject: "Betreff",
         description: "Details",
         send: "Senden",
-        save: "Antwort speichern",
+        updateStatus: "Status aktualisieren",
         responseLabel: "Antwort",
         responsePlaceholder: "Dem Benutzer antworten",
         noResults: "Keine Ergebnisse gefunden.",
@@ -3424,10 +4056,16 @@ const resources = {
         status: {
           pending: "Ausstehend",
           inProgress: "In Bearbeitung",
-          resolved: "Gelost"
+          inReview: "In Prufung",
+          answered: "Beantwortet",
+          resolved: "Gelost",
+          closed: "Geschlossen"
         },
+        threadEmpty: "Keine Nachrichten in diesem Verlauf.",
+        messagePlaceholder: "Schreiben Sie eine Nachricht in die Unterhaltung",
         errors: {
           required: "Betreff und Details ausfullen.",
+          messageRequired: "Schreiben Sie eine Nachricht.",
           send: "Gesprach konnte nicht gesendet werden.",
           responseRequired: "Vor dem Speichern eine Antwort erfassen.",
           update: "Gesprach konnte nicht aktualisiert werden."
@@ -3439,6 +4077,11 @@ const resources = {
         newBudget: "Neues Budget",
         createBudget: "Budget erstellen",
         history: "Verlauf",
+        clientsLoadError: "Die Kunden konnten nicht geladen werden.",
+        budgetsLoadError: "Fehler beim Laden der Budgets.",
+        backendHint: "Bitte prüfen Sie die Verbindung zum Backend.",
+        noClientsAvailable: "Es muss mindestens ein Kunde existieren, um ein Budget zu erstellen.",
+        empty: "Keine Budgets registriert.",
         hours: "Stunden",
         hourlyRate: "Preis/Stunde",
         vat: "MwSt. %",
@@ -3454,7 +4097,29 @@ const resources = {
         noResults: "Keine Ergebnisse gefunden.",
         errors: {
           required: "Kunde, Stunden und Tarif ausfullen."
-        }
+        },
+        lines: "Budgetpositionen",
+        service: "Leistung",
+        daysPerMonth: "Tage pro Monat",
+        daysShort: "Tage",
+        kilometers: "Kilometer",
+        applicablePrice: "Anwendbarer Preis",
+        monthlyLineTotal: "Monatlicher Positionsbetrag",
+        monthlySubtotal: "Monatliche Zwischensumme",
+        observations: "Hinweise",
+        addLine: "Position hinzufügen",
+        removeLine: "Position entfernen",
+        manageTariffs: "Tarifkatalog verwalten",
+        basePrice: "Grundpreis",
+        supplement: "Anfangszuschlag",
+        saveTariff: "Tarif speichern",
+        tariffsError: "Tarife konnten nicht geladen oder gespeichert werden.",
+        tariffSaved: "Tarif erfolgreich gespeichert.",
+        tariffSaveInvalid: "Bitte Daten prüfen: Grundpreis und Zuschlag müssen zwischen 0 und 100.000 liegen, und der Name des individuellen Dienstes darf nicht leer sein.",
+        tariffSaveUnauthorized: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, um den Tarif zu speichern.",
+        tariffSaveForbidden: "Sie haben keine Berechtigung, Tarife zu ändern. Nur die Verwaltung darf dies.",
+        tariffSaveServerError: "Serverfehler beim Speichern des Tarifs. Bitte später erneut versuchen.",
+        createError: "Das Budget konnte nicht erstellt werden."
       },
       activatePage: {
         title: "Konto aktivieren",
@@ -3513,5 +4178,65 @@ i18n.on("languageChanged", (language) => {
     window.localStorage.setItem("language", language);
   }
 });
+
+const accountEmailTranslations = {
+  es: {
+    sent: "Correo aceptado por el proveedor. Comprueba la bandeja de entrada.",
+    notConfigured: "Correo no enviado: falta configurar el proveedor. El acceso queda pendiente.",
+    failed: "Correo no enviado: fallo del proveedor. Puedes reintentar la invitacion.",
+  },
+  en: {
+    sent: "Email accepted by the provider. Check the inbox.",
+    notConfigured: "Email not sent: provider configuration is missing. Access remains pending.",
+    failed: "Email not sent: provider failure. You can retry the invitation.",
+  },
+  fr: {
+    sent: "Courriel accepte par le fournisseur. Verifiez la boite de reception.",
+    notConfigured: "Courriel non envoye : fournisseur non configure. Acces en attente.",
+    failed: "Courriel non envoye : echec du fournisseur. Vous pouvez renvoyer l'invitation.",
+  },
+  de: {
+    sent: "E-Mail vom Anbieter angenommen. Bitte Posteingang pruefen.",
+    notConfigured: "E-Mail nicht gesendet: Anbieter nicht konfiguriert. Zugang bleibt ausstehend.",
+    failed: "E-Mail nicht gesendet: Anbieterfehler. Einladung kann erneut gesendet werden.",
+  },
+};
+
+for (const [language, accountEmail] of Object.entries(accountEmailTranslations)) {
+  i18n.addResourceBundle(language, "translation", { accountEmail }, true, true);
+}
+
+const workerProfileTranslations = {
+  es: { loading: "Cargando perfil...", saved: "Perfil guardado.", loadError: "No se pudo cargar el perfil.", specialty: "Especialidad" },
+  en: { loading: "Loading profile...", saved: "Profile saved.", loadError: "Could not load the profile.", specialty: "Specialty" },
+  fr: { loading: "Chargement du profil...", saved: "Profil enregistre.", loadError: "Impossible de charger le profil.", specialty: "Specialite" },
+  de: { loading: "Profil wird geladen...", saved: "Profil gespeichert.", loadError: "Profil konnte nicht geladen werden.", specialty: "Fachgebiet" },
+};
+
+for (const [language, workerProfile] of Object.entries(workerProfileTranslations)) {
+  i18n.addResourceBundle(language, "translation", { workerProfile }, true, true);
+}
+
+const serviceCatalogTranslations = {
+  es: { title: "Catálogo de servicios", subtitle: "Servicios disponibles", service: "Servicio", category: "Categoría", rate: "Precio por hora", duration: "Duración", frequency: "Frecuencia", view: "Ver detalle", loading: "Cargando servicios...", empty: "No hay servicios disponibles para esta búsqueda.", error: "No se pudo cargar el catálogo." },
+  en: { title: "Service catalog", subtitle: "Available services", service: "Service", category: "Category", rate: "Hourly rate", duration: "Duration", frequency: "Frequency", view: "View details", loading: "Loading services...", empty: "No services available for this search.", error: "Could not load the catalog." },
+  fr: { title: "Catalogue des services", subtitle: "Services disponibles", service: "Service", category: "Categorie", rate: "Tarif horaire", duration: "Duree", frequency: "Frequence", view: "Voir les details", loading: "Chargement des services...", empty: "Aucun service disponible pour cette recherche.", error: "Impossible de charger le catalogue." },
+  de: { title: "Leistungskatalog", subtitle: "Verfuegbare Leistungen", service: "Leistung", category: "Kategorie", rate: "Stundensatz", duration: "Dauer", frequency: "Haeufigkeit", view: "Details anzeigen", loading: "Leistungen werden geladen...", empty: "Keine Leistungen fuer diese Suche verfuegbar.", error: "Katalog konnte nicht geladen werden." },
+};
+
+for (const [language, serviceCatalog] of Object.entries(serviceCatalogTranslations)) {
+  i18n.addResourceBundle(language, "translation", { serviceCatalog }, true, true);
+}
+
+const budgetPdfTranslations = {
+  es: { download: "Descargar PDF del presupuesto", error: "No se pudo descargar el PDF del presupuesto." },
+  en: { download: "Download budget PDF", error: "Could not download the budget PDF." },
+  fr: { download: "Telecharger le PDF du devis", error: "Impossible de telecharger le PDF du devis." },
+  de: { download: "Angebot als PDF herunterladen", error: "Das Angebots-PDF konnte nicht heruntergeladen werden." },
+};
+
+for (const [language, budgetPdf] of Object.entries(budgetPdfTranslations)) {
+  i18n.addResourceBundle(language, "translation", { budgetPdf }, true, true);
+}
 
 export default i18n;

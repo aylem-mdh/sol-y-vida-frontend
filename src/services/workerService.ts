@@ -10,10 +10,25 @@ export interface Worker {
   especialidad: string;
 }
 
+export type WorkerPayload = Omit<Worker, "id">;
+export type WorkerProfilePayload = Pick<Worker, "nombre" | "apellidos" | "telefono">;
+
+export async function getOwnWorkerProfile() {
+  const response = await api.get<Worker>("/Workers/me");
+  return response.data;
+}
+
+export async function updateOwnWorkerProfile(profile: WorkerProfilePayload) {
+  const response = await api.put<Worker>("/Workers/me", profile);
+  return response.data;
+}
+
 export interface CreateWorkerWithAccountResult {
   worker: Worker;
-  activationToken: string;
+  activationToken?: string;
   activationLink?: string;
+  requiresActivation?: boolean;
+  message?: string;
 }
 
 type RawCreateWorkerWithAccountResult = {
@@ -25,6 +40,10 @@ type RawCreateWorkerWithAccountResult = {
   activation_token?: string;
   activationLink?: string;
   ActivationLink?: string;
+  requiresActivation?: boolean;
+  RequiresActivation?: boolean;
+  message?: string;
+  Message?: string;
 };
 
 function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): CreateWorkerWithAccountResult {
@@ -37,20 +56,23 @@ function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): Cre
   if (!activationToken && activationLink) {
     try {
       const parsed = new URL(activationLink, window.location.origin);
-      activationToken = parsed.searchParams.get("token") ?? "";
+      activationToken = new URLSearchParams(parsed.hash.slice(1)).get("token")
+        ?? parsed.searchParams.get("token") ?? "";
     } catch {
       activationToken = "";
     }
   }
 
-  if (!worker || !activationToken) {
+  if (!worker) {
     throw new Error("Respuesta invalida al crear trabajadora.");
   }
 
   return {
     worker,
-    activationToken,
+    activationToken: activationToken || undefined,
     activationLink,
+    requiresActivation: raw.requiresActivation ?? raw.RequiresActivation,
+    message: raw.message ?? raw.Message,
   };
 }
 
@@ -60,12 +82,12 @@ export async function getWorkers() {
   return response.data;
 }
 
-export async function createWorker(worker: any) {
+export async function createWorker(worker: WorkerPayload) {
   const requestId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-  console.log("WORKER_CREATE_REQUEST", { requestId, email: worker?.email });
+  console.log("WORKER_CREATE_REQUEST", { requestId });
 
   const response = await api.post<RawCreateWorkerWithAccountResult>("/Workers", worker, {
     headers: {
@@ -80,7 +102,7 @@ export async function createWorker(worker: any) {
 
 export async function updateWorker(
   id: number,
-  worker: any
+  worker: WorkerPayload
 ) {
   await api.put(`/Workers/${id}`, worker);
 }

@@ -1,6 +1,6 @@
 import { FileText, FolderOpen, LifeBuoy, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
@@ -26,9 +26,9 @@ const documentsByRole: Record<DashboardRole, Array<{ title: string; description:
     { title: "Incidencias y seguimiento", description: "Consulta observaciones y actuaciones pendientes.", path: "/incidents" },
   ],
   family: [
-    { title: "Informes de seguimiento", description: "Accede al seguimiento del estado y visitas programadas.", path: "/reports" },
-    { title: "Documentación asistencial", description: "Solicita documentación complementaria del servicio.", path: "/contact" },
-    { title: "Canal de comunicación", description: "Ponte en contacto con el equipo de coordinación.", path: "/contact" },
+    { title: "Informes de seguimiento", description: "Accede al seguimiento del estado y visitas programadas.", path: "/family/reports" },
+    { title: "Documentación asistencial", description: "Solicita documentación complementaria del servicio.", path: "/family/messages" },
+    { title: "Canal de comunicación", description: "Ponte en contacto con el equipo de coordinación.", path: "/family/messages" },
   ],
 };
 
@@ -43,15 +43,7 @@ export default function Documentation() {
   const [selectedDocument, setSelectedDocument] = useState<FamilyDocument | null>(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (role !== "family") {
-      return;
-    }
-
-    loadFamilyDocuments();
-  }, [role]);
-
-  async function loadFamilyDocuments() {
+  const loadFamilyDocuments = useCallback(async () => {
     try {
       const documents = await getFamilyDocuments();
       setFamilyDocuments(documents);
@@ -59,7 +51,21 @@ export default function Documentation() {
     } catch (error) {
       console.error(error);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (role !== "family") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void loadFamilyDocuments();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadFamilyDocuments, role]);
 
   async function handleDownload(documentId: number) {
     try {
@@ -170,7 +176,7 @@ export default function Documentation() {
                       <FileText className="mr-2 h-4 w-4" /> Descargar documento
                     </button>
                     <button
-                      onClick={() => navigate("/contact")}
+                      onClick={() => navigate("/family/messages")}
                       className="inline-flex items-center justify-center rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] px-5 py-3 font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8]"
                     >
                       <LifeBuoy className="mr-2 h-4 w-4 text-[#0F9E98]" /> Contactar soporte

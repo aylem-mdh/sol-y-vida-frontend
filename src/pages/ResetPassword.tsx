@@ -1,15 +1,16 @@
-import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { forgotPassword, resetPassword } from "../services/authService";
 import { useTranslation } from "react-i18next";
 
 export default function ResetPassword() {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const presetToken = useMemo(() => searchParams.get("token") ?? "", [searchParams]);
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState(presetToken);
+  const [token, setToken] = useState(() =>
+    new URLSearchParams(location.hash.slice(1)).get("token")
+      ?? new URLSearchParams(location.search).get("token") ?? "");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -28,12 +29,9 @@ export default function ResetPassword() {
 
     try {
       setLoadingRecover(true);
-      const response = await forgotPassword(email.trim());
-      setMessage(response.resetToken
-        ? t("resetPasswordPage.messages.recoveryToken", { token: response.resetToken })
-        : t("resetPasswordPage.messages.recoveryRequested"));
-    } catch (recoverError) {
-      console.error(recoverError);
+      await forgotPassword(email.trim());
+      setMessage(t("resetPasswordPage.messages.recoveryRequested"));
+    } catch {
       setError(t("resetPasswordPage.errors.recovery"));
     } finally {
       setLoadingRecover(false);
@@ -55,8 +53,7 @@ export default function ResetPassword() {
       await resetPassword(token.trim(), newPassword);
       setMessage(t("resetPasswordPage.messages.updated"));
       setNewPassword("");
-    } catch (resetError) {
-      console.error(resetError);
+    } catch {
       setError(t("resetPasswordPage.errors.update"));
     } finally {
       setLoadingReset(false);
@@ -90,6 +87,7 @@ export default function ResetPassword() {
           <form onSubmit={submitReset} className="space-y-4 rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5">
             <h2 className="font-bold text-[#1F2937]">{t("resetPasswordPage.step2")}</h2>
             <input
+              type="password"
               value={token}
               onChange={(event) => setToken(event.target.value)}
               placeholder={t("resetPasswordPage.recoveryToken")}

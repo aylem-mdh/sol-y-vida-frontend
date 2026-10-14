@@ -7,8 +7,13 @@ import ClientForm from "../components/dashboard/ClientForm";
 import Modal from "../components/ui/Modal";
 
 import {
+  createClientPortalAccess,
+  deactivateClientAccess,
+  resendClientInvitation,
+  resetClientAccess,
   getClients,
   deleteClient,
+  type ClientAccountActionResult,
   type Client,
 } from "../services/clientService";
 
@@ -21,6 +26,8 @@ export default function Clients() {
   const [showForm, setShowForm] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Client | null>(null);
+  const [actionLoadingClientId, setActionLoadingClientId] = useState<number | null>(null);
+  const [accessNotice, setAccessNotice] = useState("");
 
   useEffect(() => {
     loadClients();
@@ -72,6 +79,25 @@ export default function Clients() {
     setShowForm(false);
   }
 
+  function buildAccessNotice(result: ClientAccountActionResult) {
+    const delivery = result.invitationDeliveryStatus
+      ? `\n${t(`accountEmail.${result.invitationDeliveryStatus}`)}` : "";
+    return `${result.message}${delivery}`;
+  }
+
+  async function runPortalAction(client: Client, action: () => Promise<ClientAccountActionResult>) {
+    try {
+      setActionLoadingClientId(client.id);
+      const result = await action();
+      setAccessNotice(buildAccessNotice(result));
+      await loadClients();
+    } catch {
+      alert(t("forms.common.errors.generic"));
+    } finally {
+      setActionLoadingClientId(null);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
       <Sidebar role={role} />
@@ -89,6 +115,11 @@ export default function Clients() {
         />
 
         <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-5 shadow-[0_16px_40px_rgba(15,25,30,0.08)] sm:p-7">
+          {accessNotice && (
+            <div className="mb-6 whitespace-pre-wrap rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] p-4 text-sm font-semibold text-[#1F2937]">
+              {accessNotice}
+            </div>
+          )}
 
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -112,6 +143,11 @@ export default function Clients() {
             onDelete={removeClient}
             onEdit={editClient}
             canManage={isAdmin}
+            onCreateAccess={(client) => runPortalAction(client, () => createClientPortalAccess(client.id))}
+            onResendInvitation={(client) => runPortalAction(client, () => resendClientInvitation(client.id))}
+            onResetAccess={(client) => runPortalAction(client, () => resetClientAccess(client.id))}
+            onDeactivateAccess={(client) => runPortalAction(client, () => deactivateClientAccess(client.id))}
+            pendingActionClientId={actionLoadingClientId}
             searchTerm={search}
             onSearchTermChange={setSearch}
             hideSearchInput
@@ -129,6 +165,7 @@ export default function Clients() {
           onClose={closeModal}
         >
           <ClientForm
+            key={selectedClient?.id ?? "new-client"}
             client={selectedClient}
             onCreated={async () => {
               await loadClients();

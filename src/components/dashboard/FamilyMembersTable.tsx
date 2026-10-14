@@ -7,6 +7,11 @@ interface Props {
   familyMembers: FamilyMember[];
   onDelete: (id: number) => void;
   onEdit: (member: FamilyMember) => void;
+  onCreateAccess: (member: FamilyMember) => void;
+  onResendInvitation: (member: FamilyMember) => void;
+  onResetAccess: (member: FamilyMember) => void;
+  onDeactivateAccess: (member: FamilyMember) => void;
+  pendingActionMemberId?: number | null;
   searchTerm?: string;
   onSearchTermChange?: (value: string) => void;
   hideSearchInput?: boolean;
@@ -16,6 +21,11 @@ export default function FamilyMembersTable({
   familyMembers,
   onDelete,
   onEdit,
+  onCreateAccess,
+  onResendInvitation,
+  onResetAccess,
+  onDeactivateAccess,
+  pendingActionMemberId,
   searchTerm,
   onSearchTermChange,
   hideSearchInput = false,
@@ -70,7 +80,7 @@ export default function FamilyMembersTable({
       </div>
 
       <div className="overflow-x-auto">
-      <table className="w-full min-w-[820px]">
+      <table className="w-full min-w-[980px]">
 
         <thead className="bg-slate-50">
           <tr className="text-left text-gray-600">
@@ -79,6 +89,7 @@ export default function FamilyMembersTable({
             <th>{t("tables.common.phone")}</th>
             <th>Email</th>
             <th>{t("tables.familyMembers.primary")}</th>
+            <th>{t("tables.familyMembers.portalAccess")}</th>
             <th className="text-center">{t("tables.common.actions")}</th>
           </tr>
         </thead>
@@ -117,6 +128,74 @@ export default function FamilyMembersTable({
               </td>
 
               <td>
+                <div className="flex flex-col gap-2">
+                  <span
+                    className={`inline-flex w-fit px-3 py-1 rounded-full text-xs font-semibold ${
+                      member.portalAccessStatus === "active"
+                        ? "bg-green-100 text-green-700"
+                        : member.portalAccessStatus === "pending"
+                        ? "bg-amber-100 text-amber-700"
+                        : member.portalAccessStatus === "disabled"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-slate-100 text-slate-700"
+                    }`}
+                  >
+                    {member.portalAccessStatus === "active"
+                      ? t("pages.familyMembersAccess.status.active")
+                      : member.portalAccessStatus === "pending"
+                        ? t("pages.familyMembersAccess.status.pending")
+                      : member.portalAccessStatus === "disabled"
+                        ? t("pages.familyMembersAccess.status.disabled")
+                        : member.portalAccessStatus === "unknown"
+                        ? t("pages.familyMembersAccess.status.unknown")
+                        : t("pages.familyMembersAccess.status.none")}
+                  </span>
+
+                  <div className="flex flex-wrap gap-2">
+                    {member.portalAccessStatus === "none" && (
+                      <button
+                        onClick={() => onCreateAccess(member)}
+                        disabled={pendingActionMemberId === member.id}
+                        className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-3 py-1 text-xs font-semibold text-[#1F2937] hover:bg-[#ECFAF8] disabled:bg-slate-100"
+                      >
+                        {t("pages.familyMembersAccess.actions.create")}
+                      </button>
+                    )}
+
+                    {member.portalAccessStatus === "pending" && (
+                      <button
+                        onClick={() => onResendInvitation(member)}
+                        disabled={pendingActionMemberId === member.id}
+                        className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-3 py-1 text-xs font-semibold text-[#1F2937] hover:bg-[#ECFAF8] disabled:bg-slate-100"
+                      >
+                        {t("pages.familyMembersAccess.actions.resend")}
+                      </button>
+                    )}
+
+                    {(member.portalAccessStatus === "active" || member.portalAccessStatus === "disabled") && (
+                      <button
+                        onClick={() => onResetAccess(member)}
+                        disabled={pendingActionMemberId === member.id}
+                        className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-3 py-1 text-xs font-semibold text-[#1F2937] hover:bg-[#ECFAF8] disabled:bg-slate-100"
+                      >
+                        {t("pages.familyMembersAccess.actions.reset")}
+                      </button>
+                    )}
+
+                    {member.portalAccessStatus === "active" && (
+                      <button
+                        onClick={() => onDeactivateAccess(member)}
+                        disabled={pendingActionMemberId === member.id}
+                        className="rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:bg-slate-100"
+                      >
+                        {t("pages.familyMembersAccess.actions.deactivate")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </td>
+
+              <td>
 
                 <div className="flex justify-center gap-3">
 
@@ -145,7 +224,7 @@ export default function FamilyMembersTable({
           {filtered.length === 0 && (
             <tr>
               <td
-                colSpan={6}
+                colSpan={7}
                 className="text-center py-10 text-gray-500"
               >
                 {t("tables.familyMembers.empty")}

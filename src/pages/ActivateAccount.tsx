@@ -1,13 +1,14 @@
-import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { activateAccount } from "../services/authService";
 import { useTranslation } from "react-i18next";
 
 export default function ActivateAccount() {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const urlToken = useMemo(() => searchParams.get("token") ?? "", [searchParams]);
-  const [token, setToken] = useState(urlToken);
+  const location = useLocation();
+  const [token, setToken] = useState(() =>
+    new URLSearchParams(location.hash.slice(1)).get("token")
+      ?? new URLSearchParams(location.search).get("token") ?? "");
   const [password, setPassword] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -28,8 +29,7 @@ export default function ActivateAccount() {
       await activateAccount(token.trim(), password);
       setMessage(t("activatePage.success"));
       setPassword("");
-    } catch (activationError) {
-      console.error(activationError);
+    } catch {
       setError(t("activatePage.errors.failed"));
     } finally {
       setSaving(false);
@@ -47,6 +47,7 @@ export default function ActivateAccount() {
 
         <form onSubmit={submit} className="mt-6 space-y-4">
           <input
+            type="password"
             value={token}
             onChange={(event) => setToken(event.target.value)}
             placeholder={t("activatePage.token")}

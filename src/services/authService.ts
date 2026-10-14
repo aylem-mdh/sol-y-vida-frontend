@@ -5,19 +5,6 @@ export interface LoginDto {
   password: string;
 }
 
-export interface RegisterDto {
-  nombre: string;
-  email: string;
-  password?: string;
-  rol: "admin" | "worker" | "client" | "family";
-}
-
-export interface RegisterResponse {
-  message: string;
-  requiresActivation: boolean;
-  activationToken?: string;
-}
-
 export interface LoginResponse {
   token: string;
   tokenType: string;
@@ -28,6 +15,14 @@ export interface LoginResponse {
 export function clearSession() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
+  localStorage.removeItem("tokenExpiresAt");
+}
+
+export function isSessionExpired() {
+  const expiresAt = localStorage.getItem("tokenExpiresAt");
+  if (!expiresAt) return false;
+  const expiresAtMs = Date.parse(expiresAt);
+  return Number.isFinite(expiresAtMs) && expiresAtMs <= Date.now();
 }
 
 export function getStoredRole() {
@@ -35,7 +30,7 @@ export function getStoredRole() {
 }
 
 export function hasSession() {
-  return Boolean(localStorage.getItem("token") && localStorage.getItem("role"));
+  return Boolean(localStorage.getItem("token") && localStorage.getItem("role")) && !isSessionExpired();
 }
 
 export async function login(dto: LoginDto) {
@@ -49,11 +44,6 @@ export async function login(dto: LoginDto) {
     expiresAt: payload.expiresAt,
     role: payload.role,
   } as LoginResponse;
-}
-
-export async function register(dto: RegisterDto) {
-  const response = await api.post<RegisterResponse>("/Auth/register", dto);
-  return response.data;
 }
 
 export async function activateAccount(token: string, password: string) {

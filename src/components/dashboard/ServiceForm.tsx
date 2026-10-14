@@ -5,6 +5,8 @@ import {
   updateService,
   type Service,
 } from "../../services/serviceService";
+import { getWorkers, type Worker } from "../../services/workerService";
+import { getClients, type Client } from "../../services/clientService";
 
 interface Props {
   service?: Service | null;
@@ -17,46 +19,89 @@ export default function ServiceForm({
 }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
 
-  const [form, setForm] = useState({
-    nombre: "",
-    descripcion: "",
-    precioPorHora: 0,
-    activo: true,
+  const [form, setForm] = useState(() => {
+    if (!service) {
+      return {
+        nombre: "",
+        descripcion: "",
+        categoria: "General",
+        precioPorHora: 0,
+        duracionMinutos: 60,
+        frecuencia: "Semanal",
+        assignedWorkerId: null as number | null,
+        assignedClientId: null as number | null,
+        startDate: "",
+        endDate: "",
+        notes: "",
+        activo: true,
+      };
+    }
+
+    return {
+      nombre: service.nombre,
+      descripcion: service.descripcion,
+      categoria: service.categoria ?? "General",
+      precioPorHora: service.precioPorHora,
+      duracionMinutos: service.duracionMinutos ?? 60,
+      frecuencia: service.frecuencia ?? "Semanal",
+      assignedWorkerId: service.assignedWorkerId ?? null,
+      assignedClientId: service.assignedClientId ?? null,
+      startDate: service.startDate ? service.startDate.slice(0, 10) : "",
+      endDate: service.endDate ? service.endDate.slice(0, 10) : "",
+      notes: service.notes ?? "",
+      activo: service.activo,
+    };
   });
 
   useEffect(() => {
-    if (service) {
-      setForm({
-        nombre: service.nombre,
-        descripcion: service.descripcion,
-        precioPorHora: service.precioPorHora,
-        activo: service.activo,
-      });
-    }
-  }, [service]);
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const [workersResponse, clientsResponse] = await Promise.all([
+            getWorkers(),
+            getClients(),
+          ]);
+
+          setWorkers(workersResponse);
+          setClients(clientsResponse);
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   function change(
     e: React.ChangeEvent<
       HTMLInputElement |
+      HTMLSelectElement |
       HTMLTextAreaElement
     >
   ) {
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [name]:
         type === "checkbox"
           ? checked
-          : name === "precioPorHora"
+          : name === "precioPorHora" || name === "duracionMinutos"
           ? Number(value)
+          : name === "assignedWorkerId" || name === "assignedClientId"
+          ? value === "" ? null : Number(value)
           : value,
-    });
+    }));
   }
 
   async function save() {
-    if (!form.nombre || form.precioPorHora <= 0) {
+    if (!form.nombre || form.precioPorHora <= 0 || form.duracionMinutos <= 0) {
       alert(t("forms.service.errors.required"));
       return;
     }
@@ -64,10 +109,16 @@ export default function ServiceForm({
     try {
       setLoading(true);
 
+      const payload = {
+        ...form,
+        startDate: form.startDate || null,
+        endDate: form.endDate || null,
+      };
+
       if (service) {
-        await updateService(service.id, form);
+        await updateService(service.id, payload);
       } else {
-        await createService(form);
+        await createService(payload);
       }
 
       onSaved();
@@ -105,6 +156,83 @@ export default function ServiceForm({
         value={form.descripcion}
         onChange={change}
         className="border rounded-xl p-3 col-span-2 min-h-[120px]"
+      />
+
+      <input
+        name="categoria"
+        placeholder="Categoria"
+        value={form.categoria}
+        onChange={change}
+        className="border rounded-xl p-3"
+      />
+
+      <input
+        type="number"
+        name="duracionMinutos"
+        placeholder="Duracion (min)"
+        value={form.duracionMinutos}
+        onChange={change}
+        className="border rounded-xl p-3"
+      />
+
+      <input
+        name="frecuencia"
+        placeholder="Frecuencia"
+        value={form.frecuencia}
+        onChange={change}
+        className="border rounded-xl p-3"
+      />
+
+      <select
+        name="assignedWorkerId"
+        value={form.assignedWorkerId ?? ""}
+        onChange={change}
+        className="border rounded-xl p-3"
+      >
+        <option value="">Trabajador no asignado</option>
+        {workers.map((worker) => (
+          <option key={worker.id} value={worker.id}>
+            {worker.nombre} {worker.apellidos}
+          </option>
+        ))}
+      </select>
+
+      <select
+        name="assignedClientId"
+        value={form.assignedClientId ?? ""}
+        onChange={change}
+        className="border rounded-xl p-3"
+      >
+        <option value="">Cliente no asignado</option>
+        {clients.map((clientItem) => (
+          <option key={clientItem.id} value={clientItem.id}>
+            {clientItem.nombre} {clientItem.apellidos}
+          </option>
+        ))}
+      </select>
+
+      <input
+        type="date"
+        name="startDate"
+        value={form.startDate}
+        onChange={change}
+        className="border rounded-xl p-3"
+      />
+
+      <input
+        type="date"
+        name="endDate"
+        value={form.endDate}
+        onChange={change}
+        className="border rounded-xl p-3"
+      />
+
+      <textarea
+        name="notes"
+        placeholder="Notas operativas"
+        value={form.notes}
+        onChange={change}
+        className="border rounded-xl p-3 col-span-2 min-h-[90px]"
       />
 
       <label className="flex items-center gap-3 col-span-2">

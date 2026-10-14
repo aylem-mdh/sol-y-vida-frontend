@@ -40,16 +40,14 @@ export const OPEN_COOKIE_SETTINGS_EVENT = "openCookieSettings";
 
 export default function CookieBanner() {
   // bannerVisible: true cuando el usuario no ha tomado ninguna decisión aún
-  const [bannerVisible, setBannerVisible] = useState(false);
+  const [bannerVisible, setBannerVisible] = useState(() => {
+    const consent = getStoredConsent();
+    return !consent || !consent.decided;
+  });
   // panelOpen: true cuando se muestra el modal de configuración
   const [panelOpen, setPanelOpen] = useState(false);
 
   useEffect(() => {
-    const consent = getStoredConsent();
-    if (!consent || !consent.decided) {
-      setBannerVisible(true);
-    }
-
     // Escucha el evento lanzado desde el Footer ("Configurar cookies")
     function handleOpenSettings() {
       setPanelOpen(true);

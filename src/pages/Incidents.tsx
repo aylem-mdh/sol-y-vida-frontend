@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AlertTriangle, CalendarClock, ClipboardList, Pencil, Trash2 } from "lucide-react";
 
 import Sidebar from "../components/dashboard/Sidebar";
@@ -20,12 +20,17 @@ type DashboardRole = "admin" | "worker";
 export default function Incidents() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const role = (localStorage.getItem("role") === "worker" ? "worker" : "admin") as DashboardRole;
+  const selectedIncidentId = Number(new URLSearchParams(location.search).get("id"));
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [search, setSearch] = useState("");
+  const [incidentStatusMap, setIncidentStatusMap] = useState<Record<number, string>>({});
+  const [closureNotesMap, setClosureNotesMap] = useState<Record<number, string>>({});
+  const incidentRefs = useRef<Record<number, HTMLElement | null>>({});
   const [form, setForm] = useState({
     visitId: 0,
     titulo: "",
@@ -120,10 +125,41 @@ export default function Incidents() {
     }
   }
 
+  async function updateIncidentStatus(incident: Incident) {
+    const estado = incidentStatusMap[incident.id] ?? incident.estado ?? "Pendiente";
+    const notasCierre = (closureNotesMap[incident.id] ?? incident.notasCierre ?? "").trim();
+    try {
+      await updateIncident(incident.id, {
+        visitId: incident.visitId,
+        titulo: incident.titulo,
+        descripcion: incident.descripcion,
+        fecha: incident.fecha,
+        nivelGravedad: incident.nivelGravedad,
+        estado,
+        notasCierre,
+      });
+      await loadIncidents();
+    } catch (error) {
+      console.error(error);
+      alert(t("incidentsPage.errors.update"));
+    }
+  }
+
   const filteredIncidents = incidents.filter((incident) => {
     const text = `${incident.titulo} ${incident.descripcion} ${incident.cliente} ${incident.trabajador}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
+
+  useEffect(() => {
+    if (!Number.isFinite(selectedIncidentId)) {
+      return;
+    }
+
+    const target = incidentRefs.current[selectedIncidentId];
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [filteredIncidents, selectedIncidentId]);
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
@@ -145,12 +181,14 @@ export default function Incidents() {
                 <h2 className="text-2xl font-bold text-[#1F2937]">{t("incidentsPage.registry")}</h2>
                 <p className="mt-2 text-sm text-[#4B5563]">{t("incidentsPage.registryDescription")}</p>
               </div>
-              <button
-                onClick={openNewIncident}
-                className="rounded-2xl bg-[#0F9E98] px-5 py-3 font-semibold text-white transition duration-300 hover:bg-[#0B817C]"
-              >
-                {t("incidentsPage.newIncident")}
-              </button>
+              {role === "worker" && (
+                <button
+                  onClick={openNewIncident}
+                  className="rounded-2xl bg-[#0F9E98] px-5 py-3 font-semibold text-white transition duration-300 hover:bg-[#0B817C]"
+                >
+                  {t("incidentsPage.newIncident")}
+                </button>
+              )}
             </div>
 
             <input
@@ -167,7 +205,13 @@ export default function Incidents() {
                 </div>
               ) : (
                 filteredIncidents.map((incident) => (
-                  <article key={incident.id} className="rounded-2xl border border-[#F6E4CB] bg-[#FFF9F1] p-5">
+                  <article
+                    key={incident.id}
+                    ref={(element) => {
+                      incidentRefs.current[incident.id] = element;
+                    }}
+                    className={`rounded-2xl bg-[#FFF9F1] p-5 ${incident.id === selectedIncidentId ? "border-2 border-[#0F9E98] ring-2 ring-[#0F9E98]/20" : "border border-[#F6E4CB]"}`}
+                  >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-[#9A5A13]">{incident.nivelGravedad ?? t("incidentsPage.level.medium")}</p>
@@ -176,14 +220,26 @@ export default function Incidents() {
                       <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#9A5A13]">{new Date(incident.fecha).toLocaleDateString("es-ES")}</span>
                     </div>
                     <p className="mt-3 text-sm leading-7 text-[#374151]">{incident.descripcion}</p>
+                    <p className="mt-3 text-sm font-semibold text-[#1F2937]">{t("incidentsPage.status")}: {incident.estado ?? "Pendiente"}</p>
+                    {incident.notasCierre && <p className="mt-2 text-sm text-[#4B5563]">{t("incidentsPage.closureNotes")}: {incident.notasCierre}</p>}
                     <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-[#4B5563] sm:grid-cols-2">
                       <p><span className="font-semibold text-[#1F2937]">{t("incidentsPage.client")}:</span> {incident.cliente}</p>
                       <p><span className="font-semibold text-[#1F2937]">{t("incidentsPage.professional")}:</span> {incident.trabajador}</p>
                     </div>
-                    <div className="mt-4 flex gap-3">
-                      <button onClick={() => openEditIncident(incident)} className="inline-flex items-center rounded-xl border border-[#D8EFEA] bg-white px-4 py-2 text-sm font-semibold text-[#1F2937]"><Pencil className="mr-2 h-4 w-4 text-[#0F9E98]" />{t("tables.common.edit")}</button>
-                      <button onClick={() => removeIncident(incident.id)} className="inline-flex items-center rounded-xl border border-[#F7D7AA] bg-[#FFF5E8] px-4 py-2 text-sm font-semibold text-[#9A5A13]"><Trash2 className="mr-2 h-4 w-4" />{t("tables.common.delete")}</button>
-                    </div>
+                    {role === "admin" ? (
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1.5fr_auto_auto]">
+                        <select value={incidentStatusMap[incident.id] ?? incident.estado ?? "Pendiente"} onChange={(event) => setIncidentStatusMap((current) => ({ ...current, [incident.id]: event.target.value }))} className="rounded-xl border border-[#D7E5E3] px-4 py-2">
+                          <option value="Pendiente">{t("incidentsPage.statusPending")}</option>
+                          <option value="En revisión">{t("incidentsPage.statusInReview")}</option>
+                          <option value="Resuelta">{t("incidentsPage.statusResolved")}</option>
+                          <option value="Cerrada">{t("incidentsPage.statusClosed")}</option>
+                        </select>
+                          <button onClick={() => openEditIncident(incident)} className="inline-flex items-center justify-center rounded-xl border border-[#D8EFEA] bg-white px-4 py-2 text-sm font-semibold text-[#1F2937]"><Pencil className="mr-2 h-4 w-4 text-[#0F9E98]" />{t("tables.common.edit")}</button>
+                        <input value={closureNotesMap[incident.id] ?? incident.notasCierre ?? ""} onChange={(event) => setClosureNotesMap((current) => ({ ...current, [incident.id]: event.target.value }))} placeholder={t("incidentsPage.closureNotesPlaceholder")} className="rounded-xl border border-[#D7E5E3] px-4 py-2" />
+                        <button onClick={() => void updateIncidentStatus(incident)} className="rounded-xl bg-[#0F9E98] px-4 py-2 text-sm font-semibold text-white">{t("incidentsPage.updateStatus")}</button>
+                        <button onClick={() => void removeIncident(incident.id)} className="inline-flex items-center justify-center rounded-xl border border-[#F7D7AA] bg-[#FFF5E8] px-4 py-2 text-sm font-semibold text-[#9A5A13]"><Trash2 className="mr-2 h-4 w-4" />{t("tables.common.delete")}</button>
+                      </div>
+                    ) : null}
                   </article>
                 ))
               )}

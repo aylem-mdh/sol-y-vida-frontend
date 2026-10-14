@@ -1,14 +1,30 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
   createClient,
   updateClient,
+  type ClientAccountActionResult,
   type Client,
 } from "../../services/clientService";
 import { getWorkers, type Worker } from "../../services/workerService";
 
-type ClientFormData = Omit<Client, "id" | "activo">;
+type ClientFormData = {
+  nombre: string;
+  apellidos: string;
+  fechaNacimiento: string;
+  dni: string;
+  numeroSeguridadSocial: string;
+  direccion: string;
+  ciudad: string;
+  codigoPostal: string;
+  telefono: string;
+  email: string;
+  assignedWorkerId: number | null;
+  notificationsEnabled: boolean;
+  preferredContact: string;
+  createPortalAccess: boolean;
+};
 
 interface Props {
   client: Client | null;
@@ -27,6 +43,9 @@ const emptyClient: ClientFormData = {
   telefono: "",
   email: "",
   assignedWorkerId: null,
+  notificationsEnabled: true,
+  preferredContact: "Telefono",
+  createPortalAccess: false,
 };
 
 export default function ClientForm({
@@ -38,36 +57,93 @@ export default function ClientForm({
   const [error, setError] = useState("");
   const [workers, setWorkers] = useState<Worker[]>([]);
 
-  const [form, setForm] = useState<ClientFormData>(emptyClient);
-
-  useEffect(() => {
-    loadWorkers();
-  }, []);
-
-  useEffect(() => {
-    if (client) {
-      setForm(client);
-    } else {
-      setForm(emptyClient);
+  const [form, setForm] = useState<ClientFormData>(() => {
+    if (!client) {
+      return emptyClient;
     }
-  }, [client]);
 
-  async function loadWorkers() {
+    return {
+      nombre: client.nombre,
+      apellidos: client.apellidos,
+      fechaNacimiento: client.fechaNacimiento,
+      dni: client.dni,
+      numeroSeguridadSocial: client.numeroSeguridadSocial,
+      direccion: client.direccion,
+      ciudad: client.ciudad,
+      codigoPostal: client.codigoPostal,
+      telefono: client.telefono,
+      email: client.email,
+      assignedWorkerId: client.assignedWorkerId ?? null,
+      notificationsEnabled: client.notificationsEnabled,
+      preferredContact: client.preferredContact,
+      createPortalAccess: false,
+    };
+  });
+
+  const loadWorkers = useCallback(async () => {
     try {
       const data = await getWorkers();
       setWorkers(data);
     } catch (workerError) {
       console.error(workerError);
     }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadWorkers();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadWorkers]);
+
+  function hasHomeLocation() {
+    return typeof client?.homeLatitude === "number" && typeof client?.homeLongitude === "number";
+  }
+
+  function getHomeLocationNoticeCode(result: ClientAccountActionResult) {
+    return result.homeLocationWarningCode ?? null;
+  }
+
+  function getHomeLocationNoticeText(result: ClientAccountActionResult) {
+    const warningCode = getHomeLocationNoticeCode(result);
+
+    if (warningCode === "home_location_not_found") {
+      return t("forms.client.homeLocation.warnings.notFound");
+    }
+
+    if (warningCode === "home_location_geocoding_unavailable") {
+      return t("forms.client.homeLocation.warnings.unavailable");
+    }
+
+    if (result.homeLocationConfigured) {
+      return t("forms.client.homeLocation.warnings.configured");
+    }
+
+    return "";
   }
 
   function change(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
 
-    setForm({
-      ...form,
-      [name]: name === "assignedWorkerId" ? (value === "" ? null : Number(value)) : value,
-    });
+    setForm((current) => ({
+      ...current,
+      [name]:
+        name === "assignedWorkerId"
+          ? (value === "" ? null : Number(value))
+          : value,
+    }));
+  }
+
+  function changeCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, checked } = e.target;
+
+    setForm((current) => ({
+      ...current,
+      [name]: checked,
+    }));
   }
 
   function getDetailedError(err: unknown): string {
@@ -121,23 +197,24 @@ export default function ClientForm({
       setLoading(true);
 
       if (client?.id) {
-        await updateClient(client.id, form);
-        alert(t("forms.client.success.updated"));
+        const result = await updateClient(client.id, {
+          ...form,
+          portalNotes: "",
+        });
+        const locationNotice = getHomeLocationNoticeText(result);
+        alert(`${t("forms.client.success.updated")}${locationNotice ? `\n${locationNotice}` : ""}`);
       } else {
-        await createClient(form);
-        alert(t("forms.client.success.created"));
+        const result = await createClient(form);
+        const locationNotice = getHomeLocationNoticeText(result);
+        const delivery = result.invitationDeliveryStatus
+          ? `\n${t(`accountEmail.${result.invitationDeliveryStatus}`)}` : "";
+        alert(`${t("forms.client.success.created")}${locationNotice ? `\n${locationNotice}` : ""}${delivery}`);
       }
 
       onCreated();
 
       setForm(emptyClient);
     } catch (err) {
-      console.error("Client create/update failed", {
-        payload: form,
-        assignedWorkerIdType: typeof form.assignedWorkerId,
-        assignedWorkerIdValue: form.assignedWorkerId,
-        error: err,
-      });
       setError(getDetailedError(err));
     } finally {
       setLoading(false);
@@ -222,6 +299,15 @@ export default function ClientForm({
           className="border rounded-xl p-3"
         />
 
+        {client && (
+          <div className="md:col-span-2 rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] p-4">
+            <p className="text-sm font-semibold text-[#1F2937]">{t("forms.client.homeLocation.label")}</p>
+            <p className="mt-1 text-sm text-[#4B5563]">
+              {hasHomeLocation() ? t("forms.client.homeLocation.configured") : t("forms.client.homeLocation.unavailable")}
+            </p>
+          </div>
+        )}
+
         <input
           name="telefono"
           value={form.telefono}
@@ -263,6 +349,45 @@ export default function ClientForm({
             ))}
           </select>
         </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="preferredContact" className="text-sm font-medium text-slate-700">
+            {t("forms.client.preferredContact")}
+          </label>
+
+          <select
+            id="preferredContact"
+            name="preferredContact"
+            value={form.preferredContact}
+            onChange={change}
+            className="border rounded-xl p-3"
+          >
+            <option value="Telefono">{t("forms.client.preferredPhone")}</option>
+            <option value="Email">{t("forms.client.preferredEmail")}</option>
+          </select>
+        </div>
+
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <input
+            type="checkbox"
+            name="notificationsEnabled"
+            checked={form.notificationsEnabled}
+            onChange={changeCheckbox}
+          />
+          {t("forms.client.notificationsEnabled")}
+        </label>
+
+        {!client && (
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              name="createPortalAccess"
+              checked={form.createPortalAccess}
+              onChange={changeCheckbox}
+            />
+            {t("forms.client.createPortalAccess")}
+          </label>
+        )}
 
       </div>
 

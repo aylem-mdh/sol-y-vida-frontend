@@ -1,27 +1,18 @@
 import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-interface Client {
-  id: number;
-  nombre: string;
-  apellidos: string;
-  fechaNacimiento: string;
-  dni: string;
-  numeroSeguridadSocial: string;
-  direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  telefono: string;
-  email: string;
-  activo: boolean;
-}
+import type { Client } from "../../services/clientService";
 
 interface Props {
   clients: Client[];
   onDelete: (id: number) => void;
   onEdit: (client: Client) => void;
   canManage?: boolean;
+  onCreateAccess?: (client: Client) => void;
+  onResendInvitation?: (client: Client) => void;
+  onResetAccess?: (client: Client) => void;
+  onDeactivateAccess?: (client: Client) => void;
+  pendingActionClientId?: number | null;
   searchTerm?: string;
   onSearchTermChange?: (value: string) => void;
   hideSearchInput?: boolean;
@@ -32,6 +23,11 @@ export default function ClientsTable({
   onDelete,
   onEdit,
   canManage = true,
+  onCreateAccess,
+  onResendInvitation,
+  onResetAccess,
+  onDeactivateAccess,
+  pendingActionClientId = null,
   searchTerm,
   onSearchTermChange,
   hideSearchInput = false,
@@ -58,6 +54,34 @@ export default function ClientsTable({
       return text.includes(effectiveSearch.toLowerCase());
     });
   }, [clients, effectiveSearch]);
+
+  function getAccessBadge(status: Client["portalAccessStatus"]) {
+    if (status === "active") {
+      return <span className="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">Portal activo</span>;
+    }
+
+    if (status === "pending") {
+      return <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Invitacion pendiente</span>;
+    }
+
+    if (status === "disabled") {
+      return <span className="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Portal desactivado</span>;
+    }
+
+    return <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">Sin acceso</span>;
+  }
+
+  function hasHomeLocation(client: Client) {
+    return typeof client.homeLatitude === "number" && typeof client.homeLongitude === "number";
+  }
+
+  function getHomeLocationBadge(client: Client) {
+    if (hasHomeLocation(client)) {
+      return <span className="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">{t("tables.clients.homeLocationConfigured")}</span>;
+    }
+
+    return <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">{t("tables.clients.homeLocationUnavailable")}</span>;
+  }
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
@@ -97,6 +121,8 @@ export default function ClientsTable({
             <th className="px-8 py-4">{t("tables.clients.client")}</th>
             <th className="py-4">{t("tables.common.city")}</th>
             <th className="py-4">{t("tables.common.phone")}</th>
+            <th className="py-4">{t("tables.clients.homeLocation")}</th>
+            <th className="py-4">Acceso portal</th>
             <th className="py-4">{t("tables.common.status")}</th>
             <th className="py-4 text-center">{t("tables.common.actions")}</th>
           </tr>
@@ -151,6 +177,54 @@ export default function ClientsTable({
 
               <td>{client.telefono}</td>
 
+              <td>{getHomeLocationBadge(client)}</td>
+
+              <td>
+                <div className="flex flex-col gap-2">
+                  {getAccessBadge(client.portalAccessStatus)}
+                  {canManage && (
+                    <div className="flex flex-wrap gap-2">
+                      {!client.hasPortalAccess && onCreateAccess && (
+                        <button
+                          onClick={() => onCreateAccess(client)}
+                          disabled={pendingActionClientId === client.id}
+                          className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-2 py-1 text-xs font-semibold text-[#0F9E98] disabled:opacity-60"
+                        >
+                          Crear acceso
+                        </button>
+                      )}
+                      {client.hasPortalAccess && onResendInvitation && (
+                        <button
+                          onClick={() => onResendInvitation(client)}
+                          disabled={pendingActionClientId === client.id}
+                          className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-2 py-1 text-xs font-semibold text-[#0F9E98] disabled:opacity-60"
+                        >
+                          Reenviar
+                        </button>
+                      )}
+                      {client.hasPortalAccess && onResetAccess && (
+                        <button
+                          onClick={() => onResetAccess(client)}
+                          disabled={pendingActionClientId === client.id}
+                          className="rounded-lg border border-[#D8EFEA] bg-[#F7FCFB] px-2 py-1 text-xs font-semibold text-[#0F9E98] disabled:opacity-60"
+                        >
+                          Reset
+                        </button>
+                      )}
+                      {client.hasPortalAccess && onDeactivateAccess && client.portalAccessStatus !== "disabled" && (
+                        <button
+                          onClick={() => onDeactivateAccess(client)}
+                          disabled={pendingActionClientId === client.id}
+                          className="rounded-lg border border-red-200 bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 disabled:opacity-60"
+                        >
+                          Desactivar
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </td>
+
               <td>
 
                 <span
@@ -202,7 +276,7 @@ export default function ClientsTable({
             <tr>
 
               <td
-                colSpan={5}
+                colSpan={7}
                 className="text-center py-12 text-gray-500"
               >
                 {t("tables.clients.empty")}

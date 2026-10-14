@@ -1,0 +1,45 @@
+﻿name: Frontend validation
+
+# Validation only. This repository does not deploy from GitHub Actions; the
+# hosting provider's own Git integration must be configured to not deploy
+# production automatically on push (verify in the provider dashboard).
+on:
+  push:
+    branches: ["main", "release/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          VITE_API_URL: https://solyvida-api-c0akbkcac3fzc2fv.swedencentral-01.azurewebsites.net/api
+        run: npm run build
+
+      - name: Staging build must require an explicit API URL
+        run: |
+          if npx vite build --mode staging --outDir dist-staging-check; then
+            echo "Staging build succeeded without VITE_API_URL" >&2
+            exit 1
+          fi

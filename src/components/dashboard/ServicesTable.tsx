@@ -30,7 +30,11 @@ export default function ServicesTable({
       const text = (
         service.nombre +
         " " +
-        service.descripcion
+        service.descripcion +
+        " " +
+        (service.categoria ?? "") +
+        " " +
+        (service.frecuencia ?? "")
       ).toLowerCase();
 
       return text.includes(effectiveSearch.toLowerCase());
@@ -70,6 +74,9 @@ export default function ServicesTable({
           <tr className="text-left text-gray-600">
             <th className="px-8 py-4">{t("tables.services.service")}</th>
             <th>{t("tables.common.description")}</th>
+            <th>Categoria</th>
+            <th>Duracion</th>
+            <th>Frecuencia</th>
             <th>{t("tables.services.pricePerHour")}</th>
             <th>{t("tables.common.status")}</th>
             <th className="text-center">{t("tables.common.actions")}</th>
@@ -90,6 +97,12 @@ export default function ServicesTable({
               </td>
 
               <td>{service.descripcion}</td>
+
+              <td>{service.categoria ?? "General"}</td>
+
+              <td>{service.duracionMinutos ?? 60} min</td>
+
+              <td>{service.frecuencia ?? "Semanal"}</td>
 
               <td>{service.precioPorHora} €</td>
 
@@ -136,7 +149,7 @@ export default function ServicesTable({
           {filteredServices.length === 0 && (
             <tr>
               <td
-                colSpan={5}
+                colSpan={8}
                 className="text-center py-12 text-gray-500"
               >
                 {t("tables.services.empty")}

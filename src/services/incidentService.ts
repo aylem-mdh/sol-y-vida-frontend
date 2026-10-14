@@ -7,6 +7,8 @@ export interface Incident {
   descripcion: string;
   fecha: string;
   nivelGravedad?: string;
+  estado?: string;
+  notasCierre?: string;
   cliente: string;
   trabajador: string;
 }
@@ -17,6 +19,8 @@ export interface IncidentPayload {
   descripcion: string;
   fecha: string;
   nivelGravedad?: string;
+  estado?: string;
+  notasCierre?: string;
 }
 
 export async function getIncidents() {

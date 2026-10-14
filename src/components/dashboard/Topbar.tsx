@@ -76,7 +76,6 @@ export default function Topbar({
 
   useEffect(() => {
     if (!notificationPath) {
-      setUnreadCount(0);
       return;
     }
 
@@ -100,10 +99,16 @@ export default function Topbar({
 
     loadUnreadCount();
     const timer = window.setInterval(loadUnreadCount, 45000);
+    const refreshListener = () => {
+      void loadUnreadCount();
+    };
+
+    window.addEventListener("notifications:updated", refreshListener);
 
     return () => {
       mounted = false;
       window.clearInterval(timer);
+      window.removeEventListener("notifications:updated", refreshListener);
     };
   }, [notificationPath]);
 

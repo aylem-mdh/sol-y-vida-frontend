@@ -1,5 +1,14 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "release/solyvida-production-20261014": false
+    }
+  },
   "rewrites": [
+    {
+      "source": "/push-sw.js",
+      "destination": "/push-sw.js"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
