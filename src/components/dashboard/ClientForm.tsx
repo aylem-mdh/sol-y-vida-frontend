@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
@@ -12,7 +12,7 @@ type ClientFormData = Omit<Client, "id" | "activo">;
 
 interface Props {
   client: Client | null;
-  onCreated: () => void;
+  onCreated: () => void | Promise<void>;
 }
 
 const emptyClient: ClientFormData = {
@@ -37,37 +37,32 @@ export default function ClientForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [workers, setWorkers] = useState<Worker[]>([]);
+  const [saved, setSaved] = useState(false);
+  const submitLock = useRef(false);
 
-  const [form, setForm] = useState<ClientFormData>(emptyClient);
-
-  useEffect(() => {
-    loadWorkers();
-  }, []);
+  const [form, setForm] = useState<ClientFormData>(() => client ?? emptyClient);
 
   useEffect(() => {
-    if (client) {
-      setForm(client);
-    } else {
-      setForm(emptyClient);
+    let cancelled = false;
+    async function loadWorkers() {
+      try {
+        const data = await getWorkers();
+        if (!cancelled) setWorkers(data);
+      } catch {
+        if (!cancelled) setError(t("crud.errors.loadOptions"));
+      }
     }
-  }, [client]);
-
-  async function loadWorkers() {
-    try {
-      const data = await getWorkers();
-      setWorkers(data);
-    } catch (workerError) {
-      console.error(workerError);
-    }
-  }
+    void loadWorkers();
+    return () => { cancelled = true; };
+  }, [t]);
 
   function change(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
 
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [name]: name === "assignedWorkerId" ? (value === "" ? null : Number(value)) : value,
-    });
+    }));
   }
 
   function getDetailedError(err: unknown): string {
@@ -99,24 +94,26 @@ export default function ClientForm({
   }
 
   async function save() {
+    if (submitLock.current || saved) return;
     setError("");
 
     if (
-      !form.nombre ||
-      !form.apellidos ||
+      !form.nombre.trim() ||
+      !form.apellidos.trim() ||
       !form.fechaNacimiento ||
-      !form.dni ||
-      !form.numeroSeguridadSocial ||
-      !form.direccion ||
-      !form.ciudad ||
-      !form.codigoPostal ||
-      !form.telefono ||
-      !form.email
+      !form.dni.trim() ||
+      !form.numeroSeguridadSocial.trim() ||
+      !form.direccion.trim() ||
+      !form.ciudad.trim() ||
+      !form.codigoPostal.trim() ||
+      !form.telefono.trim() ||
+      !form.email.trim()
     ) {
       setError(t("forms.client.errors.required"));
       return;
     }
 
+    submitLock.current = true;
     try {
       setLoading(true);
 
@@ -128,18 +125,16 @@ export default function ClientForm({
         alert(t("forms.client.success.created"));
       }
 
-      onCreated();
-
-      setForm(emptyClient);
+      setSaved(true);
+      try {
+        await onCreated();
+      } catch {
+        setError(t("crud.errors.savedRefresh"));
+      }
     } catch (err) {
-      console.error("Client create/update failed", {
-        payload: form,
-        assignedWorkerIdType: typeof form.assignedWorkerId,
-        assignedWorkerIdValue: form.assignedWorkerId,
-        error: err,
-      });
       setError(getDetailedError(err));
     } finally {
+      submitLock.current = false;
       setLoading(false);
     }
   }
@@ -151,7 +146,7 @@ export default function ClientForm({
       </h2>
 
       {error && (
-        <div className="mb-6 rounded-xl bg-red-100 text-red-700 p-4 font-medium">
+        <div role="alert" className="mb-6 rounded-xl bg-red-100 text-red-700 p-4 font-medium">
           {error}
         </div>
       )}
@@ -269,7 +264,7 @@ export default function ClientForm({
       <div className="flex gap-4 mt-8">
 
         <button
-          disabled={loading}
+          disabled={loading || saved}
           onClick={save}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-4 rounded-2xl font-bold transition"
         >

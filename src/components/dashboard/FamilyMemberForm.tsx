@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import {
   createFamilyMember,
   updateFamilyMember,
@@ -15,7 +16,7 @@ interface ClientOption {
 
 interface Props {
   familyMember?: FamilyMember | null;
-  onSaved: () => void;
+  onSaved: () => void | Promise<void>;
 }
 
 export default function FamilyMemberForm({
@@ -25,8 +26,11 @@ export default function FamilyMemberForm({
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<ClientOption[]>([]);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+  const submitLock = useRef(false);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     nombre: "",
     apellidos: "",
     parentesco: "",
@@ -34,42 +38,32 @@ export default function FamilyMemberForm({
     email: "",
     esContactoPrincipal: false,
     observaciones: "",
-    clientId: 1,
-  });
+    clientId: 0,
+    ...(familyMember ? {
+      nombre: familyMember.nombre,
+      apellidos: familyMember.apellidos,
+      parentesco: familyMember.parentesco,
+      telefono: familyMember.telefono,
+      email: familyMember.email ?? "",
+      esContactoPrincipal: familyMember.esContactoPrincipal,
+      observaciones: familyMember.observaciones ?? "",
+      clientId: familyMember.clientId,
+    } : {}),
+  }));
 
   useEffect(() => {
-    loadClients();
-  }, []);
-
-  useEffect(() => {
-    if (familyMember) {
-      setForm({
-        nombre: familyMember.nombre,
-        apellidos: familyMember.apellidos,
-        parentesco: familyMember.parentesco,
-        telefono: familyMember.telefono,
-        email: familyMember.email ?? "",
-        esContactoPrincipal: familyMember.esContactoPrincipal,
-        observaciones: familyMember.observaciones ?? "",
-        clientId: familyMember.clientId,
-      });
-    }
-  }, [familyMember]);
-
-  async function loadClients() {
-    try {
-      const data = await getClients();
-      setClients(data);
-      if (data.length > 0) {
-        setForm((current) => ({
-          ...current,
-          clientId: current.clientId || data[0].id,
-        }));
+    let cancelled = false;
+    async function loadClients() {
+      try {
+        const data = await getClients();
+        if (!cancelled) setClients(data);
+      } catch {
+        if (!cancelled) setError(t("crud.errors.loadOptions"));
       }
-    } catch (error) {
-      console.error(error);
     }
-  }
+    void loadClients();
+    return () => { cancelled = true; };
+  }, [t]);
 
   function change(
     e: React.ChangeEvent<
@@ -79,23 +73,26 @@ export default function FamilyMemberForm({
     const { name, value, type, checked } =
       e.target as HTMLInputElement;
 
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [name]:
         type === "checkbox"
           ? checked
           : name === "clientId"
           ? Number(value)
           : value,
-    });
+    }));
   }
 
   async function save() {
-    if (!form.nombre || !form.apellidos || !form.parentesco || !form.telefono || !form.clientId) {
-      alert(t("forms.familyMember.errors.required"));
+    if (submitLock.current || saved) return;
+    setError("");
+    if (!form.nombre.trim() || !form.apellidos.trim() || !form.parentesco.trim() || !form.telefono.trim() || form.clientId <= 0) {
+      setError(t("forms.familyMember.errors.required"));
       return;
     }
 
+    submitLock.current = true;
     try {
       setLoading(true);
 
@@ -105,17 +102,25 @@ export default function FamilyMemberForm({
         await createFamilyMember(form);
       }
 
-      onSaved();
+      setSaved(true);
+      try {
+        await onSaved();
+      } catch {
+        setError(t("crud.errors.savedRefresh"));
+      }
     } catch (error) {
-      console.error(error);
-      alert(t("forms.common.errors.generic"));
+      setError(axios.isAxiosError<{ message?: string }>(error)
+        ? error.response?.data?.message ?? t("forms.common.errors.generic")
+        : t("forms.common.errors.generic"));
     } finally {
+      submitLock.current = false;
       setLoading(false);
     }
   }
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      {error && <div role="alert" className="col-span-2 rounded-xl bg-red-100 p-4 text-red-700">{error}</div>}
 
       <input
         name="nombre"
@@ -163,6 +168,7 @@ export default function FamilyMemberForm({
         onChange={change}
         className="border rounded-xl p-3"
       >
+        <option value={0}>{t("forms.familyMember.selectClient")}</option>
         {clients.map((client) => (
           <option key={client.id} value={client.id}>
             {client.nombre} {client.apellidos}
@@ -192,7 +198,7 @@ export default function FamilyMemberForm({
       <div className="col-span-2 flex justify-end">
 
         <button
-          disabled={loading}
+          disabled={loading || saved}
           onClick={save}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-bold"
         >

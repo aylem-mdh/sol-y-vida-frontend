@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import ClientsTable from "../components/dashboard/ClientsTable";
@@ -19,21 +20,25 @@ export default function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [selectedClient, setSelectedClient] =
     useState<Client | null>(null);
 
-  useEffect(() => {
-    loadClients();
-  }, []);
-
-  async function loadClients() {
+  const loadClients = useCallback(async () => {
+    setLoadError("");
     try {
       const data = await getClients();
       setClients(data);
     } catch (err) {
-      console.error(err);
+      setLoadError(t("crud.errors.loadList"));
+      throw err;
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadClients().catch(() => undefined); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadClients]);
 
   async function removeClient(id: number) {
     if (!window.confirm(t("crud.confirmDeleteClient"))) return;
@@ -44,8 +49,10 @@ export default function Clients() {
       setClients((prev) =>
         prev.filter((c) => c.id !== id)
       );
-    } catch {
-      alert(t("crud.errors.deleteClient"));
+    } catch (error) {
+      alert(axios.isAxiosError<{ message?: string }>(error)
+        ? error.response?.data?.message ?? t("crud.errors.deleteClient")
+        : t("crud.errors.deleteClient"));
     }
   }
 
@@ -90,6 +97,7 @@ export default function Clients() {
         />
 
         <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-5 shadow-[0_16px_40px_rgba(15,25,30,0.08)] sm:p-7">
+          {loadError && <div role="alert" className="mb-4 rounded-xl bg-red-100 p-4 text-red-700">{loadError}</div>}
 
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -130,6 +138,7 @@ export default function Clients() {
           onClose={closeModal}
         >
           <ClientForm
+            key={selectedClient?.id ?? "new"}
             client={selectedClient}
             onCreated={async () => {
               await loadClients();

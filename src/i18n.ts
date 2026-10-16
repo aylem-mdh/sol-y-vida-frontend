@@ -376,6 +376,9 @@ const resources = {
           deleteWorker: "No se pudo eliminar el trabajador.",
           deleteClient: "No se pudo eliminar el cliente.",
           deleteFamilyMember: "No se pudo eliminar el familiar.",
+          loadList: "No se pudo cargar la lista.",
+          loadOptions: "No se pudieron cargar las opciones de clientes o trabajadores.",
+          savedRefresh: "Guardado correctamente, pero no se pudo refrescar la lista. No vuelvas a crear el registro; cierra el formulario y recarga.",
           deleteService: "No se pudo eliminar el servicio.",
           deleteVisit: "No se pudo eliminar la visita."
         }
@@ -1471,6 +1474,9 @@ const resources = {
           deleteWorker: "Could not delete the worker.",
           deleteClient: "Could not delete the client.",
           deleteFamilyMember: "Could not delete the family member.",
+          loadList: "Could not load the list.",
+          loadOptions: "Could not load client or worker options.",
+          savedRefresh: "Saved successfully, but the list could not be refreshed. Do not create the record again; close the form and reload.",
           deleteService: "Could not delete the service.",
           deleteVisit: "Could not delete the visit."
         }
@@ -2510,6 +2516,9 @@ const resources = {
           deleteWorker: "Suppression de l'intervenant impossible.",
           deleteClient: "Suppression du client impossible.",
           deleteFamilyMember: "Suppression du proche impossible.",
+          loadList: "Impossible de charger la liste.",
+          loadOptions: "Impossible de charger les options des clients ou des intervenants.",
+          savedRefresh: "Enregistrement effectue, mais la liste n'a pas pu etre actualisee. Ne creez pas un doublon ; fermez le formulaire et rechargez.",
           deleteService: "Suppression du service impossible.",
           deleteVisit: "Suppression de la visite impossible."
         }
@@ -3547,6 +3556,9 @@ const resources = {
           deleteWorker: "Der Mitarbeitende konnte nicht geloscht werden.",
           deleteClient: "Der Kunde konnte nicht geloscht werden.",
           deleteFamilyMember: "Der Angehorige konnte nicht geloscht werden.",
+          loadList: "Die Liste konnte nicht geladen werden.",
+          loadOptions: "Kunden- oder Mitarbeiteroptionen konnten nicht geladen werden.",
+          savedRefresh: "Gespeichert, aber die Liste konnte nicht aktualisiert werden. Nicht erneut anlegen; Formular schliessen und neu laden.",
           deleteService: "Die Leistung konnte nicht geloscht werden.",
           deleteVisit: "Der Besuch konnte nicht geloscht werden."
         }

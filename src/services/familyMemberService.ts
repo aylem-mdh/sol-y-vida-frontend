@@ -18,7 +18,9 @@ export async function getFamilyMembers() {
   return response.data;
 }
 
-export async function createFamilyMember(data: any) {
+export type FamilyMemberPayload = Omit<FamilyMember, "id">;
+
+export async function createFamilyMember(data: FamilyMemberPayload) {
   const response = await api.post("/FamilyMembers", data);
 
   return response.data;
@@ -26,7 +28,7 @@ export async function createFamilyMember(data: any) {
 
 export async function updateFamilyMember(
   id: number,
-  data: any
+  data: FamilyMemberPayload
 ) {
   await api.put(`/FamilyMembers/${id}`, data);
 }
