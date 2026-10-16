@@ -878,6 +878,7 @@ const resources = {
           saveProfile: "Guardar cambios del perfil"
         },
         errors: {
+          load: "No se pudo cargar el perfil.",
           save: "No se pudo guardar el perfil."
         }
       },
@@ -1971,6 +1972,7 @@ const resources = {
           saveProfile: "Save profile changes"
         },
         errors: {
+          load: "Profile could not be loaded.",
           save: "Profile could not be saved."
         }
       },
@@ -3006,6 +3008,7 @@ const resources = {
           saveProfile: "Enregistrer les modifications du profil"
         },
         errors: {
+          load: "Le profil n'a pas pu etre charge.",
           save: "Le profil n'a pas pu etre enregistre."
         }
       },
@@ -4041,6 +4044,7 @@ const resources = {
           saveProfile: "Profilanderungen speichern"
         },
         errors: {
+          load: "Profil konnte nicht geladen werden.",
           save: "Profil konnte nicht gespeichert werden."
         }
       },

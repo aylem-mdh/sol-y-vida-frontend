@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LifeBuoy, LogOut, Phone, ShieldCheck, UserCog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,13 +16,25 @@ export default function Settings() {
   const role = storedRole === "worker" ? "worker" : storedRole === "family" ? "family" : "admin";
   const [profile, setProfile] = useState<FamilyProfile | null>(null);
   const [saving, setSaving] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const saveInFlight = useRef(false);
 
   useEffect(() => {
     if (role !== "family") {
       return;
     }
 
-    loadProfile();
+    let active = true;
+    const timer = window.setTimeout(() => {
+      void getFamilyProfile().then(
+        (loaded) => { if (active) setProfile(loaded); },
+        () => { if (active) setProfileError("settingsPage.errors.load"); },
+      );
+    }, 0);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
   }, [role]);
 
   function logout() {
@@ -31,22 +43,15 @@ export default function Settings() {
     navigate("/login");
   }
 
-  async function loadProfile() {
-    try {
-      const familyProfile = await getFamilyProfile();
-      setProfile(familyProfile);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   async function saveProfile() {
-    if (!profile) {
+    if (!profile || saveInFlight.current) {
       return;
     }
 
+    saveInFlight.current = true;
     try {
       setSaving(true);
+      setProfileError("");
       const updated = await updateFamilyProfile({
         email: profile.email,
         phone: profile.phone,
@@ -55,10 +60,10 @@ export default function Settings() {
         notificationsEnabled: profile.notificationsEnabled,
       });
       setProfile(updated);
-    } catch (error) {
-      console.error(error);
-      alert(t("settingsPage.errors.save"));
+    } catch {
+      setProfileError("settingsPage.errors.save");
     } finally {
+      saveInFlight.current = false;
       setSaving(false);
     }
   }
@@ -79,32 +84,33 @@ export default function Settings() {
         <section className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
           <article className="rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7 xl:col-span-2">
             <h2 className="text-2xl font-bold text-[#1F2937]">{t("settingsPage.sections.operational")}</h2>
+            {profileError && <p role="alert" className="mt-4 text-sm text-red-700">{t(profileError)}</p>}
             {role === "family" && profile ? (
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.family.linkedFamily")}</p><p className="mt-2 text-sm text-[#4B5563]">{profile.fullName}</p></div>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.family.caredPerson")}</p><p className="mt-2 text-sm text-[#4B5563]">{profile.clientName}</p></div>
                 <label className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#374151]">
                   <span className="font-semibold text-[#1F2937]">{t("settingsPage.family.operationalEmail")}</span>
-                  <input value={profile.email} onChange={(event) => setProfile({ ...profile, email: event.target.value })} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
+                  <input value={profile.email} disabled={saving} onChange={(event) => { const value = event.target.value; setProfile((current) => current ? { ...current, email: value } : current); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
                 </label>
                 <label className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#374151]">
                   <span className="font-semibold text-[#1F2937]">{t("settingsPage.family.contactPhone")}</span>
-                  <input value={profile.phone} onChange={(event) => setProfile({ ...profile, phone: event.target.value })} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
+                  <input value={profile.phone} disabled={saving} onChange={(event) => { const value = event.target.value; setProfile((current) => current ? { ...current, phone: value } : current); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
                 </label>
                 <label className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#374151]">
                   <span className="font-semibold text-[#1F2937]">{t("settingsPage.family.preferredChannel")}</span>
-                  <select value={profile.preferredContact} onChange={(event) => setProfile({ ...profile, preferredContact: event.target.value })} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]">
-                    <option>{t("settingsPage.family.channelPhone")}</option>
-                    <option>{t("settingsPage.family.channelEmail")}</option>
+                  <select value={profile.preferredContact} disabled={saving} onChange={(event) => { const value = event.target.value; setProfile((current) => current ? { ...current, preferredContact: value } : current); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]">
+                    <option value="Telefono">{t("settingsPage.family.channelPhone")}</option>
+                    <option value="Email">{t("settingsPage.family.channelEmail")}</option>
                   </select>
                 </label>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.family.activePlan")}</p><p className="mt-2 text-sm text-[#4B5563]">{profile.servicePlan}</p></div>
                 <label className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm text-[#374151] md:col-span-2">
                   <span className="font-semibold text-[#1F2937]">{t("settingsPage.family.coordinationNotes")}</span>
-                  <textarea value={profile.notes} onChange={(event) => setProfile({ ...profile, notes: event.target.value })} rows={4} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
+                  <textarea value={profile.notes} disabled={saving} onChange={(event) => { const value = event.target.value; setProfile((current) => current ? { ...current, notes: value } : current); }} rows={4} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3 outline-none focus:border-[#0F9E98]" />
                 </label>
                 <label className="flex items-center gap-3 rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4 text-sm font-semibold text-[#1F2937] md:col-span-2">
-                  <input type="checkbox" checked={profile.notificationsEnabled} onChange={(event) => setProfile({ ...profile, notificationsEnabled: event.target.checked })} />
+                  <input type="checkbox" checked={profile.notificationsEnabled} disabled={saving} onChange={(event) => { const checked = event.target.checked; setProfile((current) => current ? { ...current, notificationsEnabled: checked } : current); }} />
                   {t("settingsPage.family.keepNotifications")}
                 </label>
               </div>
