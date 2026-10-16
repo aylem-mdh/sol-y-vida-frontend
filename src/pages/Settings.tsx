@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import { getFamilyProfile, updateFamilyProfile, type FamilyProfile } from "../services/familyPortalService";
+import { getOwnWorkerProfile, updateOwnWorkerProfile, type Worker } from "../services/workerService";
 import { useTranslation } from "react-i18next";
 
 type DashboardRole = "admin" | "worker" | "family";
@@ -15,21 +16,30 @@ export default function Settings() {
   const storedRole = localStorage.getItem("role");
   const role = storedRole === "worker" ? "worker" : storedRole === "family" ? "family" : "admin";
   const [profile, setProfile] = useState<FamilyProfile | null>(null);
+  const [workerProfile, setWorkerProfile] = useState<Worker | null>(null);
+  const [profileSaved, setProfileSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profileError, setProfileError] = useState("");
   const saveInFlight = useRef(false);
 
   useEffect(() => {
-    if (role !== "family") {
+    if (role !== "family" && role !== "worker") {
       return;
     }
 
     let active = true;
-    const timer = window.setTimeout(() => {
-      void getFamilyProfile().then(
-        (loaded) => { if (active) setProfile(loaded); },
-        () => { if (active) setProfileError("settingsPage.errors.load"); },
-      );
+    const timer = window.setTimeout(async () => {
+      try {
+        if (role === "worker") {
+          const loaded = await getOwnWorkerProfile();
+          if (active) setWorkerProfile(loaded);
+        } else {
+          const loaded = await getFamilyProfile();
+          if (active) setProfile(loaded);
+        }
+      } catch {
+        if (active) setProfileError("settingsPage.errors.load");
+      }
     }, 0);
     return () => {
       active = false;
@@ -44,7 +54,7 @@ export default function Settings() {
   }
 
   async function saveProfile() {
-    if (!profile || saveInFlight.current) {
+    if (saveInFlight.current || (role === "worker" ? !workerProfile : !profile)) {
       return;
     }
 
@@ -52,14 +62,23 @@ export default function Settings() {
     try {
       setSaving(true);
       setProfileError("");
-      const updated = await updateFamilyProfile({
-        email: profile.email,
-        phone: profile.phone,
-        preferredContact: profile.preferredContact,
-        notes: profile.notes,
-        notificationsEnabled: profile.notificationsEnabled,
-      });
-      setProfile(updated);
+      setProfileSaved(false);
+      if (role === "worker" && workerProfile) {
+        setWorkerProfile(await updateOwnWorkerProfile({
+          nombre: workerProfile.nombre.trim(),
+          apellidos: workerProfile.apellidos.trim(),
+          telefono: workerProfile.telefono.trim(),
+        }));
+        setProfileSaved(true);
+      } else if (profile) {
+        setProfile(await updateFamilyProfile({
+          email: profile.email,
+          phone: profile.phone,
+          preferredContact: profile.preferredContact,
+          notes: profile.notes,
+          notificationsEnabled: profile.notificationsEnabled,
+        }));
+      }
     } catch {
       setProfileError("settingsPage.errors.save");
     } finally {
@@ -85,7 +104,37 @@ export default function Settings() {
           <article className="rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7 xl:col-span-2">
             <h2 className="text-2xl font-bold text-[#1F2937]">{t("settingsPage.sections.operational")}</h2>
             {profileError && <p role="alert" className="mt-4 text-sm text-red-700">{t(profileError)}</p>}
-            {role === "family" && profile ? (
+            {profileSaved && <p role="status" className="mt-4 text-sm text-[#0F9E98]">{t("workerProfile.saved")}</p>}
+            {role === "worker" ? (
+              workerProfile ? (
+                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("forms.common.name")}
+                    <input value={workerProfile.nombre} disabled={saving} maxLength={100} required onChange={(event) => { setProfileSaved(false); setWorkerProfile({ ...workerProfile, nombre: event.target.value }); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("forms.common.lastName")}
+                    <input value={workerProfile.apellidos} disabled={saving} maxLength={100} required onChange={(event) => { setProfileSaved(false); setWorkerProfile({ ...workerProfile, apellidos: event.target.value }); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("forms.common.phone")}
+                    <input type="tel" value={workerProfile.telefono} disabled={saving} maxLength={30} required onChange={(event) => { setProfileSaved(false); setWorkerProfile({ ...workerProfile, telefono: event.target.value }); }} className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-white px-4 py-3" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("forms.common.email")}
+                    <input type="email" value={workerProfile.email} readOnly className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-[#FAFDFC] px-4 py-3" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("forms.common.idNumber")}
+                    <input value={workerProfile.dni} readOnly className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-[#FAFDFC] px-4 py-3" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#1F2937]">
+                    {t("workerProfile.specialty")}
+                    <input value={workerProfile.especialidad} readOnly className="mt-3 w-full rounded-xl border border-[#D7E5E3] bg-[#FAFDFC] px-4 py-3" />
+                  </label>
+                </div>
+              ) : !profileError && <p className="mt-6 text-sm text-[#4B5563]">{t("workerProfile.loading")}</p>
+            ) : role === "family" && profile ? (
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.family.linkedFamily")}</p><p className="mt-2 text-sm text-[#4B5563]">{profile.fullName}</p></div>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.family.caredPerson")}</p><p className="mt-2 text-sm text-[#4B5563]">{profile.clientName}</p></div>
@@ -116,7 +165,7 @@ export default function Settings() {
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.labels.activeRole")}</p><p className="mt-2 text-sm text-[#4B5563]">{role === "admin" ? t("roles.admin") : role === "worker" ? t("roles.worker") : t("roles.family")}</p></div>
+                <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.labels.activeRole")}</p><p className="mt-2 text-sm text-[#4B5563]">{role === "admin" ? t("roles.admin") : t("roles.family")}</p></div>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.labels.supportChannel")}</p><p className="mt-2 text-sm text-[#4B5563]">{t("branding.supportPhone")}</p></div>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.labels.operationalEmail")}</p><p className="mt-2 text-sm text-[#4B5563]">{t("branding.supportEmail")}</p></div>
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4"><p className="text-sm font-semibold text-[#1F2937]">{t("settingsPage.labels.protectedEnvironment")}</p><p className="mt-2 text-sm text-[#4B5563]">{t("settingsPage.labels.protectedEnvironmentText")}</p></div>
@@ -141,8 +190,8 @@ export default function Settings() {
               </div>
             </div>
 
-            {role === "family" && profile && (
-              <button onClick={saveProfile} disabled={saving} className="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] px-5 py-3 font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8] disabled:bg-slate-100">
+            {(role === "family" && profile || role === "worker" && workerProfile) && (
+              <button onClick={saveProfile} disabled={saving || (role === "worker" && !!workerProfile && (!workerProfile.nombre.trim() || !workerProfile.apellidos.trim() || !workerProfile.telefono.trim()))} className="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-[#D8EFEA] bg-[#F7FCFB] px-5 py-3 font-semibold text-[#1F2937] transition duration-300 hover:bg-[#ECFAF8] disabled:bg-slate-100">
                 {saving ? t("forms.common.saving") : t("settingsPage.actions.saveProfile")}
               </button>
             )}
