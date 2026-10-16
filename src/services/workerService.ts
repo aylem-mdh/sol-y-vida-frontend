@@ -27,6 +27,7 @@ export interface CreateWorkerWithAccountResult {
   worker: Worker;
   activationToken: string;
   activationLink?: string;
+  message?: string;
 }
 
 type RawCreateWorkerWithAccountResult = {
@@ -38,6 +39,8 @@ type RawCreateWorkerWithAccountResult = {
   activation_token?: string;
   activationLink?: string;
   ActivationLink?: string;
+  message?: string;
+  Message?: string;
 };
 
 function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): CreateWorkerWithAccountResult {
@@ -50,13 +53,14 @@ function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): Cre
   if (!activationToken && activationLink) {
     try {
       const parsed = new URL(activationLink, window.location.origin);
-      activationToken = parsed.searchParams.get("token") ?? "";
+      activationToken = new URLSearchParams(parsed.hash.slice(1)).get("token")
+        ?? parsed.searchParams.get("token") ?? "";
     } catch {
       activationToken = "";
     }
   }
 
-  if (!worker || !activationToken) {
+  if (!worker) {
     throw new Error("Respuesta invalida al crear trabajadora.");
   }
 
@@ -64,6 +68,7 @@ function normalizeCreateWorkerResult(raw: RawCreateWorkerWithAccountResult): Cre
     worker,
     activationToken,
     activationLink,
+    message: raw.message ?? raw.Message,
   };
 }
 

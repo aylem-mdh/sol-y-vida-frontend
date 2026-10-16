@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import WorkersTable from "../components/dashboard/WorkersTable";
@@ -18,17 +19,22 @@ export default function Workers() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    loadWorkers();
+    void loadWorkers();
   }, []);
 
-  async function loadWorkers() {
+  async function loadWorkers(options?: { throwOnError?: boolean }) {
     try {
       const data = await getWorkers();
       setWorkers(data);
+      setLoadError(false);
     } catch (error) {
-      console.error(error);
+      setLoadError(true);
+      if (options?.throwOnError) {
+        throw error;
+      }
     }
   }
 
@@ -41,8 +47,11 @@ export default function Workers() {
 
       setWorkers((prev) => prev.filter((w) => w.id !== id));
     } catch (error) {
-      console.error(error);
-      alert(t("crud.errors.deleteWorker"));
+      const message = axios.isAxiosError(error)
+        && typeof error.response?.data?.message === "string"
+        ? error.response.data.message
+        : t("crud.errors.deleteWorker");
+      alert(message);
     }
   }
 
@@ -91,6 +100,7 @@ export default function Workers() {
             </button>
           </div>
 
+          {loadError && <p role="alert" className="mb-4 text-sm text-red-700">{t("forms.common.errors.generic")}</p>}
           <WorkersTable
             workers={workers}
             onDelete={removeWorker}
@@ -111,9 +121,10 @@ export default function Workers() {
           onClose={closeModal}
         >
           <WorkerForm
+            key={selectedWorker?.id ?? "new-worker"}
             worker={selectedWorker}
             onSaved={async (options) => {
-              await loadWorkers();
+              await loadWorkers({ throwOnError: true });
 
               if (options?.close ?? true) {
                 closeModal();
