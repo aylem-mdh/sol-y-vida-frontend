@@ -23,9 +23,9 @@ export default function Family() {
 
   const modules = useMemo(
     () => [
-      { label: t("familyPage.cards.familyStatus"), path: "/reports", icon: ShieldCheck },
-      { label: t("familyPage.cards.nextVisits"), path: "/reports", icon: Calendar },
-      { label: t("sidebar.reports"), path: "/reports", icon: FileText },
+      { label: t("familyPage.cards.familyStatus"), path: "/family/follow-up", icon: ShieldCheck },
+      { label: t("familyPage.cards.nextVisits"), path: "/family/calendar", icon: Calendar },
+      { label: t("sidebar.reports"), path: "/family/reports", icon: FileText },
       { label: t("sidebar.documentation"), path: "/documentation", icon: FolderOpen },
       { label: t("sidebar.messages"), path: "/complaints", icon: MessageSquare },
       { label: t("familyPage.actions.contact"), path: "/contact", icon: Phone },
@@ -53,7 +53,7 @@ export default function Family() {
           title={t("sidebar.dashboard")}
           subtitle={t("familyPage.topbar.subtitleFamily")}
           name={t("profiles.familyName")}
-          role={t("roles.family")}
+          role={role === "client" ? t("roles.client") : t("roles.family")}
           notificationPath="/notifications"
           searchValue={search}
           onSearchChange={setSearch}
