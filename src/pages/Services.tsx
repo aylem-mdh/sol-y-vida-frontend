@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import { useTranslation } from "react-i18next";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -8,12 +9,11 @@ import Topbar from "../components/dashboard/Topbar";
 import ServicesTable from "../components/dashboard/ServicesTable";
 import ServiceForm from "../components/dashboard/ServiceForm";
 import Modal from "../components/ui/Modal";
-import { deleteService, getServices, type Service } from "../services/serviceService";
-import { getVisits, type Visit } from "../services/visitService";
-import { getCurrentUserIdFromToken } from "../utils/authClaims";
+import { deleteService, getServices, getServiceCatalog, type Service, type ServiceCatalogItem } from "../services/serviceService";
 import {
   ArrowRight,
   BriefcaseMedical,
+  Eye,
   HeartHandshake,
   Home as HomeIcon,
   Users,
@@ -25,9 +25,15 @@ export default function Services() {
   const role = localStorage.getItem("role");
   const isAdmin = hasSession && role === "admin";
   const isWorker = hasSession && role === "worker";
-  const currentWorkerId = getCurrentUserIdFromToken();
+  const isClient = hasSession && role === "client";
+  const [catalog, setCatalog] = useState<ServiceCatalogItem[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState(false);
+  const [selectedCatalogItem, setSelectedCatalogItem] = useState<ServiceCatalogItem | null>(null);
   const [services, setServices] = useState<Service[]>([]);
-  const [assignedVisits, setAssignedVisits] = useState<Visit[]>([]);
+  const [assignedServices, setAssignedServices] = useState<Service[]>([]);
+  const [loadError, setLoadError] = useState("");
+  const [assignedLoading, setAssignedLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -54,43 +60,78 @@ export default function Services() {
     },
   ];
 
+  const loadServices = useCallback(async () => {
+    setLoadError("");
+    try {
+      const data = await getServices();
+      setServices(data);
+    } catch (error) {
+      setLoadError(t("crud.errors.loadList"));
+      throw error;
+    }
+  }, [t]);
+
+  const loadAssignedServices = useCallback(async () => {
+    setLoadError("");
+    setAssignedLoading(true);
+    try {
+      setAssignedServices(await getServices());
+    } catch {
+      setLoadError(t("crud.errors.loadList"));
+    } finally {
+      setAssignedLoading(false);
+    }
+  }, [t]);
+
   useEffect(() => {
     if (!isAdmin) {
       return;
     }
 
-    loadServices();
-  }, [isAdmin]);
+    const timer = window.setTimeout(() => {
+      void loadServices().catch(() => undefined);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isAdmin, loadServices]);
 
   useEffect(() => {
     if (!isWorker) {
       return;
     }
 
-    loadAssignedServices();
-  }, [isWorker]);
+    const timer = window.setTimeout(() => {
+      void loadAssignedServices();
+    }, 0);
 
-  async function loadServices() {
-    try {
-      const data = await getServices();
-      setServices(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isWorker, loadAssignedServices]);
 
-  async function loadAssignedServices() {
-    try {
-      const data = await getVisits();
-      const filtered = data
-        .filter((visit) => currentWorkerId == null || visit.workerId === currentWorkerId)
-        .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-      setAssignedVisits(filtered);
-    } catch (error) {
-      console.error(error);
-      setAssignedVisits([]);
+  useEffect(() => {
+    if (!isClient) return;
+    let active = true;
+    async function loadCatalog() {
+      try {
+        setCatalogLoading(true);
+        setCatalogError(false);
+        const data = await getServiceCatalog();
+        if (active) setCatalog(data);
+      } catch {
+        if (active) {
+          setCatalog([]);
+          setCatalogError(true);
+        }
+      } finally {
+        if (active) setCatalogLoading(false);
+      }
     }
-  }
+    void loadCatalog();
+    return () => { active = false; };
+  }, [isClient]);
 
   async function removeService(id: number) {
     if (!window.confirm(t("crud.confirmDeleteService"))) {
@@ -101,20 +142,63 @@ export default function Services() {
       await deleteService(id);
       setServices((previous) => previous.filter((service) => service.id !== id));
     } catch (error) {
-      console.error(error);
-      alert(t("crud.errors.deleteService"));
+      alert(axios.isAxiosError<{ message?: string }>(error)
+        ? error.response?.data?.message ?? t("crud.errors.deleteService")
+        : t("crud.errors.deleteService"));
     }
   }
 
-  const filteredAssignedVisits = assignedVisits.filter((visit) => {
+  const filteredAssignedServices = assignedServices.filter((service) => {
     const query = search.trim().toLowerCase();
     if (!query) {
       return true;
     }
 
-    const text = `${visit.cliente} ${visit.fecha} ${visit.estado ?? ""} ${visit.observaciones ?? ""}`.toLowerCase();
+    const text = `${service.nombre} ${service.descripcion} ${service.categoria} ${service.frecuencia} ${service.notes} ${service.clienteNombre ?? ""} ${service.clienteDireccion ?? ""}`.toLowerCase();
     return text.includes(query);
   });
+
+  if (isClient) {
+    const query = search.trim().toLowerCase();
+    const visibleCatalog = catalog.filter((item) =>
+      `${item.nombre} ${item.descripcion} ${item.categoria} ${item.frecuencia}`.toLowerCase().includes(query));
+    const formatRate = (rate: number) => new Intl.NumberFormat(i18n.language, { style: "currency", currency: "EUR" }).format(rate);
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#F7FCFB_40%,#FFFFFF_100%)] lg:flex">
+        <Sidebar role="client" />
+        <main className="min-w-0 flex-1 p-4 pt-16 [overflow-wrap:anywhere] sm:p-6 sm:pt-20 lg:p-8 lg:pt-8 lg:[&_header>div]:flex-col lg:[&_header>div]:items-stretch">
+          <Topbar title={t("serviceCatalog.title")} subtitle={t("serviceCatalog.subtitle")} name={t("profiles.familyName")} role={t("roles.client")} notificationPath="/notifications" searchValue={search} onSearchChange={setSearch} searchPlaceholder={t("tables.services.search")} />
+          <section className="mt-8">
+            <div className="mb-4 lg:hidden">
+              <label htmlFor="catalog-search" className="sr-only">{t("tables.services.search")}</label>
+              <input id="catalog-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("tables.services.search")} className="w-full rounded-md border border-[#D8EFEA] bg-white px-4 py-3 text-sm" />
+            </div>
+            {catalogError ? <p role="alert" className="text-sm text-red-700">{t("serviceCatalog.error")}</p> : (
+              <div className="relative overflow-x-auto border border-[#D8EFEA] bg-white">
+                <table className="w-full min-w-[800px] table-fixed text-left text-sm">
+                  <thead className="bg-[#F7FCFB] text-[#1F2937]">
+                    <tr><th className="w-2/5 p-4">{t("serviceCatalog.service")}</th><th className="p-4">{t("serviceCatalog.category")}</th><th className="p-4">{t("serviceCatalog.rate")}</th><th className="p-4">{t("serviceCatalog.duration")}</th><th className="p-4">{t("serviceCatalog.frequency")}</th><th className="w-16 p-4"><span className="sr-only">{t("serviceCatalog.view")}</span></th></tr>
+                  </thead>
+                  <tbody>
+                    {catalogLoading ? <tr><td colSpan={6} className="p-6 text-[#4B5563]">{t("serviceCatalog.loading")}</td></tr> : visibleCatalog.length === 0 ? <tr><td colSpan={6} className="p-6 text-[#4B5563]">{t("serviceCatalog.empty")}</td></tr> : visibleCatalog.map((item) => (
+                      <tr key={item.id} className="border-t border-[#E3F2EF] text-[#4B5563]">
+                        <td className="max-w-sm p-4"><p className="break-words font-semibold text-[#1F2937]">{item.nombre}</p><p className="mt-1 break-words">{item.descripcion}</p></td>
+                        <td className="p-4">{item.categoria}</td><td className="whitespace-nowrap p-4">{formatRate(item.precioPorHora)}</td><td className="whitespace-nowrap p-4">{item.duracionMinutos} min</td><td className="p-4">{item.frecuencia}</td>
+                        <td className="p-4"><button type="button" onClick={() => setSelectedCatalogItem(item)} aria-label={t("serviceCatalog.view")} title={t("serviceCatalog.view")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#D8EFEA] text-[#0F9E98]"><Eye size={18} /></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          <Modal open={selectedCatalogItem !== null} title={selectedCatalogItem?.nombre ?? t("serviceCatalog.title")} onClose={() => setSelectedCatalogItem(null)}>
+            {selectedCatalogItem && <div className="space-y-4 text-sm text-[#4B5563]"><p className="break-words">{selectedCatalogItem.descripcion}</p><dl className="grid grid-cols-2 gap-3"><dt>{t("serviceCatalog.category")}</dt><dd>{selectedCatalogItem.categoria}</dd><dt>{t("serviceCatalog.rate")}</dt><dd>{formatRate(selectedCatalogItem.precioPorHora)}</dd><dt>{t("serviceCatalog.duration")}</dt><dd>{selectedCatalogItem.duracionMinutos} min</dd><dt>{t("serviceCatalog.frequency")}</dt><dd>{selectedCatalogItem.frecuencia}</dd></dl></div>}
+          </Modal>
+        </main>
+      </div>
+    );
+  }
 
   if (isAdmin) {
     return (
@@ -133,6 +217,7 @@ export default function Services() {
           />
 
           <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-5 shadow-[0_16px_40px_rgba(15,25,30,0.08)] sm:p-7">
+            {loadError && <p role="alert" className="mb-4 rounded-xl bg-red-100 p-4 text-red-700">{loadError}</p>}
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-2xl font-bold text-[#1F2937] sm:text-3xl">{t("pages.services.title")}</h2>
               <button
@@ -168,6 +253,7 @@ export default function Services() {
             }}
           >
             <ServiceForm
+              key={selectedService?.id ?? "new-service"}
               service={selectedService}
               onSaved={async () => {
                 await loadServices();
@@ -200,24 +286,30 @@ export default function Services() {
 
           <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
             <h2 className="text-2xl font-bold text-[#1F2937]">{t("workerPage.cards.assignedServices")}</h2>
+            {loadError && <p role="alert" className="mt-4 rounded-xl bg-red-100 p-4 text-red-700">{loadError}</p>}
+            {assignedLoading && <p role="status" className="mt-4">{t("serviceCatalog.loading")}</p>}
 
             <div className="mt-5 space-y-3">
-              {filteredAssignedVisits.map((visit) => (
-                  <article key={visit.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
-                    <p className="font-semibold text-[#1F2937]">{visit.cliente}</p>
-                    <p className="mt-1 text-sm text-[#4B5563]">{new Date(visit.fecha).toLocaleString(i18n.language === "es" ? "es-ES" : i18n.language === "fr" ? "fr-FR" : i18n.language === "de" ? "de-DE" : "en-US")}</p>
-                    {visit.estado && <p className="mt-1 text-xs font-semibold text-[#0F9E98]">{visit.estado}</p>}
-                    {visit.observaciones && <p className="mt-2 text-sm text-[#4B5563]">{visit.observaciones}</p>}
+              {filteredAssignedServices.map((service) => (
+                  <article key={service.id} className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-4">
+                    <p className="font-semibold text-[#1F2937]">{service.nombre}</p>
+                    <p className="mt-1 text-sm text-[#4B5563]">{service.categoria} · {service.frecuencia} · {service.duracionMinutos} min · {service.precioPorHora.toFixed(2)} EUR/h</p>
+                      {service.clienteNombre && <p className="mt-2 text-sm font-medium text-[#1F2937]">{t("assignedService.client")}: {service.clienteNombre}</p>}
+                      {(service.clienteDireccion || service.clienteCiudad) && <p className="text-sm text-[#4B5563]">{t("assignedService.address")}: {[service.clienteDireccion, service.clienteCiudad].filter(Boolean).join(", ")}</p>}
+                      {service.startDate && <p className="mt-2 text-xs text-[#6B7280]">{t("assignedService.start")}: {new Date(service.startDate).toLocaleString(i18n.language)}</p>}
+                      {service.endDate && <p className="text-xs text-[#6B7280]">{t("assignedService.end")}: {new Date(service.endDate).toLocaleString(i18n.language)}</p>}
+                      {service.descripcion && <p className="mt-2 text-sm text-[#4B5563]"><span className="font-medium">{t("assignedService.tasks")}:</span> {service.descripcion}</p>}
+                      {service.notes && <p className="mt-2 text-sm text-[#4B5563]"><span className="font-medium">{t("assignedService.notes")}:</span> {service.notes}</p>}
                   </article>
                 ))}
 
-              {assignedVisits.length === 0 && (
+              {!assignedLoading && !loadError && assignedServices.length === 0 && (
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
-                  {t("pages.visits.noAssignedVisits")}
+                  {t("workerPage.cards.noAssignedServices")}
                 </div>
               )}
 
-              {assignedVisits.length > 0 && filteredAssignedVisits.length === 0 && (
+              {!assignedLoading && !loadError && assignedServices.length > 0 && filteredAssignedServices.length === 0 && (
                 <div className="rounded-2xl border border-[#E3F2EF] bg-[#FAFDFC] p-5 text-sm text-[#4B5563]">
                   {t("tables.visits.empty")}
                 </div>

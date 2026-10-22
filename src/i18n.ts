@@ -4351,4 +4351,15 @@ for (const [language, budgetPdf] of Object.entries(budgetPdfTranslations)) {
   i18n.addResourceBundle(language, "translation", { budgetPdf }, true, true);
 }
 
+const assignedServiceTranslations = {
+  es: { client: "Cliente", address: "Domicilio", start: "Inicio", end: "Fin", tasks: "Tareas", notes: "Observaciones", noWorker: "Trabajador no asignado", noClient: "Cliente no asignado", required: "Indica nombre, precio y duración positivos. Para asignar un trabajador, selecciona cliente, tareas y un horario de inicio y fin válido." },
+  en: { client: "Client", address: "Address", start: "Start", end: "End", tasks: "Tasks", notes: "Notes", noWorker: "No assigned worker", noClient: "No assigned client", required: "Enter a name, positive price and duration. Worker assignments require a client, tasks and a valid start/end schedule." },
+  fr: { client: "Client", address: "Adresse", start: "Debut", end: "Fin", tasks: "Taches", notes: "Observations", noWorker: "Aucun intervenant affecte", noClient: "Aucun client affecte", required: "Indiquez un nom, un prix et une duree positifs. Une affectation exige un client, des taches et un horaire valide." },
+  de: { client: "Kunde", address: "Adresse", start: "Beginn", end: "Ende", tasks: "Aufgaben", notes: "Anmerkungen", noWorker: "Kein Mitarbeiter zugewiesen", noClient: "Kein Kunde zugewiesen", required: "Name, positiver Preis und Dauer sind erforderlich. Eine Zuweisung erfordert Kunde, Aufgaben und einen gueltigen Zeitraum." },
+};
+
+for (const [language, assignedService] of Object.entries(assignedServiceTranslations)) {
+  i18n.addResourceBundle(language, "translation", { assignedService }, true, true);
+}
+
 export default i18n;
