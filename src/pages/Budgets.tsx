@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
-import { createBudget, getBudgets, approveBudget, downloadBudgetPdf, type Budget } from "../services/budgetService";
-import { Download, LoaderCircle } from "lucide-react";
+import { createBudget, getBudgets, approveBudget, deleteBudget, downloadBudgetPdf, type Budget } from "../services/budgetService";
+import { Download, LoaderCircle, Trash2 } from "lucide-react";
 import { getClients } from "../services/clientService";
 import { useTranslation } from "react-i18next";
 import { getServiceTariffs, updateServiceTariff, type ServiceTariff } from "../services/serviceTariffService";
@@ -35,6 +35,8 @@ export default function Budgets() {
   const [budgetCreateSuccess, setBudgetCreateSuccess] = useState(false);
   const [creatingBudget, setCreatingBudget] = useState(false);
   const [approveError, setApproveError] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [savingTariffIds, setSavingTariffIds] = useState<Set<number>>(new Set());
   const savingTariffRef = useRef<Set<number>>(new Set());
   const [tariffSaveMessage, setTariffSaveMessage] = useState<{ type: "success" | "error"; key: string } | null>(null);
@@ -167,6 +169,25 @@ export default function Budgets() {
 
   const hasClients = clients.length > 0;
   const disableBudgetCreation = loadingClients || clientsError || !hasClients;
+
+  async function remove(id: number) {
+    if (!window.confirm(t("budgetsPage.deleteConfirm"))) return;
+    setDeleteError(false);
+    setDeletingIds((current) => new Set(current).add(id));
+    try {
+      await deleteBudget(id);
+      setBudgets((current) => current.filter((budget) => budget.id !== id));
+    } catch (error) {
+      console.error("Budget deletion failed", isAxiosError(error) ? error.response?.status : "error");
+      setDeleteError(true);
+    } finally {
+      setDeletingIds((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
+    }
+  }
 
   async function approve(id: number) {
     try {
@@ -372,6 +393,7 @@ export default function Budgets() {
         <section className="mt-6 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
           {downloadError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetPdf.error")}</p>}
           {approveError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetsPage.approveError")}</p>}
+          {deleteError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetsPage.deleteError")}</p>}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold text-[#1F2937]">{t("budgetsPage.history")}</h2>
           </div>
@@ -407,6 +429,11 @@ export default function Budgets() {
                     <button type="button" onClick={() => void downloadPdf(budget.id)} disabled={downloadingIds.has(budget.id)} aria-label={t("budgetPdf.download")} title={t("budgetPdf.download")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#D8EFEA] bg-white text-[#0F9E98] disabled:cursor-wait disabled:opacity-60">
                       {downloadingIds.has(budget.id) ? <LoaderCircle size={18} className="animate-spin" /> : <Download size={18} />}
                     </button>
+                    {isAdmin && (
+                      <button type="button" onClick={() => void remove(budget.id)} disabled={deletingIds.has(budget.id)} aria-label={t("budgetsPage.delete")} title={t("budgetsPage.delete")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60">
+                        {deletingIds.has(budget.id) ? <LoaderCircle size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                      </button>
+                    )}
                     {isAdmin && !budget.isApproved && (
                       <button onClick={() => approve(budget.id)} className="text-xs font-semibold text-[#0F9E98]">{t("budgetsPage.approve")}</button>
                     )}

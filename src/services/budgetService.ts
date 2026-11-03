@@ -65,6 +65,10 @@ export async function approveBudget(id: number) {
   await api.put(`/Budgets/${id}/approve`);
 }
 
+export async function deleteBudget(id: number) {
+  await api.delete(`/Budgets/${id}`);
+}
+
 export async function downloadBudgetPdf(id: number) {
   const response = await api.get<Blob>(`/Budgets/${id}/pdf`, { responseType: "blob" });
   const contentType = String(response.headers["content-type"] ?? "");

@@ -1058,7 +1058,10 @@ const resources = {
         invalidVat: "El IVA debe estar entre 0 y 100.",
         invalidIban: "Introduce los 4 últimos dígitos del IBAN o desactiva el recibo domiciliado.",
         directDebitToggle: "Recibo domiciliado",
-        approveError: "No se pudo aprobar el presupuesto."
+        approveError: "No se pudo aprobar el presupuesto.",
+        delete: "Eliminar presupuesto",
+        deleteConfirm: "¿Eliminar este presupuesto? Esta acción no se puede deshacer.",
+        deleteError: "No se pudo eliminar el presupuesto."
       },
       activatePage: {
         title: "Activar cuenta",
@@ -2161,7 +2164,10 @@ const resources = {
         invalidVat: "VAT must be between 0 and 100.",
         invalidIban: "Enter the last 4 digits of the IBAN or disable the direct debit receipt.",
         directDebitToggle: "Direct debit receipt",
-        approveError: "The budget could not be approved."
+        approveError: "The budget could not be approved.",
+        delete: "Delete budget",
+        deleteConfirm: "Delete this budget? This cannot be undone.",
+        deleteError: "The budget could not be deleted."
       },
       activatePage: {
         title: "Activate account",
@@ -3206,7 +3212,10 @@ const resources = {
         invalidVat: "La TVA doit être comprise entre 0 et 100.",
         invalidIban: "Saisissez les 4 derniers chiffres de l'IBAN ou désactivez le prélèvement.",
         directDebitToggle: "Prélèvement automatique",
-        approveError: "Impossible d'approuver le devis."
+        approveError: "Impossible d'approuver le devis.",
+        delete: "Supprimer le devis",
+        deleteConfirm: "Supprimer ce devis ? Cette action est irréversible.",
+        deleteError: "Impossible de supprimer le devis."
       },
       activatePage: {
         title: "Activer le compte",
@@ -4251,7 +4260,10 @@ const resources = {
         invalidVat: "Die MwSt. muss zwischen 0 und 100 liegen.",
         invalidIban: "Geben Sie die letzten 4 Ziffern der IBAN ein oder deaktivieren Sie die Lastschrift.",
         directDebitToggle: "Lastschrift",
-        approveError: "Das Budget konnte nicht genehmigt werden."
+        approveError: "Das Budget konnte nicht genehmigt werden.",
+        delete: "Budget löschen",
+        deleteConfirm: "Dieses Budget löschen? Dies kann nicht rückgängig gemacht werden.",
+        deleteError: "Das Budget konnte nicht gelöscht werden."
       },
       activatePage: {
         title: "Konto aktivieren",
