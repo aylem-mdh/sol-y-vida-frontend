@@ -1053,7 +1053,12 @@ const resources = {
         tariffSaveUnauthorized: "Tu sesión ha caducado. Vuelve a iniciar sesión para guardar la tarifa.",
         tariffSaveForbidden: "No tienes permiso para modificar tarifas. Solo la administración puede hacerlo.",
         tariffSaveServerError: "Error del servidor al guardar la tarifa. Inténtalo de nuevo más tarde.",
-        createError: "No se pudo crear el presupuesto."
+        createError: "No se pudo crear el presupuesto.",
+        createSuccess: "Presupuesto creado correctamente.",
+        invalidVat: "El IVA debe estar entre 0 y 100.",
+        invalidIban: "Introduce los 4 últimos dígitos del IBAN o desactiva el recibo domiciliado.",
+        directDebitToggle: "Recibo domiciliado",
+        approveError: "No se pudo aprobar el presupuesto."
       },
       activatePage: {
         title: "Activar cuenta",
@@ -2151,7 +2156,12 @@ const resources = {
         tariffSaveUnauthorized: "Your session has expired. Please sign in again to save the tariff.",
         tariffSaveForbidden: "You do not have permission to modify tariffs. Only administrators can do this.",
         tariffSaveServerError: "Server error while saving the tariff. Please try again later.",
-        createError: "The budget could not be created."
+        createError: "The budget could not be created.",
+        createSuccess: "Budget created successfully.",
+        invalidVat: "VAT must be between 0 and 100.",
+        invalidIban: "Enter the last 4 digits of the IBAN or disable the direct debit receipt.",
+        directDebitToggle: "Direct debit receipt",
+        approveError: "The budget could not be approved."
       },
       activatePage: {
         title: "Activate account",
@@ -3191,7 +3201,12 @@ const resources = {
         tariffSaveUnauthorized: "Votre session a expiré. Reconnectez-vous pour enregistrer le tarif.",
         tariffSaveForbidden: "Vous n'avez pas l'autorisation de modifier les tarifs. Seule l'administration peut le faire.",
         tariffSaveServerError: "Erreur du serveur lors de l'enregistrement du tarif. Réessayez plus tard.",
-        createError: "Impossible de créer le devis."
+        createError: "Impossible de créer le devis.",
+        createSuccess: "Devis créé avec succès.",
+        invalidVat: "La TVA doit être comprise entre 0 et 100.",
+        invalidIban: "Saisissez les 4 derniers chiffres de l'IBAN ou désactivez le prélèvement.",
+        directDebitToggle: "Prélèvement automatique",
+        approveError: "Impossible d'approuver le devis."
       },
       activatePage: {
         title: "Activer le compte",
@@ -4231,7 +4246,12 @@ const resources = {
         tariffSaveUnauthorized: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, um den Tarif zu speichern.",
         tariffSaveForbidden: "Sie haben keine Berechtigung, Tarife zu ändern. Nur die Verwaltung darf dies.",
         tariffSaveServerError: "Serverfehler beim Speichern des Tarifs. Bitte später erneut versuchen.",
-        createError: "Das Budget konnte nicht erstellt werden."
+        createError: "Das Budget konnte nicht erstellt werden.",
+        createSuccess: "Budget erfolgreich erstellt.",
+        invalidVat: "Die MwSt. muss zwischen 0 und 100 liegen.",
+        invalidIban: "Geben Sie die letzten 4 Ziffern der IBAN ein oder deaktivieren Sie die Lastschrift.",
+        directDebitToggle: "Lastschrift",
+        approveError: "Das Budget konnte nicht genehmigt werden."
       },
       activatePage: {
         title: "Konto aktivieren",

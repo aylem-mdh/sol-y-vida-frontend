@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import CookieBanner from "./components/cookies/CookieBanner";
@@ -87,6 +87,7 @@ function App() {
           <Route path="/family/messages" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyMessages /></ProtectedRoute>} />
           <Route path="/worker" element={<ProtectedRoute allowedRoles={["worker"]}><Worker /></ProtectedRoute>} />
 
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

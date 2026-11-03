@@ -31,7 +31,10 @@ export default function Budgets() {
   const [downloadingIds, setDownloadingIds] = useState<Set<number>>(new Set());
   const [downloadError, setDownloadError] = useState(false);
   const [tariffError, setTariffError] = useState(false);
-  const [budgetCreateError, setBudgetCreateError] = useState(false);
+  const [budgetCreateError, setBudgetCreateError] = useState<string | null>(null);
+  const [budgetCreateSuccess, setBudgetCreateSuccess] = useState(false);
+  const [creatingBudget, setCreatingBudget] = useState(false);
+  const [approveError, setApproveError] = useState(false);
   const [savingTariffIds, setSavingTariffIds] = useState<Set<number>>(new Set());
   const savingTariffRef = useRef<Set<number>>(new Set());
   const [tariffSaveMessage, setTariffSaveMessage] = useState<{ type: "success" | "error"; key: string } | null>(null);
@@ -41,7 +44,7 @@ export default function Budgets() {
     hourlyRate: 18,
     vatPercent: 21,
     description: "",
-    directDebitReceiptEnabled: true,
+    directDebitReceiptEnabled: false,
     directDebitIbanLast4: "",
   });
 
@@ -106,16 +109,31 @@ export default function Budgets() {
   }, [budgets, search]);
 
   async function create() {
+    setBudgetCreateSuccess(false);
+    setBudgetCreateError(null);
     if (!form.clientId || lines.length === 0 || lines.some((line) =>
-      !line.serviceTariffId || line.quantity <= 0 || line.daysPerMonth <= 0 || line.daysPerMonth > 31)) {
-      alert(t("budgetsPage.errors.required"));
+      !line.serviceTariffId || !(line.quantity > 0) || !(line.daysPerMonth > 0) || line.daysPerMonth > 31)) {
+      setBudgetCreateError(t("budgetsPage.errors.required"));
+      return;
+    }
+    if (!Number.isFinite(form.vatPercent) || form.vatPercent < 0 || form.vatPercent > 100) {
+      setBudgetCreateError(t("budgetsPage.invalidVat"));
+      return;
+    }
+    const iban = form.directDebitIbanLast4.trim();
+    if (form.directDebitReceiptEnabled && !/^\d{4}$/.test(iban)) {
+      setBudgetCreateError(t("budgetsPage.invalidIban"));
       return;
     }
 
     try {
-      setBudgetCreateError(false);
+      setCreatingBudget(true);
       await createBudget({
-        ...form,
+        clientId: form.clientId,
+        vatPercent: form.vatPercent,
+        description: form.description.trim() || undefined,
+        directDebitReceiptEnabled: form.directDebitReceiptEnabled,
+        directDebitIbanLast4: form.directDebitReceiptEnabled ? iban : undefined,
         lines: lines.map(({ serviceTariffId, quantity, daysPerMonth, notes }) => ({
           serviceTariffId,
           quantity,
@@ -123,19 +141,42 @@ export default function Budgets() {
           notes: notes.trim() || undefined,
         })),
       });
+      setBudgetCreateSuccess(true);
+      setForm((current) => ({ ...current, description: "", directDebitIbanLast4: "" }));
       await loadBudgets();
     } catch (error) {
-      console.error(error);
-      setBudgetCreateError(true);
+      const status = isAxiosError(error) ? error.response?.status : undefined;
+      console.error("Budget creation failed", status ?? "network error");
+      setBudgetCreateError(serverErrorMessage(error) ?? t("budgetsPage.createError"));
+    } finally {
+      setCreatingBudget(false);
     }
+  }
+
+  function serverErrorMessage(error: unknown): string | null {
+    if (!isAxiosError(error) || error.response?.status !== 400) return null;
+    const data = error.response.data as unknown;
+    if (typeof data === "string" && data.trim()) return data;
+    if (data && typeof data === "object") {
+      const { errors, message, title } = data as { errors?: Record<string, string[]>; message?: string; title?: string };
+      const first = errors ? Object.values(errors).flat()[0] : undefined;
+      return first ?? message ?? title ?? null;
+    }
+    return null;
   }
 
   const hasClients = clients.length > 0;
   const disableBudgetCreation = loadingClients || clientsError || !hasClients;
 
   async function approve(id: number) {
-    await approveBudget(id);
-    await loadBudgets();
+    try {
+      setApproveError(false);
+      await approveBudget(id);
+      await loadBudgets();
+    } catch (error) {
+      console.error("Budget approval failed", isAxiosError(error) ? error.response?.status : "error");
+      setApproveError(true);
+    }
   }
 
   async function downloadPdf(id: number) {
@@ -239,7 +280,8 @@ export default function Budgets() {
         {isAdmin && (
           <section className="mt-8 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
             <h2 className="text-xl font-bold text-[#1F2937]">{t("budgetsPage.newBudget")}</h2>
-            {budgetCreateError && <p role="alert" className="mt-3 text-sm text-red-700">{t("budgetsPage.createError")}</p>}
+            {budgetCreateError && <p role="alert" className="mt-3 text-sm text-red-700">{budgetCreateError}</p>}
+            {budgetCreateSuccess && <p role="status" className="mt-3 text-sm font-medium text-emerald-800">{t("budgetsPage.createSuccess")}</p>}
             {tariffError && <p role="alert" className="mt-3 text-sm text-red-700">{t("budgetsPage.tariffsError")}</p>}
 
             {clientsError && (
@@ -260,7 +302,13 @@ export default function Budgets() {
                 {clients.map((client) => <option key={client.id} value={client.id}>{client.nombre} {client.apellidos}</option>)}
               </select>
               <input type="number" value={form.vatPercent} onChange={(e) => setForm((c) => ({ ...c, vatPercent: Number(e.target.value) }))} placeholder={t("budgetsPage.vat")} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
-              <input value={form.directDebitIbanLast4} onChange={(e) => setForm((c) => ({ ...c, directDebitIbanLast4: e.target.value }))} placeholder={t("budgetsPage.ibanLast4")} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
+              <label className="flex items-center gap-2 rounded-xl border border-[#D7E5E3] px-4 py-3 text-sm md:col-span-1">
+                <input type="checkbox" checked={form.directDebitReceiptEnabled} onChange={(e) => setForm((c) => ({ ...c, directDebitReceiptEnabled: e.target.checked }))} disabled={disableBudgetCreation} />
+                {t("budgetsPage.directDebitToggle")}
+              </label>
+              {form.directDebitReceiptEnabled && (
+                <input value={form.directDebitIbanLast4} inputMode="numeric" maxLength={4} onChange={(e) => setForm((c) => ({ ...c, directDebitIbanLast4: e.target.value.replace(/\D/g, "") }))} placeholder={t("budgetsPage.ibanLast4")} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
+              )}
               <input value={form.description} onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} placeholder={t("forms.common.description")} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
             </div>
             <div className="mt-6 space-y-4">
@@ -317,12 +365,13 @@ export default function Budgets() {
                 {tariffSaveMessage?.type === "error" && tariffSaveMessage.key !== "budgetsPage.tariffSaveUnauthorized" && <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{t(tariffSaveMessage.key)}</p>}
               </details>
             )}
-            <button onClick={create} disabled={disableBudgetCreation || tariffs.length === 0} className="mt-4 rounded-2xl bg-[#0F9E98] px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">{t("budgetsPage.createBudget")}</button>
+            <button type="button" onClick={() => void create()} disabled={disableBudgetCreation || tariffs.length === 0 || creatingBudget} className="mt-4 rounded-2xl bg-[#0F9E98] px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">{t("budgetsPage.createBudget")}</button>
           </section>
         )}
 
         <section className="mt-6 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
           {downloadError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetPdf.error")}</p>}
+          {approveError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetsPage.approveError")}</p>}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold text-[#1F2937]">{t("budgetsPage.history")}</h2>
           </div>

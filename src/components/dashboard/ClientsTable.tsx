@@ -119,13 +119,6 @@ export default function ClientsTable({
                     <button
                       type="button"
                       onClick={() => {
-                        console.log("CLIENT_CLICK", client);
-
-                        if (!Number.isInteger(Number(client.id)) || Number(client.id) <= 0) {
-                          console.log("ID FALTANTE", client);
-                          return;
-                        }
-
                         window.location.assign(`/clients/${Number(client.id)}`);
                       }}
                       className="relative z-10 pointer-events-auto cursor-pointer font-semibold text-slate-800 hover:text-[#0F9E98] hover:underline text-left transition"
