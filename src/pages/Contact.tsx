@@ -3,7 +3,8 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { Navigate } from "react-router-dom";
-import { getFamilyProfile, submitFamilyContactRequest } from "../services/familyPortalService";
+import { getFamilyProfile } from "../services/familyPortalService";
+import { sendPublicContact } from "../services/contactService";
 import { useTranslation } from "react-i18next";
 
 export default function Contact() {
@@ -17,6 +18,7 @@ export default function Contact() {
     message: "",
   });
   const [sending, setSending] = useState(false);
+  const [website, setWebsite] = useState("");
 
   const hydrateFamilyContact = useCallback(async () => {
     try {
@@ -61,7 +63,7 @@ export default function Contact() {
 
     try {
       setSending(true);
-      await submitFamilyContactRequest(form);
+      await sendPublicContact({ ...form, website });
       alert(t("contactPage.alerts.success"));
       setForm((current) => ({
         ...current,
@@ -170,6 +172,16 @@ export default function Contact() {
             </p>
 
             <form className="mt-8 space-y-4 sm:mt-10 sm:space-y-5" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={website}
+                onChange={(event) => setWebsite(event.target.value)}
+                className="absolute -left-[9999px] h-0 w-0 opacity-0"
+              />
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-[#374151]">{t("contactPage.form.fullName")}</span>
                 <input
