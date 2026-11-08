@@ -4373,10 +4373,10 @@ for (const [language, serviceCatalog] of Object.entries(serviceCatalogTranslatio
 }
 
 const budgetPdfTranslations = {
-  es: { download: "Descargar PDF del presupuesto", error: "No se pudo descargar el PDF del presupuesto." },
-  en: { download: "Download budget PDF", error: "Could not download the budget PDF." },
-  fr: { download: "Telecharger le PDF du devis", error: "Impossible de telecharger le PDF du devis." },
-  de: { download: "Angebot als PDF herunterladen", error: "Das Angebots-PDF konnte nicht heruntergeladen werden." },
+  es: { download: "Descargar presupuesto (PDF)", acceptanceDownload: "Descargar documentación de aceptación (PDF)", error: "No se pudo descargar el PDF del presupuesto." },
+  en: { download: "Download budget (PDF)", acceptanceDownload: "Download acceptance documents (PDF)", error: "Could not download the budget PDF." },
+  fr: { download: "Télécharger le devis (PDF)", acceptanceDownload: "Télécharger les documents d'acceptation (PDF)", error: "Impossible de télécharger le PDF du devis." },
+  de: { download: "Angebot herunterladen (PDF)", acceptanceDownload: "Annahmeunterlagen herunterladen (PDF)", error: "Das Angebots-PDF konnte nicht heruntergeladen werden." },
 };
 
 for (const [language, budgetPdf] of Object.entries(budgetPdfTranslations)) {
@@ -4392,6 +4392,39 @@ const assignedServiceTranslations = {
 
 for (const [language, assignedService] of Object.entries(assignedServiceTranslations)) {
   i18n.addResourceBundle(language, "translation", { assignedService }, true, true);
+}
+
+const budgetStatusTranslations = {
+  es: { change: "Estado", pending: "Pendiente", accepted: "Aceptado", rejected: "Rechazado", acceptanceDate: "Fecha real de aceptación (opcional)", save: "Guardar estado", error: "No se pudo actualizar el estado." },
+  en: { change: "Status", pending: "Pending", accepted: "Accepted", rejected: "Rejected", acceptanceDate: "Actual acceptance date (optional)", save: "Save status", error: "Could not update the status." },
+  fr: { change: "Statut", pending: "En attente", accepted: "Accepté", rejected: "Refusé", acceptanceDate: "Date réelle d'acceptation (facultative)", save: "Enregistrer le statut", error: "Impossible de modifier le statut." },
+  de: { change: "Status", pending: "Ausstehend", accepted: "Angenommen", rejected: "Abgelehnt", acceptanceDate: "Tatsächliches Annahmedatum (optional)", save: "Status speichern", error: "Der Status konnte nicht geändert werden." },
+};
+
+for (const [language, budgetStatus] of Object.entries(budgetStatusTranslations)) {
+  i18n.addResourceBundle(language, "translation", { budgetStatus }, true, true);
+}
+
+const budgetDetailsTranslations = {
+  es: { title: "Datos del servicio para los documentos", serviceType: "Tipo de servicio", startDate: "Fecha de inicio", endDate: "Fecha de finalización", days: "Días de la semana (por ejemplo, lunes a viernes)", startTime: "Hora de inicio", endTime: "Hora de fin", address: "Dirección del servicio", city: "Municipio", invalidPeriod: "Revisa las fechas y horas del servicio: el inicio debe ser anterior al final." },
+  en: { title: "Service details for documents", serviceType: "Service type", startDate: "Start date", endDate: "End date", days: "Days of the week (for example, Monday to Friday)", startTime: "Start time", endTime: "End time", address: "Service address", city: "Municipality", invalidPeriod: "Check the service dates and times: the start must be before the end." },
+  fr: { title: "Détails du service pour les documents", serviceType: "Type de service", startDate: "Date de début", endDate: "Date de fin", days: "Jours de la semaine (par exemple, lundi à vendredi)", startTime: "Heure de début", endTime: "Heure de fin", address: "Adresse du service", city: "Commune", invalidPeriod: "Vérifiez les dates et heures du service : le début doit précéder la fin." },
+  de: { title: "Leistungsangaben für Dokumente", serviceType: "Leistungsart", startDate: "Anfangsdatum", endDate: "Enddatum", days: "Wochentage (z. B. Montag bis Freitag)", startTime: "Beginn", endTime: "Ende", address: "Leistungsadresse", city: "Ort", invalidPeriod: "Bitte Leistungsdaten und -zeiten prüfen: Beginn muss vor dem Ende liegen." },
+};
+
+for (const [language, budgetDetails] of Object.entries(budgetDetailsTranslations)) {
+  i18n.addResourceBundle(language, "translation", { budgetDetails }, true, true);
+}
+
+const budgetAgreementTranslations = {
+  es: { select: "Incluir en un acuerdo", title: "Crear acuerdo con {{count}} presupuesto(s) aceptado(s)", paymentMethod: "Forma de pago acordada (opcional)", firstPaymentDate: "Fecha del primer pago (opcional)", create: "Crear acuerdo", created: "Acuerdo creado. Ya puedes descargar la documentación de aceptación.", error: "No se pudo crear el acuerdo. Comprueba que todos los presupuestos sean aceptados y del mismo cliente.", assignFirst: "Asocia primero este presupuesto a un acuerdo." },
+  en: { select: "Include in an agreement", title: "Create agreement with {{count}} accepted budget(s)", paymentMethod: "Agreed payment method (optional)", firstPaymentDate: "First payment date (optional)", create: "Create agreement", created: "Agreement created. Acceptance documents are now available.", error: "Could not create the agreement. Check that all budgets are accepted and belong to the same client.", assignFirst: "Associate this budget with an agreement first." },
+  fr: { select: "Inclure dans un accord", title: "Créer un accord avec {{count}} devis accepté(s)", paymentMethod: "Mode de paiement convenu (facultatif)", firstPaymentDate: "Date du premier paiement (facultative)", create: "Créer l'accord", created: "Accord créé. Les documents d'acceptation sont disponibles.", error: "Impossible de créer l'accord. Vérifiez que tous les devis sont acceptés et appartiennent au même client.", assignFirst: "Associez d'abord ce devis à un accord." },
+  de: { select: "In eine Vereinbarung aufnehmen", title: "Vereinbarung mit {{count}} angenommenen Angebot(en) erstellen", paymentMethod: "Vereinbarte Zahlungsart (optional)", firstPaymentDate: "Datum der ersten Zahlung (optional)", create: "Vereinbarung erstellen", created: "Vereinbarung erstellt. Die Annahmeunterlagen können jetzt heruntergeladen werden.", error: "Vereinbarung konnte nicht erstellt werden. Alle Angebote müssen angenommen sein und zum selben Kunden gehören.", assignFirst: "Ordnen Sie dieses Angebot zuerst einer Vereinbarung zu." },
+};
+
+for (const [language, budgetAgreement] of Object.entries(budgetAgreementTranslations)) {
+  i18n.addResourceBundle(language, "translation", { budgetAgreement }, true, true);
 }
 
 export default i18n;

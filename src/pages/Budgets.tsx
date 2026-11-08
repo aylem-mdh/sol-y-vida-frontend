@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
-import { createBudget, getBudgets, approveBudget, deleteBudget, downloadBudgetPdf, type Budget } from "../services/budgetService";
-import { Download, LoaderCircle, Trash2 } from "lucide-react";
+import { createBudget, createBudgetAgreement, getBudgets, updateBudgetStatus, deleteBudget, downloadAcceptancePdf, downloadBudgetPdf, type Budget, type BudgetStatus } from "../services/budgetService";
+import { Download, FileCheck2, LoaderCircle, Trash2 } from "lucide-react";
 import { getClients } from "../services/clientService";
 import { useTranslation } from "react-i18next";
 import { getServiceTariffs, updateServiceTariff, type ServiceTariff } from "../services/serviceTariffService";
@@ -13,6 +13,49 @@ type DraftLine = { serviceTariffId: number; quantity: number; daysPerMonth: numb
 type Role = "admin" | "family" | "client";
 
 type ClientOption = { id: number; nombre: string; apellidos: string };
+
+function BudgetStatusEditor({ budget, onSaved }: { budget: Budget; onSaved: () => Promise<void> }) {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState<BudgetStatus>(budget.isApproved ? "accepted" : budget.isRejected ? "rejected" : "pending");
+  const [date, setDate] = useState(budget.acceptanceDate ?? "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
+
+  async function save() {
+    setSaving(true);
+    setError(false);
+    try {
+      await updateBudgetStatus(budget.id, status, date);
+      await onSaved();
+    } catch (error) {
+      console.error("Budget status update failed", isAxiosError(error) ? error.response?.status : "error");
+      setError(true);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-stretch gap-2 text-sm">
+      <label>{t("budgetStatus.change")}
+        <select value={status} onChange={(event) => setStatus(event.target.value as BudgetStatus)} disabled={saving} className="mt-1 block w-full rounded-lg border p-2">
+          <option value="pending">{t("budgetStatus.pending")}</option>
+          <option value="accepted">{t("budgetStatus.accepted")}</option>
+          <option value="rejected">{t("budgetStatus.rejected")}</option>
+        </select>
+      </label>
+      {status === "accepted" && (
+        <label>{t("budgetStatus.acceptanceDate")}
+          <input type="date" value={date} onChange={(event) => setDate(event.target.value)} disabled={saving} className="mt-1 block w-full rounded-lg border p-2" />
+        </label>
+      )}
+      <button type="button" disabled={saving} onClick={() => void save()} className="rounded-lg border border-[#D8EFEA] px-3 py-2 font-semibold text-[#0F817C] disabled:opacity-50">
+        {saving ? t("forms.common.saving") : t("budgetStatus.save")}
+      </button>
+      {error && <p role="alert" className="text-red-700">{t("budgetStatus.error")}</p>}
+    </div>
+  );
+}
 
 export default function Budgets() {
   const { t } = useTranslation();
@@ -29,12 +72,18 @@ export default function Budgets() {
   const [budgetsError, setBudgetsError] = useState(false);
   const [clientsError, setClientsError] = useState(false);
   const [downloadingIds, setDownloadingIds] = useState<Set<number>>(new Set());
+  const [downloadingAcceptanceIds, setDownloadingAcceptanceIds] = useState<Set<number>>(new Set());
   const [downloadError, setDownloadError] = useState(false);
+  const [selectedAgreementBudgetIds, setSelectedAgreementBudgetIds] = useState<Set<number>>(new Set());
+  const [agreementPaymentMethod, setAgreementPaymentMethod] = useState("");
+  const [agreementFirstPaymentDate, setAgreementFirstPaymentDate] = useState("");
+  const [creatingAgreement, setCreatingAgreement] = useState(false);
+  const [agreementError, setAgreementError] = useState(false);
+  const [agreementSuccess, setAgreementSuccess] = useState(false);
   const [tariffError, setTariffError] = useState(false);
   const [budgetCreateError, setBudgetCreateError] = useState<string | null>(null);
   const [budgetCreateSuccess, setBudgetCreateSuccess] = useState(false);
   const [creatingBudget, setCreatingBudget] = useState(false);
-  const [approveError, setApproveError] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [savingTariffIds, setSavingTariffIds] = useState<Set<number>>(new Set());
@@ -48,6 +97,14 @@ export default function Budgets() {
     description: "",
     directDebitReceiptEnabled: false,
     directDebitIbanLast4: "",
+    serviceStartDate: "",
+    serviceEndDate: "",
+    serviceType: "",
+    serviceDays: "",
+    serviceStartTime: "",
+    serviceEndTime: "",
+    serviceAddress: "",
+    serviceCity: "",
   });
 
   useEffect(() => {
@@ -122,6 +179,11 @@ export default function Budgets() {
       setBudgetCreateError(t("budgetsPage.invalidVat"));
       return;
     }
+    if ((form.serviceStartDate && form.serviceEndDate && form.serviceStartDate > form.serviceEndDate)
+      || (form.serviceStartTime && form.serviceEndTime && form.serviceStartTime >= form.serviceEndTime)) {
+      setBudgetCreateError(t("budgetDetails.invalidPeriod"));
+      return;
+    }
     const iban = form.directDebitIbanLast4.trim();
     if (form.directDebitReceiptEnabled && !/^\d{4}$/.test(iban)) {
       setBudgetCreateError(t("budgetsPage.invalidIban"));
@@ -136,6 +198,14 @@ export default function Budgets() {
         description: form.description.trim() || undefined,
         directDebitReceiptEnabled: form.directDebitReceiptEnabled,
         directDebitIbanLast4: form.directDebitReceiptEnabled ? iban : undefined,
+        serviceStartDate: form.serviceStartDate || undefined,
+        serviceEndDate: form.serviceEndDate || undefined,
+        serviceType: form.serviceType.trim() || undefined,
+        serviceDays: form.serviceDays.trim() || undefined,
+        serviceStartTime: form.serviceStartTime || undefined,
+        serviceEndTime: form.serviceEndTime || undefined,
+        serviceAddress: form.serviceAddress.trim() || undefined,
+        serviceCity: form.serviceCity.trim() || undefined,
         lines: lines.map(({ serviceTariffId, quantity, daysPerMonth, notes }) => ({
           serviceTariffId,
           quantity,
@@ -169,6 +239,7 @@ export default function Budgets() {
 
   const hasClients = clients.length > 0;
   const disableBudgetCreation = loadingClients || clientsError || !hasClients;
+  const selectedAgreementClientId = budgets.find((budget) => selectedAgreementBudgetIds.has(budget.id))?.clientId;
 
   async function remove(id: number) {
     if (!window.confirm(t("budgetsPage.deleteConfirm"))) return;
@@ -189,17 +260,6 @@ export default function Budgets() {
     }
   }
 
-  async function approve(id: number) {
-    try {
-      setApproveError(false);
-      await approveBudget(id);
-      await loadBudgets();
-    } catch (error) {
-      console.error("Budget approval failed", isAxiosError(error) ? error.response?.status : "error");
-      setApproveError(true);
-    }
-  }
-
   async function downloadPdf(id: number) {
     setDownloadError(false);
     setDownloadingIds((current) => new Set(current).add(id));
@@ -214,7 +274,47 @@ export default function Budgets() {
         return next;
       });
     }
+  }
 
+  async function downloadAcceptance(id: number) {
+    setDownloadError(false);
+    setDownloadingAcceptanceIds((current) => new Set(current).add(id));
+    try {
+      await downloadAcceptancePdf(id);
+    } catch (error) {
+      console.error("Acceptance PDF download failed", isAxiosError(error) ? error.response?.status : "error");
+      setDownloadError(true);
+    } finally {
+      setDownloadingAcceptanceIds((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
+    }
+  }
+
+  async function createAgreement() {
+    if (selectedAgreementBudgetIds.size === 0) return;
+    setCreatingAgreement(true);
+    setAgreementError(false);
+    setAgreementSuccess(false);
+    try {
+      await createBudgetAgreement({
+        budgetIds: [...selectedAgreementBudgetIds],
+        paymentMethod: agreementPaymentMethod.trim() || undefined,
+        firstPaymentDate: agreementFirstPaymentDate || undefined,
+      });
+      setSelectedAgreementBudgetIds(new Set());
+      setAgreementPaymentMethod("");
+      setAgreementFirstPaymentDate("");
+      setAgreementSuccess(true);
+      await loadBudgets();
+    } catch (error) {
+      console.error("Budget agreement creation failed", isAxiosError(error) ? error.response?.status : "error");
+      setAgreementError(true);
+    } finally {
+      setCreatingAgreement(false);
+    }
   }
 
   function addLine() {
@@ -332,6 +432,17 @@ export default function Budgets() {
               )}
               <input value={form.description} onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} placeholder={t("forms.common.description")} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
             </div>
+            <h3 className="mt-5 font-semibold text-[#1F2937]">{t("budgetDetails.title")}</h3>
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <input aria-label={t("budgetDetails.serviceType")} value={form.serviceType} onChange={(event) => setForm((current) => ({ ...current, serviceType: event.target.value }))} placeholder={t("budgetDetails.serviceType")} maxLength={200} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3" />
+              <label className="text-sm">{t("budgetDetails.startDate")}<input type="date" value={form.serviceStartDate} onChange={(event) => setForm((current) => ({ ...current, serviceStartDate: event.target.value }))} disabled={disableBudgetCreation} className="mt-1 block w-full rounded-xl border border-[#D7E5E3] px-4 py-3" /></label>
+              <label className="text-sm">{t("budgetDetails.endDate")}<input type="date" value={form.serviceEndDate} onChange={(event) => setForm((current) => ({ ...current, serviceEndDate: event.target.value }))} disabled={disableBudgetCreation} className="mt-1 block w-full rounded-xl border border-[#D7E5E3] px-4 py-3" /></label>
+              <input aria-label={t("budgetDetails.days")} value={form.serviceDays} onChange={(event) => setForm((current) => ({ ...current, serviceDays: event.target.value }))} placeholder={t("budgetDetails.days")} maxLength={200} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3" />
+              <label className="text-sm">{t("budgetDetails.startTime")}<input type="time" value={form.serviceStartTime} onChange={(event) => setForm((current) => ({ ...current, serviceStartTime: event.target.value }))} disabled={disableBudgetCreation} className="mt-1 block w-full rounded-xl border border-[#D7E5E3] px-4 py-3" /></label>
+              <label className="text-sm">{t("budgetDetails.endTime")}<input type="time" value={form.serviceEndTime} onChange={(event) => setForm((current) => ({ ...current, serviceEndTime: event.target.value }))} disabled={disableBudgetCreation} className="mt-1 block w-full rounded-xl border border-[#D7E5E3] px-4 py-3" /></label>
+              <input aria-label={t("budgetDetails.address")} value={form.serviceAddress} onChange={(event) => setForm((current) => ({ ...current, serviceAddress: event.target.value }))} placeholder={t("budgetDetails.address")} maxLength={250} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3" />
+              <input aria-label={t("budgetDetails.city")} value={form.serviceCity} onChange={(event) => setForm((current) => ({ ...current, serviceCity: event.target.value }))} placeholder={t("budgetDetails.city")} maxLength={120} disabled={disableBudgetCreation} className="rounded-xl border border-[#D7E5E3] px-4 py-3" />
+            </div>
             <div className="mt-6 space-y-4">
               <h3 className="font-semibold text-[#1F2937]">{t("budgetsPage.lines")}</h3>
               {lines.map((line, index) => {
@@ -392,7 +503,8 @@ export default function Budgets() {
 
         <section className="mt-6 rounded-[28px] border border-[#D8EFEA] bg-white p-6 shadow-[0_16px_36px_rgba(15,25,30,0.08)] sm:p-7">
           {downloadError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetPdf.error")}</p>}
-          {approveError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetsPage.approveError")}</p>}
+          {agreementError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetAgreement.error")}</p>}
+          {agreementSuccess && <p role="status" className="mb-4 text-sm text-emerald-800">{t("budgetAgreement.created")}</p>}
           {deleteError && <p role="alert" className="mb-4 text-sm text-red-700">{t("budgetsPage.deleteError")}</p>}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold text-[#1F2937]">{t("budgetsPage.history")}</h2>
@@ -415,7 +527,7 @@ export default function Budgets() {
                     <p className="font-semibold text-[#1F2937]">{budget.cliente}</p>
                     {budget.lines?.length ? (
                       <div className="mt-1 space-y-1 text-sm text-[#4B5563]">
-                        {budget.lines.map((line) => <p key={line.id}>{line.serviceName}: {line.quantity} {line.unit === "€/km" ? "km" : "h"} x {line.daysPerMonth} {t("budgetsPage.daysShort")} — {formatMoney(line.monthlyTotal)}{line.notes ? ` · ${line.notes}` : ""}</p>)}
+                        {budget.lines.map((line) => <p key={line.id}>{line.serviceName}: {line.quantity} {line.unit === "€/km" ? "km" : line.unit} x {line.daysPerMonth} {t("budgetsPage.daysShort")} — {formatMoney(line.monthlyTotal)}{line.notes ? ` · ${line.notes}` : ""}</p>)}
                       </div>
                     ) : <p className="mt-1 text-sm text-[#4B5563]">{budget.hours}h x {budget.hourlyRate.toFixed(2)} EUR</p>}
                     <p className="text-sm text-[#4B5563]">{t("budgetsPage.base")}: {budget.subtotal.toFixed(2)} EUR | {t("budgetsPage.vatLabel")}: {budget.vatAmount.toFixed(2)} EUR | {t("budgetsPage.total")}: {budget.total.toFixed(2)} EUR</p>
@@ -423,25 +535,57 @@ export default function Budgets() {
                     <p className="text-xs text-[#6B7280]">{t("budgetsPage.directDebit")}: {budget.directDebitReceiptEnabled ? `${t("common.yes")} (****${budget.directDebitIbanLast4 ?? ""})` : t("common.no")}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${budget.isApproved ? "bg-[#ECFAF8] text-[#0F9E98]" : "bg-[#FFF5E8] text-[#9A5A13]"}`}>
-                      {budget.isApproved ? t("budgetsPage.approved") : t("budgetsPage.pending")}
+                    <span className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold ${budget.isApproved ? "bg-green-50 text-green-800" : budget.isRejected ? "bg-red-50 text-red-800" : "bg-yellow-50 text-yellow-800"}`}>
+                      <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ${budget.isApproved ? "bg-green-600" : budget.isRejected ? "bg-red-600" : "bg-yellow-500"}`} />
+                      {budget.isApproved ? t("budgetStatus.accepted") : budget.isRejected ? t("budgetStatus.rejected") : t("budgetStatus.pending")}
                     </span>
                     <button type="button" onClick={() => void downloadPdf(budget.id)} disabled={downloadingIds.has(budget.id)} aria-label={t("budgetPdf.download")} title={t("budgetPdf.download")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#D8EFEA] bg-white text-[#0F9E98] disabled:cursor-wait disabled:opacity-60">
                       {downloadingIds.has(budget.id) ? <LoaderCircle size={18} className="animate-spin" /> : <Download size={18} />}
                     </button>
+                    {isAdmin && budget.isApproved && (
+                      <button type="button" onClick={() => void downloadAcceptance(budget.id)} disabled={downloadingAcceptanceIds.has(budget.id) || !budget.agreementId} aria-label={t("budgetPdf.acceptanceDownload")} title={budget.agreementId ? t("budgetPdf.acceptanceDownload") : t("budgetAgreement.assignFirst")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-green-200 bg-white text-green-700 disabled:cursor-not-allowed disabled:opacity-50">
+                        {downloadingAcceptanceIds.has(budget.id) ? <LoaderCircle size={18} className="animate-spin" /> : <FileCheck2 size={18} />}
+                      </button>
+                    )}
+                    {isAdmin && budget.isApproved && !budget.agreementId && (
+                      <label className="flex items-center gap-2 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={selectedAgreementBudgetIds.has(budget.id)}
+                          disabled={creatingAgreement || (selectedAgreementClientId !== undefined && selectedAgreementClientId !== budget.clientId)}
+                          onChange={(event) => {
+                            const checked = event.target.checked;
+                            setSelectedAgreementBudgetIds((current) => {
+                              const next = new Set(current);
+                              if (checked) next.add(budget.id);
+                              else next.delete(budget.id);
+                              return next;
+                            });
+                            setAgreementSuccess(false);
+                          }}
+                        />
+                        {t("budgetAgreement.select")}
+                      </label>
+                    )}
                     {isAdmin && (
                       <button type="button" onClick={() => void remove(budget.id)} disabled={deletingIds.has(budget.id)} aria-label={t("budgetsPage.delete")} title={t("budgetsPage.delete")} className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60">
                         {deletingIds.has(budget.id) ? <LoaderCircle size={18} className="animate-spin" /> : <Trash2 size={18} />}
                       </button>
                     )}
-                    {isAdmin && !budget.isApproved && (
-                      <button onClick={() => approve(budget.id)} className="text-xs font-semibold text-[#0F9E98]">{t("budgetsPage.approve")}</button>
-                    )}
+                    {isAdmin && <BudgetStatusEditor key={`${budget.id}-${budget.isApproved}-${budget.isRejected}-${budget.acceptanceDate}`} budget={budget} onSaved={loadBudgets} />}
                   </div>
                 </div>
               </article>
             ))}
           </div>
+          {isAdmin && selectedAgreementBudgetIds.size > 0 && (
+            <div className="mt-5 grid grid-cols-1 gap-3 rounded-xl border border-[#D8EFEA] bg-[#FAFDFC] p-4 md:grid-cols-3">
+              <p className="font-semibold md:col-span-3">{t("budgetAgreement.title", { count: selectedAgreementBudgetIds.size })}</p>
+              <input value={agreementPaymentMethod} maxLength={200} onChange={(event) => setAgreementPaymentMethod(event.target.value)} placeholder={t("budgetAgreement.paymentMethod")} className="rounded-lg border px-3 py-2" />
+              <label className="text-sm">{t("budgetAgreement.firstPaymentDate")}<input type="date" value={agreementFirstPaymentDate} onChange={(event) => setAgreementFirstPaymentDate(event.target.value)} className="mt-1 block w-full rounded-lg border px-3 py-2" /></label>
+              <button type="button" onClick={() => void createAgreement()} disabled={creatingAgreement} className="rounded-lg bg-[#0F817C] px-3 py-2 font-semibold text-white disabled:opacity-50">{creatingAgreement ? t("forms.common.saving") : t("budgetAgreement.create")}</button>
+            </div>
+          )}
         </section>
       </main>
     </div>
