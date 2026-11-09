@@ -204,10 +204,6 @@ export default function ClientDetails() {
                       <dt className="font-semibold text-slate-500">{t("forms.common.idNumber")}</dt>
                       <dd>{display(client.dni)}</dd>
                     </div>
-                    <div className="sm:col-span-2">
-                      <dt className="font-semibold text-slate-500">{t("forms.client.socialSecurity")}</dt>
-                      <dd>{display(client.numeroSeguridadSocial)}</dd>
-                    </div>
                   </dl>
                 </article>
 

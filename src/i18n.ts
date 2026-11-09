@@ -406,6 +406,7 @@ const resources = {
         client: {
           newTitle: "Nuevo cliente",
           editTitle: "Editar cliente",
+          idNumberOptional: "DNI/NIE (opcional)",
           socialSecurity: "Numero Seguridad Social",
           assignedWorker: "Trabajador asignado",
           unassigned: "Sin asignar",
@@ -1512,6 +1513,7 @@ const resources = {
         client: {
           newTitle: "New client",
           editTitle: "Edit client",
+          idNumberOptional: "ID number (optional)",
           socialSecurity: "Social Security Number",
           assignedWorker: "Assigned worker",
           unassigned: "Unassigned",
@@ -2561,6 +2563,7 @@ const resources = {
         client: {
           newTitle: "Nouveau client",
           editTitle: "Modifier le client",
+          idNumberOptional: "Pièce d’identité (facultatif)",
           socialSecurity: "Numero de securite sociale",
           assignedWorker: "Intervenant assigne",
           unassigned: "Aucun intervenant assigne",
@@ -3609,6 +3612,7 @@ const resources = {
         client: {
           newTitle: "Neuer Kunde",
           editTitle: "Kunde bearbeiten",
+          idNumberOptional: "Ausweisnummer (optional)",
           socialSecurity: "Sozialversicherungsnummer",
           assignedWorker: "Zugewiesener Mitarbeitender",
           unassigned: "Nicht zugewiesen",

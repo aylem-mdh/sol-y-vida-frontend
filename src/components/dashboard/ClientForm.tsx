@@ -101,8 +101,6 @@ export default function ClientForm({
       !form.nombre.trim() ||
       !form.apellidos.trim() ||
       !form.fechaNacimiento ||
-      !form.dni.trim() ||
-      !form.numeroSeguridadSocial.trim() ||
       !form.direccion.trim() ||
       !form.ciudad.trim() ||
       !form.codigoPostal.trim() ||
@@ -179,17 +177,10 @@ export default function ClientForm({
 
         <input
           name="dni"
-          value={form.dni}
+          value={form.dni ?? ""}
           onChange={change}
-          placeholder={t("forms.common.idNumber")}
-          className="border rounded-xl p-3"
-        />
-
-        <input
-          name="numeroSeguridadSocial"
-          value={form.numeroSeguridadSocial}
-          onChange={change}
-          placeholder={t("forms.client.socialSecurity")}
+          placeholder={t("forms.client.idNumberOptional")}
+          aria-label={t("forms.client.idNumberOptional")}
           className="border rounded-xl p-3"
         />
 

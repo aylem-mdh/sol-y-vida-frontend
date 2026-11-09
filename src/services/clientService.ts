@@ -60,13 +60,13 @@ export async function getClientById(id: number): Promise<Client> {
 }
 
 export async function createClient(client: Omit<Client, "id" | "activo">) {
-  const response = await api.post("/Clients", client);
+  const response = await api.post("/Clients", { ...client, dni: client.dni.trim() || null });
 
   return response.data;
 }
 
 export async function updateClient(id: number, client: Omit<Client, "id" | "activo">) {
-  const response = await api.put(`/Clients/${id}`, client);
+  const response = await api.put(`/Clients/${id}`, { ...client, dni: client.dni.trim() || null });
 
   return response.data;
 }
