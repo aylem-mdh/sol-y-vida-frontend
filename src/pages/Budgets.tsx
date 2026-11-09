@@ -8,7 +8,20 @@ import { getClients } from "../services/clientService";
 import { useTranslation } from "react-i18next";
 import { getServiceTariffs, updateServiceTariff, type ServiceTariff } from "../services/serviceTariffService";
 
-type DraftLine = { serviceTariffId: number; quantity: number; daysPerMonth: number; notes: string };
+type DraftLine = { serviceTariffId: number; quantity: string; daysPerMonth: string; notes: string };
+type ParsedLine = Omit<DraftLine, "quantity" | "daysPerMonth"> & { quantity: number | null; daysPerMonth: number | null };
+
+function parseLineNumber(value: string): number | null {
+  const trimmed = value.trim();
+  if (!/^\d+(?:[.,]\d{1,2})?$/.test(trimmed)) return null;
+  const number = Number(trimmed.replace(",", "."));
+  return Number.isFinite(number) ? number : null;
+}
+
+function isValidLine(line: ParsedLine): line is ParsedLine & { quantity: number; daysPerMonth: number } {
+  return line.quantity !== null && line.quantity >= 0.01 && line.quantity <= 100000
+    && line.daysPerMonth !== null && line.daysPerMonth >= 0.01 && line.daysPerMonth <= 31;
+}
 
 type Role = "admin" | "family" | "client";
 
@@ -65,7 +78,7 @@ export default function Budgets() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [tariffs, setTariffs] = useState<ServiceTariff[]>([]);
-  const [lines, setLines] = useState<DraftLine[]>([{ serviceTariffId: 0, quantity: 4, daysPerMonth: 20, notes: "" }]);
+  const [lines, setLines] = useState<DraftLine[]>([{ serviceTariffId: 0, quantity: "4", daysPerMonth: "20", notes: "" }]);
   const [search, setSearch] = useState("");
   const [loadingBudgets, setLoadingBudgets] = useState(false);
   const [loadingClients, setLoadingClients] = useState(false);
@@ -170,9 +183,17 @@ export default function Budgets() {
   async function create() {
     setBudgetCreateSuccess(false);
     setBudgetCreateError(null);
-    if (!form.clientId || lines.length === 0 || lines.some((line) =>
-      !line.serviceTariffId || !(line.quantity > 0) || !(line.daysPerMonth > 0) || line.daysPerMonth > 31)) {
+    if (!form.clientId || lines.length === 0 || lines.some((line) => !line.serviceTariffId)) {
       setBudgetCreateError(t("budgetsPage.errors.required"));
+      return;
+    }
+    const parsedLines = lines.map((line) => ({
+      ...line,
+      quantity: parseLineNumber(line.quantity),
+      daysPerMonth: parseLineNumber(line.daysPerMonth),
+    }));
+    if (!parsedLines.every(isValidLine)) {
+      setBudgetCreateError(t("budgetsPage.invalidLineNumbers"));
       return;
     }
     if (!Number.isFinite(form.vatPercent) || form.vatPercent < 0 || form.vatPercent > 100) {
@@ -206,7 +227,7 @@ export default function Budgets() {
         serviceEndTime: form.serviceEndTime || undefined,
         serviceAddress: form.serviceAddress.trim() || undefined,
         serviceCity: form.serviceCity.trim() || undefined,
-        lines: lines.map(({ serviceTariffId, quantity, daysPerMonth, notes }) => ({
+        lines: parsedLines.map(({ serviceTariffId, quantity, daysPerMonth, notes }) => ({
           serviceTariffId,
           quantity,
           daysPerMonth,
@@ -320,8 +341,8 @@ export default function Budgets() {
   function addLine() {
     setLines((current) => [...current, {
       serviceTariffId: tariffs[0]?.id ?? 0,
-      quantity: 1,
-      daysPerMonth: 1,
+      quantity: "1",
+      daysPerMonth: "1",
       notes: "",
     }]);
   }
@@ -374,7 +395,10 @@ export default function Budgets() {
   const formatMoney = (amount: number) => `${amount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
   const monthlyLineTotal = (line: DraftLine) => {
     const tariff = tariffs.find((item) => item.id === line.serviceTariffId);
-    return tariff ? Math.round((tariff.basePrice + tariff.initialSupplement) * line.quantity * line.daysPerMonth * 100) / 100 : 0;
+    const quantity = parseLineNumber(line.quantity);
+    const daysPerMonth = parseLineNumber(line.daysPerMonth);
+    return tariff && quantity !== null && daysPerMonth !== null
+      ? Math.round((tariff.basePrice + tariff.initialSupplement) * quantity * daysPerMonth * 100) / 100 : 0;
   };
   const monthlySubtotal = lines.reduce((sum, line) => sum + monthlyLineTotal(line), 0);
 
@@ -453,10 +477,10 @@ export default function Budgets() {
                       {tariffs.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                     </select>
                     <label className="text-xs font-medium text-[#4B5563]">{tariff?.unit === "€/km" ? t("budgetsPage.kilometers") : t("budgetsPage.hours")}
-                      <input aria-label={tariff?.unit === "€/km" ? t("budgetsPage.kilometers") : t("budgetsPage.hours")} type="number" min="0.01" step="0.01" value={line.quantity} onChange={(event) => setLines((current) => current.map((item, i) => i === index ? { ...item, quantity: Number(event.target.value) } : item))} className="mt-1 w-full rounded-xl border border-[#D7E5E3] bg-amber-100 px-3 py-2" />
+                      <input aria-label={tariff?.unit === "€/km" ? t("budgetsPage.kilometers") : t("budgetsPage.hours")} type="text" inputMode="decimal" value={line.quantity} onChange={(event) => setLines((current) => current.map((item, i) => i === index ? { ...item, quantity: event.target.value } : item))} className="mt-1 w-full rounded-xl border border-[#D7E5E3] bg-amber-100 px-3 py-2" />
                     </label>
                     <label className="text-xs font-medium text-[#4B5563]">{t("budgetsPage.daysPerMonth")}
-                      <input aria-label={t("budgetsPage.daysPerMonth")} type="number" min="0.01" max="31" step="0.01" value={line.daysPerMonth} onChange={(event) => setLines((current) => current.map((item, i) => i === index ? { ...item, daysPerMonth: Number(event.target.value) } : item))} className="mt-1 w-full rounded-xl border border-[#D7E5E3] bg-amber-100 px-3 py-2" />
+                      <input aria-label={t("budgetsPage.daysPerMonth")} type="text" inputMode="decimal" value={line.daysPerMonth} onChange={(event) => setLines((current) => current.map((item, i) => i === index ? { ...item, daysPerMonth: event.target.value } : item))} className="mt-1 w-full rounded-xl border border-[#D7E5E3] bg-amber-100 px-3 py-2" />
                     </label>
                     <div className="rounded-xl bg-emerald-100 px-3 py-2 text-sm">
                       <p className="text-xs text-[#4B5563]">{t("budgetsPage.applicablePrice")}</p>

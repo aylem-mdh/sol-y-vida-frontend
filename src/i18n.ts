@@ -1034,6 +1034,7 @@ const resources = {
           required: "Completa cliente, horas y tarifa."
         },
         lines: "Líneas del presupuesto",
+        invalidLineNumbers: "Introduce horas o kilómetros entre 0,01 y 100.000 y días al mes entre 0,01 y 31, con hasta dos decimales.",
         service: "Servicio",
         daysPerMonth: "Días al mes",
         daysShort: "días",
@@ -2141,6 +2142,7 @@ const resources = {
           required: "Complete client, hours and rate."
         },
         lines: "Budget lines",
+        invalidLineNumbers: "Enter hours or kilometres between 0.01 and 100,000 and days per month between 0.01 and 31, with up to two decimal places.",
         service: "Service",
         daysPerMonth: "Days per month",
         daysShort: "days",
@@ -3190,6 +3192,7 @@ const resources = {
           required: "Completez client, heures et tarif."
         },
         lines: "Lignes du devis",
+        invalidLineNumbers: "Saisissez des heures ou kilomètres entre 0,01 et 100 000 et des jours par mois entre 0,01 et 31, avec deux décimales au maximum.",
         service: "Service",
         daysPerMonth: "Jours par mois",
         daysShort: "jours",
@@ -4239,6 +4242,7 @@ const resources = {
           required: "Kunde, Stunden und Tarif ausfullen."
         },
         lines: "Budgetpositionen",
+        invalidLineNumbers: "Geben Sie Stunden oder Kilometer zwischen 0,01 und 100.000 und Tage pro Monat zwischen 0,01 und 31 mit höchstens zwei Dezimalstellen ein.",
         service: "Leistung",
         daysPerMonth: "Tage pro Monat",
         daysShort: "Tage",
