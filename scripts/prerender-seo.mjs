@@ -80,6 +80,8 @@ fs.writeFileSync(
   path.join(dist, "app.html"),
   stripSeoTags(template).replace("</head>", `  <title>Sol y Vida Care</title>\n  <meta name="robots" content="noindex, nofollow" />\n</head>`),
 );
+// Vercel sirve 404.html con estado HTTP 404 para cualquier ruta inexistente.
+fs.copyFileSync(path.join(dist, "app.html"), path.join(dist, "404.html"));
 for (const page of pages) {
   const html = render(page);
   const out = page.path === "/" ? path.join(dist, "index.html") : path.join(dist, page.path, "index.html");

@@ -9,7 +9,7 @@
 ## Pendiente de confirmar por la empresa (NO verificado)
 | Tema | Estado actual | Qué hacer |
 |---|---|---|
-| Cobertura en **Málaga capital** | Página `/ayuda-a-domicilio-malaga` con `status: "pending-review"`: noindex, fuera del sitemap, del pie y de los datos estructurados | Confirmar cobertura. Si es cierta, cambiar a `"published"` en `localPages.json`. Si no, borrar la página |
+| Zona de cobertura | Solo Torremolinos, Benalmádena, Fuengirola y Mijas. Málaga capital NO se atiende y su página se ha eliminado (devuelve 404) | Ninguna. Si se amplía la cobertura, añadir la página en `localPages.json` |
 | Barrios y núcleos por municipio | Retirados del texto visible. Guardados en `zonesToReview` | Confirmar cuáles se atienden y moverlos a `zones` |
 | WhatsApp del 626 406 477 | Botón existente conservado | Confirmar que el número tiene WhatsApp activo |
 | Blog (6 artículos) | `published: false` | Revisar textos, poner `published: true` y ajustar las fechas (están programadas desde 2026-11-17) |
@@ -47,7 +47,7 @@ Nota: los eventos solo se registran de personas que aceptan analítica, así que
 - Añadir fecha de actualización y autoría real (persona o equipo de la empresa) una vez revisados.
 
 ## Plan de 90 días (sin inversión publicitaria)
-- **Días 1-15:** verificar Search Console y enviar sitemap; crear y verificar el perfil de empresa; confirmar WhatsApp, Málaga y zonas; conectar GA4.
+- **Días 1-15:** verificar Search Console y enviar sitemap; crear y verificar el perfil de empresa; confirmar WhatsApp y zonas; conectar GA4.
 - **Días 16-30:** revisar y publicar 2 artículos (necesita ayuda en casa; respiro familiar); pedir las primeras reseñas reales; subir fotos reales al perfil.
 - **Días 31-60:** publicar 2 artículos más (elegir servicio; contratar cuidador); conseguir enlaces locales (ayuntamientos, asociaciones de mayores y directorios que acepten la empresa); responder todas las reseñas.
 - **Días 61-90:** publicar los 2 artículos restantes; revisar en Search Console qué consultas dan impresiones y reforzar esas páginas; publicar las páginas de zona confirmadas; revisar eventos de conversión en GA4.

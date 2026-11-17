@@ -141,40 +141,6 @@
         { "q": "¿Se puede combinar compañía y ayuda en casa?", "a": "Sí. Podemos combinar ambos tipos de apoyo según lo que necesite tu familiar." }
       ],
       "related": ["ayuda-a-domicilio-fuengirola", "ayuda-a-domicilio-torremolinos"]
-    },
-    {
-      "slug": "ayuda-a-domicilio-malaga",
-      "municipality": "Málaga",
-      "status": "pending-review",
-      "reviewNotes": "Cobertura en Málaga capital NO confirmada. Página en noindex y fuera del sitemap, del pie de página y de los datos estructurados hasta confirmarlo. Para publicar: cambiar status a published y revisar el texto.",
-      "title": "Acompañamiento de Mayores en Málaga | Sol y Vida Care",
-      "description": "Acompañamiento de personas mayores en Málaga: consulta la disponibilidad de compañía, ayuda a domicilio y respiro familiar llamando al 626 406 477.",
-      "h1": "Acompañamiento de personas mayores a domicilio en Málaga",
-      "intro": [
-        "Si tu familiar vive en Málaga, escríbenos o llámanos para consultar si podemos atender su domicilio. La disponibilidad depende de la zona y del horario, y te la confirmamos antes de empezar.",
-        "Aquí te explicamos qué servicios puedes solicitar y cómo empezar."
-      ],
-      "zones": [],
-      "zonesToReview": ["Centro", "Teatinos", "Cruz de Humilladero", "Churriana", "Pedregalejo", "El Palo"],
-      "sections": [
-        {
-          "h2": "Cómo consultar la disponibilidad",
-          "paragraphs": [
-            "Indícanos la dirección, las necesidades de tu familiar y el horario deseado. Con eso te confirmamos si podemos atenderle y, en su caso, preparamos una propuesta y un presupuesto."
-          ]
-        },
-        {
-          "h2": "Respiro familiar",
-          "paragraphs": [
-            "Si cuidas a un familiar y necesitas descansar, puedes solicitar el servicio de respiro familiar por horas o días. Lo acordamos con antelación con la familia para que todo esté claro desde el principio."
-          ]
-        }
-      ],
-      "faq": [
-        { "q": "¿Atendéis mi domicilio en Málaga?", "a": "La disponibilidad depende de la zona y el horario. Llámanos al 626 406 477 o escríbenos y te lo confirmamos." },
-        { "q": "¿Qué información necesitáis para empezar?", "a": "Dirección, necesidades de tu familiar, horario deseado y fecha de inicio. Con eso te ofrecemos una propuesta y un presupuesto." }
-      ],
-      "related": ["ayuda-a-domicilio-torremolinos", "ayuda-a-domicilio-mijas"]
     }
   ]
 }
