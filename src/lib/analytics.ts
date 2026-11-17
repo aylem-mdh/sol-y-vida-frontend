@@ -38,7 +38,15 @@ export function initAnalytics(): void {
 
 export function trackEvent(name: string, params: Record<string, string> = {}): void {
   const w = window as GtagWindow;
-  if (loaded && w.gtag) {
+  if (loaded && w.gtag && hasAnalyticsConsent()) {
     w.gtag("event", name, params);
   }
+}
+
+// Si se retira el consentimiento, se desactiva el seguimiento de GA4 sin necesidad de recargar.
+export function syncAnalyticsConsent(): void {
+  if (MEASUREMENT_ID) {
+    (window as unknown as Record<string, unknown>)[`ga-disable-${MEASUREMENT_ID}`] = !hasAnalyticsConsent();
+  }
+  initAnalytics();
 }

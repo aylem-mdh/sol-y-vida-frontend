@@ -2,7 +2,7 @@ import { ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContactActions from "../seo/ContactActions";
-import { localPages } from "../../seo";
+import { publishedLocalPages } from "../../seo";
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ export default function Footer() {
         <nav aria-label={t("contactActions.areas")}>
           <h2 className="text-lg font-bold text-black">{t("contactActions.areas")}</h2>
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
-            {localPages.map((page) => (
+            {publishedLocalPages.map((page) => (
               <li key={page.slug}>
                 <Link to={`/${page.slug}`} className="font-semibold text-[#0B6F6A] hover:underline">
                   {page.municipality}

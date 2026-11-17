@@ -24,7 +24,7 @@ export default function Seo({ path, noindex, title, description }: Props) {
     const finalTitle = title ?? page?.title ?? "Sol y Vida Care";
     const finalDescription = description ?? page?.description ?? "";
     const url = seo.absoluteUrl(path);
-    const image = "https://www.solyvidacare.com/logo.png";
+    const image = "https://www.solyvidacare.com/og-image.jpg";
     const hidden = noindex ?? page?.noindex ?? false;
 
     document.title = finalTitle;
@@ -34,7 +34,7 @@ export default function Seo({ path, noindex, title, description }: Props) {
     setMeta('meta[property="og:description"]', "property", "og:description", finalDescription);
     setMeta('meta[property="og:url"]', "property", "og:url", url);
     setMeta('meta[property="og:image"]', "property", "og:image", image);
-    setMeta('meta[name="twitter:card"]', "name", "twitter:card", "summary");
+    setMeta('meta[name="twitter:card"]', "name", "twitter:card", "summary_large_image");
     setMeta('meta[name="twitter:title"]', "name", "twitter:title", finalTitle);
     setMeta('meta[name="twitter:description"]', "name", "twitter:description", finalDescription);
     setMeta('meta[name="twitter:image"]', "name", "twitter:image", image);

@@ -1,4 +1,4 @@
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { Phone, MessageCircle, MapPin } from "lucide-react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -7,7 +7,8 @@ import { localPages, localServices, seo } from "../seo";
 import { trackEvent } from "../lib/analytics";
 
 export default function LocalLanding() {
-  const { slug } = useParams();
+  const { pathname } = useLocation();
+  const slug = pathname.replace(/^\/|\/$/g, "");
   const page = localPages.find((p) => p.slug === slug);
 
   if (!page) {
@@ -79,16 +80,18 @@ export default function LocalLanding() {
             </section>
           ))}
 
-          <section className="mt-10">
-            <h2 className="text-2xl font-bold text-[#1F2937]">{page.zonesTitle}</h2>
-            <ul className="mt-4 flex flex-wrap gap-3">
-              {page.zones.map((zone) => (
-                <li key={zone} className="inline-flex items-center gap-2 rounded-full bg-[#DDF7F5] px-4 py-2 text-sm font-semibold text-[#0B6F6A]">
-                  <MapPin className="h-4 w-4" aria-hidden="true" /> {zone}
-                </li>
-              ))}
-            </ul>
-          </section>
+          {page.zones.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-[#1F2937]">Zonas de {page.municipality}</h2>
+              <ul className="mt-4 flex flex-wrap gap-3">
+                {page.zones.map((zone) => (
+                  <li key={zone} className="inline-flex items-center gap-2 rounded-full bg-[#DDF7F5] px-4 py-2 text-sm font-semibold text-[#0B6F6A]">
+                    <MapPin className="h-4 w-4" aria-hidden="true" /> {zone}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="mt-10">
             <h2 className="text-2xl font-bold text-[#1F2937]">Preguntas frecuentes</h2>

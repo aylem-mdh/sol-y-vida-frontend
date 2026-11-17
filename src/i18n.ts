@@ -631,8 +631,8 @@ const resources = {
         familyName: "Familia López",
         clientMain: "Carmen López"
       },
-      contactPage: {
         contactActions: { whatsapp: "Escr\u00edbenos por WhatsApp", call: "Llamar al 626 406 477", areas: "Zonas donde trabajamos", whatsappMessage: "Hola, me gustar\u00eda recibir informaci\u00f3n sobre el cuidado de una persona mayor." },
+      contactPage: {
         followUpSubject: "Seguimiento familiar de {{clientName}}",
         title: "Contacta con Sol y Vida Cuidados",
         subtitle: "Estamos aquí para ayudarte.",
@@ -1745,8 +1745,8 @@ const resources = {
         familyName: "Lopez Family",
         clientMain: "Carmen Lopez"
       },
-      contactPage: {
         contactActions: { whatsapp: "Message us on WhatsApp", call: "Call 626 406 477", areas: "Areas we serve", whatsappMessage: "Hello, I would like information about care for an elderly person." },
+      contactPage: {
         followUpSubject: "Family follow-up for {{clientName}}",
         title: "Contact Sol y Vida Cuidados",
         subtitle: "We are here to help you.",
@@ -2801,8 +2801,8 @@ const resources = {
         familyName: "Famille Lopez",
         clientMain: "Carmen Lopez"
       },
-      contactPage: {
         contactActions: { whatsapp: "\u00c9crivez-nous sur WhatsApp", call: "Appeler le 626 406 477", areas: "Zones desservies", whatsappMessage: "Bonjour, je souhaite des informations sur l'accompagnement d'une personne \u00e2g\u00e9e." },
+      contactPage: {
         followUpSubject: "Suivi familial de {{clientName}}",
         title: "Contacter Sol y Vida Cuidados",
         subtitle: "Nous sommes la pour vous aider.",
@@ -3857,8 +3857,8 @@ const resources = {
         familyName: "Familie Lopez",
         clientMain: "Carmen Lopez"
       },
-      contactPage: {
         contactActions: { whatsapp: "Schreiben Sie uns per WhatsApp", call: "626 406 477 anrufen", areas: "Unsere Einsatzgebiete", whatsappMessage: "Guten Tag, ich m\u00f6chte Informationen zur Betreuung einer \u00e4lteren Person." },
+      contactPage: {
         followUpSubject: "Familienbetreuung fur {{clientName}}",
         title: "Kontaktieren Sie Sol y Vida Cuidados",
         subtitle: "Wir sind hier, um Ihnen zu helfen.",

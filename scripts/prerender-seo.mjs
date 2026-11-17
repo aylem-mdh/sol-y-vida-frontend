@@ -11,7 +11,7 @@ const dist = path.join(root, "dist");
 const template = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const IMAGE = `${seo.absoluteUrl("/").replace(/\/$/, "")}/logo.png`;
+const IMAGE = "https://www.solyvidacare.com/og-image.jpg";
 
 function stripSeoTags(html) {
   return html
@@ -27,14 +27,21 @@ function bodyFor(page) {
     .filter((p) => !p.noindex)
     .map((p) => `<li><a href="${p.path}">${esc(p.name)}</a></li>`)
     .join("");
+  const paragraphs = (list) => (list || []).map((t) => `<p>${esc(t)}</p>`).join("");
+  const servicesHtml = `<h2>Servicios</h2><ul>${local.services.map((s) => `<li><strong>${esc(s.name)}</strong>: ${esc(s.text)}</li>`).join("")}</ul>`;
   let extra = "";
   if (page.kind === "local") {
     const lp = local.pages.find((p) => p.slug === page.slug);
     extra =
-      `<p>${esc(lp.intro)}</p>` +
-      (lp.sections || []).map((s) => `<h2>${esc(s.h2)}</h2>${(s.paragraphs || []).map((t) => `<p>${esc(t)}</p>`).join("")}`).join("");
+      paragraphs(lp.intro) +
+      servicesHtml +
+      (lp.sections || []).map((s) => `<h2>${esc(s.h2)}</h2>${paragraphs(s.paragraphs)}`).join("") +
+      `<h2>Preguntas frecuentes</h2>${(lp.faq || []).map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("")}`;
+  } else if (page.path === "/" || page.path === "/services") {
+    extra = servicesHtml;
   }
-  return `<main><h1>${esc(page.h1)}</h1><p>${esc(page.description)}</p>${extra}<nav aria-label="Principal"><ul>${links}</ul></nav></main>`;
+  const contact = `<p>Teléfono: <a href="tel:${esc(seo.SITE.phone)}">${esc(seo.SITE.phoneDisplay)}</a> · ${esc(seo.SITE.email)}</p>`;
+  return `<main><h1>${esc(page.h1)}</h1><p>${esc(page.description)}</p>${extra}${contact}<nav aria-label="Principal"><ul>${links}</ul></nav></main>`;
 }
 
 function render(page) {
@@ -52,7 +59,7 @@ function render(page) {
     `<meta property="og:description" content="${esc(page.description)}" />`,
     `<meta property="og:url" content="${url}" />`,
     `<meta property="og:image" content="${IMAGE}" />`,
-    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(page.title)}" />`,
     `<meta name="twitter:description" content="${esc(page.description)}" />`,
     `<meta name="twitter:image" content="${IMAGE}" />`,
@@ -67,6 +74,12 @@ function render(page) {
 }
 
 const pages = seo.allPublicPages();
+
+// Plantilla para las rutas privadas de la aplicación: sin metadatos de la home y con noindex.
+fs.writeFileSync(
+  path.join(dist, "app.html"),
+  stripSeoTags(template).replace("</head>", `  <title>Sol y Vida Care</title>\n  <meta name="robots" content="noindex, nofollow" />\n</head>`),
+);
 for (const page of pages) {
   const html = render(page);
   const out = page.path === "/" ? path.join(dist, "index.html") : path.join(dist, page.path, "index.html");

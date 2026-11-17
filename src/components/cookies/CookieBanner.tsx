@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Cookie, X } from "lucide-react";
-import { analyticsConfigured, initAnalytics } from "../../lib/analytics";
+import { analyticsConfigured, syncAnalyticsConsent } from "../../lib/analytics";
 
 // ── Almacenamiento ────────────────────────────────────────────────────────────
 
@@ -32,7 +32,7 @@ function saveConsent(analytics: boolean): void {
     timestamp: new Date().toISOString(),
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
-  if (analytics) initAnalytics();
+  syncAnalyticsConsent();
 }
 
 // ── Evento global para abrir el panel desde el Footer ─────────────────────────

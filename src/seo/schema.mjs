@@ -21,6 +21,7 @@ function allPublicPages() {
     h1: p.h1,
     priority: "0.8",
     kind: "local",
+    noindex: p.status === "pending-review",
     slug: p.slug,
   }));
   const blogPages = blog.published
@@ -74,10 +75,9 @@ function organizationSchema() {
       addressRegion: SITE.region,
       addressCountry: "ES",
     },
-    areaServed: ["Torremolinos", "Benalmádena", "Fuengirola", "Mijas", "Málaga"].map((n) => ({
-      "@type": "City",
-      name: n,
-    })),
+    areaServed: local.pages
+      .filter((p) => p.status !== "pending-review")
+      .map((p) => ({ "@type": "City", name: p.municipality })),
   };
 }
 

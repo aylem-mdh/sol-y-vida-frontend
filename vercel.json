@@ -6,7 +6,7 @@
     },
     {
       "source": "/(admin|calendar|agenda|clients|clients/.*|workers|client/services|visits|family-members|incidents|documentation|reports|settings|notifications|budgets|maintenance|complaints|reviews|family|family/.*|worker|login|activate-account|reset-password)",
-      "destination": "/index.html"
+      "destination": "/app.html"
     }
   ]
 }
