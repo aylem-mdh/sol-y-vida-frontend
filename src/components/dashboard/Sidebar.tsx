@@ -18,6 +18,7 @@ import {
   Settings,
   LogOut,
   Star,
+  Home,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -141,6 +142,18 @@ export default function Sidebar({ role }: Props) {
           );
         })}
       </nav>
+
+      <div className="px-4 pb-3">
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center gap-3 rounded-2xl border border-[#D8EFEA] px-4 py-3 text-[#0F817C] transition duration-300 hover:bg-[#ECFAF8]"
+        >
+          <Home size={18} className="flex-shrink-0" />
+          <span className="text-sm font-semibold sm:text-[15px]">{t("common.home")}</span>
+        </a>
+      </div>
 
       <div className="mx-4 mb-4 rounded-2xl border border-[#D8EFEA] bg-[#ECFAF8] p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6B7280]">{t("sidebar.support")}</p>
