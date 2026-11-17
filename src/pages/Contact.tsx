@@ -7,9 +7,12 @@ import { getFamilyProfile } from "../services/familyPortalService";
 import { sendPublicContact } from "../services/contactService";
 import { useTranslation } from "react-i18next";
 
+const MAP_QUERY = encodeURIComponent("Sol y Vida Cuidados, Paseo del Colorado 7, Torremolinos, Málaga");
+
 export default function Contact() {
   const { t } = useTranslation();
   const role = localStorage.getItem("role");
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -247,6 +250,37 @@ export default function Contact() {
             </form>
           </section>
         </div>
+
+        <section className="mt-10 rounded-[32px] border border-[#D6F1EE] bg-white p-6 shadow-[0_20px_55px_rgba(15,158,152,0.08)] sm:p-8">
+          <h2 className="text-2xl font-bold text-[#1F2937]">{t("contactPage.map.title")}</h2>
+          <p className="mt-2 text-sm text-[#4B5563]">{t("contactPage.map.description")}</p>
+          {mapLoaded ? (
+            <iframe
+              title={t("contactPage.map.title")}
+              src={`https://www.google.com/maps?q=${MAP_QUERY}&output=embed`}
+              className="mt-5 h-80 w-full rounded-2xl border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setMapLoaded(true)}
+              className="mt-5 flex h-48 w-full items-center justify-center rounded-2xl border border-dashed border-[#B8E3DF] bg-[#F2FBFA] text-sm font-semibold text-[#0F817C]"
+            >
+              {t("contactPage.map.load")}
+            </button>
+          )}
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 inline-block rounded-2xl bg-[#0F9E98] px-5 py-3 text-sm font-semibold text-white"
+          >
+            {t("contactPage.map.directions")}
+          </a>
+        </section>
 
         <div className="pointer-events-none mx-auto mt-12 h-20 w-full max-w-3xl rounded-full bg-[radial-gradient(ellipse_at_center,rgba(15,158,152,0.14)_0%,rgba(15,158,152,0)_70%)] sm:mt-16" />
       </main>

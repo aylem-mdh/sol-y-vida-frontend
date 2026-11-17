@@ -640,6 +640,7 @@ const resources = {
         addressLabel: "Dirección",
         addressStreet: "Paseo del Colorado, 7",
         addressCity: "Torremolinos (Málaga)",
+        map: { title: "Cómo encontrarnos", description: "Estamos en Torremolinos y atendemos a familias de la Costa del Sol.", load: "Ver mapa de Google Maps", directions: "Cómo llegar" },
         websiteLabel: "Sitio web",
         alerts: {
           required: "Completa los campos obligatorios para enviar tu solicitud.",
@@ -974,6 +975,8 @@ const resources = {
         replyingTo: "Responder: {{subject}}",
         startAnother: "Nueva conversación",
         openConversation: "Abrir conversación",
+        delete: "Eliminar",
+        deleteConfirm: "¿Eliminar esta conversación y todos sus mensajes? Esta acción no se puede deshacer.",
         adminInbox: "Gestión de conversaciones",
         history: "Historial de conversaciones",
         subject: "Asunto",
@@ -1003,7 +1006,8 @@ const resources = {
           messageRequired: "Escribe un mensaje.",
           send: "No se pudo enviar la conversación.",
           responseRequired: "Añade una respuesta antes de guardar.",
-          update: "No se pudo actualizar la conversación."
+          update: "No se pudo actualizar la conversación.",
+          delete: "No se pudo eliminar la conversación."
         }
       },
       budgetsPage: {
@@ -1748,6 +1752,7 @@ const resources = {
         addressLabel: "Address",
         addressStreet: "Paseo del Colorado, 7",
         addressCity: "Torremolinos (Malaga)",
+        map: { title: "How to find us", description: "We are based in Torremolinos and support families across the Costa del Sol.", load: "Show Google Maps", directions: "Get directions" },
         websiteLabel: "Website",
         alerts: {
           required: "Complete the required fields to send your request.",
@@ -2082,6 +2087,8 @@ const resources = {
         replyingTo: "Reply: {{subject}}",
         startAnother: "New conversation",
         openConversation: "Open conversation",
+        delete: "Delete",
+        deleteConfirm: "Delete this conversation and all its messages? This cannot be undone.",
         adminInbox: "Conversation management",
         history: "Conversation history",
         subject: "Subject",
@@ -2111,7 +2118,8 @@ const resources = {
           messageRequired: "Write a message.",
           send: "Conversation could not be sent.",
           responseRequired: "Add a response before saving.",
-          update: "Conversation could not be updated."
+          update: "Conversation could not be updated.",
+          delete: "Conversation could not be deleted."
         }
       },
       budgetsPage: {
@@ -2798,6 +2806,7 @@ const resources = {
         addressLabel: "Adresse",
         addressStreet: "Paseo del Colorado, 7",
         addressCity: "Torremolinos (Malaga)",
+        map: { title: "Nous trouver", description: "Nous sommes ? Torremolinos et accompagnons les familles de la Costa del Sol.", load: "Afficher Google Maps", directions: "Itin?raire" },
         websiteLabel: "Site web",
         alerts: {
           required: "Completez les champs obligatoires pour envoyer votre demande.",
@@ -3132,6 +3141,8 @@ const resources = {
         replyingTo: "Repondre : {{subject}}",
         startAnother: "Nouvelle conversation",
         openConversation: "Ouvrir la conversation",
+        delete: "Supprimer",
+        deleteConfirm: "Supprimer cette conversation et tous ses messages ? Cette action est irréversible.",
         adminInbox: "Gestion des conversations",
         history: "Historique des conversations",
         subject: "Sujet",
@@ -3161,7 +3172,8 @@ const resources = {
           messageRequired: "Ecrivez un message.",
           send: "La conversation n'a pas pu etre envoyee.",
           responseRequired: "Ajoutez une reponse avant d'enregistrer.",
-          update: "La conversation n'a pas pu etre mise a jour."
+          update: "La conversation n'a pas pu etre mise a jour.",
+          delete: "La conversation n'a pas pu etre supprimee."
         }
       },
       budgetsPage: {
@@ -3848,6 +3860,7 @@ const resources = {
         addressLabel: "Adresse",
         addressStreet: "Paseo del Colorado, 7",
         addressCity: "Torremolinos (Malaga)",
+        map: { title: "So finden Sie uns", description: "Wir sind in Torremolinos und betreuen Familien an der Costa del Sol.", load: "Google Maps anzeigen", directions: "Route planen" },
         websiteLabel: "Webseite",
         alerts: {
           required: "Fullen Sie die Pflichtfelder aus, um Ihre Anfrage zu senden.",
@@ -4182,6 +4195,8 @@ const resources = {
         replyingTo: "Antworten: {{subject}}",
         startAnother: "Neues Gesprach",
         openConversation: "Gesprach offnen",
+        delete: "Löschen",
+        deleteConfirm: "Dieses Gespräch und alle Nachrichten löschen? Dies kann nicht rückgängig gemacht werden.",
         adminInbox: "Gesprachsverwaltung",
         history: "Gesprachsverlauf",
         subject: "Betreff",
@@ -4211,7 +4226,8 @@ const resources = {
           messageRequired: "Schreiben Sie eine Nachricht.",
           send: "Gesprach konnte nicht gesendet werden.",
           responseRequired: "Vor dem Speichern eine Antwort erfassen.",
-          update: "Gesprach konnte nicht aktualisiert werden."
+          update: "Gesprach konnte nicht aktualisiert werden.",
+          delete: "Gesprach konnte nicht geloscht werden."
         }
       },
       budgetsPage: {

@@ -5,6 +5,7 @@ import Topbar from "../components/dashboard/Topbar";
 import {
   addComplaintMessage,
   createComplaint,
+  deleteComplaint,
   getComplaints,
   resolveComplaint,
   type Complaint,
@@ -163,6 +164,22 @@ export default function Complaints() {
       await loadComplaints();
     } catch {
       alert(t("complaintsPage.errors.update"));
+    }
+  }
+
+  async function removeComplaint(complaint: Complaint) {
+    if (!window.confirm(t("complaintsPage.deleteConfirm"))) {
+      return;
+    }
+
+    try {
+      await deleteComplaint(complaint.id);
+      setComplaints((current) => current.filter((item) => item.id !== complaint.id));
+      if (selectedConversationId === complaint.id) {
+        startNewConversation();
+      }
+    } catch {
+      alert(t("complaintsPage.errors.delete"));
     }
   }
 
@@ -332,6 +349,13 @@ export default function Complaints() {
                         className="rounded-2xl bg-[#0F9E98] px-5 py-3 font-semibold text-white"
                       >
                         {t("complaintsPage.updateStatus")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void removeComplaint(complaint)}
+                        className="rounded-2xl border border-red-200 bg-white px-5 py-3 font-semibold text-red-700 hover:bg-red-50"
+                      >
+                        {t("complaintsPage.delete")}
                       </button>
                     </div>
                   )}

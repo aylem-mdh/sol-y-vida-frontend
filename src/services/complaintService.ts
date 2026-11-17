@@ -51,6 +51,10 @@ export async function resolveComplaint(id: number, payload: ResolveComplaintPayl
   await api.put(`/Complaints/${id}/status`, payload);
 }
 
+export async function deleteComplaint(id: number) {
+  await api.delete(`/Complaints/${id}`);
+}
+
 export async function addComplaintMessage(id: number, payload: AddComplaintMessagePayload) {
   const response = await api.post<ComplaintMessage>(`/Complaints/${id}/messages`, payload);
   return response.data;
