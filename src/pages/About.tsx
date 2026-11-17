@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { Link } from "react-router-dom";
@@ -54,6 +55,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ECFAF8_0%,#F6FCFB_45%,#FFFFFF_100%)]">
+      <Seo path="/about" />
       <section className="relative overflow-hidden bg-[linear-gradient(140deg,#0F9E98_0%,#6EC8C3_40%,#F29A38_100%)] pb-16 pt-8 sm:pb-20 lg:pb-24">
         <div className="mx-auto max-w-7xl px-6">
           <Header />

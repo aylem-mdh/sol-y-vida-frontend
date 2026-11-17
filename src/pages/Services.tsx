@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -323,6 +324,7 @@ export default function Services() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ECFAF8_0%,#F7FCFB_45%,#FFFFFF_100%)]">
+      <Seo path="/services" />
       <div className="mx-auto max-w-7xl px-6 pt-8">
         <Header />
       </div>

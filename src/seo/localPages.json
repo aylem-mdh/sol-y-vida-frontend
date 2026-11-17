@@ -1,0 +1,175 @@
+{
+  "services": [
+    { "name": "Acompañamiento y compañía", "text": "Compañía, conversación y apoyo diario para que cada jornada se viva con más tranquilidad." },
+    { "name": "Ayuda a domicilio", "text": "Asistencia práctica en casa para las tareas cotidianas y un entorno más seguro y ordenado." },
+    { "name": "Acompañamiento médico y hospitalario", "text": "Acompañamiento a consultas y pruebas, con respeto y profesionalidad." },
+    { "name": "Respiro familiar", "text": "Apoyo para que las familias cuidadoras puedan recuperar tiempo y energía con confianza." }
+  ],
+  "pages": [
+    {
+      "slug": "ayuda-a-domicilio-torremolinos",
+      "municipality": "Torremolinos",
+      "title": "Ayuda a Domicilio en Torremolinos | Cuidado de Mayores",
+      "description": "Ayuda a domicilio y cuidado de personas mayores en Torremolinos. Acompañamiento, respiro familiar y apoyo en casa con trato cercano. Llama al 626 406 477.",
+      "h1": "Ayuda a domicilio y cuidado de personas mayores en Torremolinos",
+      "intro": [
+        "Sol y Vida Care tiene su sede en Torremolinos, en el Paseo del Colorado, 7. Conocemos la zona y trabajamos con familias que quieren que su familiar mayor siga en su casa, en su barrio y con sus rutinas.",
+        "Si estás buscando ayuda a domicilio en Torremolinos, te explicamos cómo trabajamos y qué podemos hacer según la situación de tu familiar. La primera conversación no te compromete a nada."
+      ],
+      "zonesTitle": "Zonas de Torremolinos que atendemos",
+      "zones": ["Centro", "La Carihuela", "Montemar", "El Bajondillo", "El Calvario"],
+      "sections": [
+        {
+          "h2": "Cuidado en casa, en tu propio barrio",
+          "paragraphs": [
+            "Muchas personas mayores de Torremolinos viven en edificios con vida de barrio: el mercado, la farmacia y el paseo marítimo a pocos minutos. Un buen servicio a domicilio ayuda a conservar esas costumbres, por ejemplo con paseos acompañados, compras o simplemente una conversación cada día.",
+            "Adaptamos las visitas a la rutina de cada persona: horarios, frecuencia y tareas se acuerdan con la familia antes de empezar."
+          ]
+        },
+        {
+          "h2": "Cuándo suelen pedirnos ayuda las familias",
+          "paragraphs": [
+            "Con frecuencia, cuando un familiar mayor empieza a necesitar compañía durante el día, apoyo en las tareas de casa o alguien que le acompañe a una cita médica. También cuando la persona que cuida habitualmente necesita descansar unos días o unas horas a la semana."
+          ]
+        }
+      ],
+      "faq": [
+        { "q": "¿Dónde está vuestra oficina en Torremolinos?", "a": "En el Paseo del Colorado, 7, Torremolinos (Málaga). Antes de acudir, llámanos al 626 406 477 para concertar la cita." },
+        { "q": "¿Cómo se pide información?", "a": "Puedes llamarnos, escribirnos por WhatsApp o usar el formulario de contacto. Te preguntaremos por la situación de tu familiar y te explicaremos las opciones." }
+      ],
+      "related": ["ayuda-a-domicilio-benalmadena", "ayuda-a-domicilio-malaga"]
+    },
+    {
+      "slug": "ayuda-a-domicilio-benalmadena",
+      "municipality": "Benalmádena",
+      "title": "Cuidado de Mayores en Benalmádena | Sol y Vida Care",
+      "description": "Cuidado de personas mayores a domicilio en Benalmádena Pueblo, Arroyo de la Miel y Benalmádena Costa. Compañía, ayuda en casa y respiro familiar.",
+      "h1": "Cuidado de mayores a domicilio en Benalmádena",
+      "intro": [
+        "Benalmádena combina zonas muy distintas entre sí, y el cuidado a domicilio también debe adaptarse a cada una. Desde Sol y Vida Care acompañamos a personas mayores y a sus familias en este municipio.",
+        "Te contamos cómo podemos ayudarte si buscas cuidado de mayores en Benalmádena."
+      ],
+      "zonesTitle": "Núcleos de Benalmádena que atendemos",
+      "zones": ["Benalmádena Pueblo", "Arroyo de la Miel", "Benalmádena Costa"],
+      "sections": [
+        {
+          "h2": "Un municipio, tres entornos",
+          "paragraphs": [
+            "Benalmádena Pueblo tiene calles con pendiente, mientras que Arroyo de la Miel y la zona de costa son más llanas y cuentan con más comercios y servicios cerca. Tenerlo en cuenta es importante al planificar paseos, recados o desplazamientos con una persona mayor.",
+            "Antes de empezar valoramos con la familia las necesidades concretas: accesibilidad de la vivienda, movilidad de la persona y apoyos que ya existen."
+          ]
+        },
+        {
+          "h2": "Apoyo a familias cuidadoras",
+          "paragraphs": [
+            "Si cuidas de un familiar y necesitas tiempo para ti, nuestro servicio de respiro familiar permite que otra persona de confianza esté con él o ella durante unas horas o unos días. Es una forma de seguir cuidando sin llegar al agotamiento."
+          ]
+        }
+      ],
+      "faq": [
+        { "q": "¿Atendéis en toda la zona de Benalmádena?", "a": "Atendemos Benalmádena Pueblo, Arroyo de la Miel y Benalmádena Costa. Si tu domicilio está en otra zona, consúltanos la disponibilidad." },
+        { "q": "¿Se puede solicitar solo compañía unas horas?", "a": "Sí. El servicio se adapta a las necesidades de cada familia; cuéntanos qué horario necesitas y te lo planteamos." }
+      ],
+      "related": ["ayuda-a-domicilio-torremolinos", "ayuda-a-domicilio-fuengirola"]
+    },
+    {
+      "slug": "ayuda-a-domicilio-fuengirola",
+      "municipality": "Fuengirola",
+      "title": "Ayuda a Domicilio en Fuengirola | Sol y Vida Care",
+      "description": "Ayuda a domicilio y acompañamiento de personas mayores en Fuengirola: compañía, apoyo en casa, acompañamiento médico y respiro familiar.",
+      "h1": "Ayuda a domicilio para personas mayores en Fuengirola",
+      "intro": [
+        "En Fuengirola trabajamos con familias que buscan ayuda a domicilio para un familiar mayor, ya sea para acompañarle varias horas al día, apoyarle en casa o ayudarle con los desplazamientos.",
+        "Esta página resume lo que podemos hacer y cómo empezar."
+      ],
+      "zonesTitle": "Zonas de Fuengirola que atendemos",
+      "zones": ["Centro", "Los Boliches", "Torreblanca", "Carvajal"],
+      "sections": [
+        {
+          "h2": "Acompañamiento a consultas y gestiones",
+          "paragraphs": [
+            "Ir a una consulta médica o a hacer una gestión puede ser complicado para una persona mayor que vive sola o cuya familia trabaja. Nuestro acompañamiento médico y hospitalario ofrece una persona de confianza que va con ella, la espera y la lleva de vuelta a casa.",
+            "No sustituimos a ningún profesional sanitario: nuestro papel es acompañar, ayudar a que la persona se sienta segura y mantener informada a la familia."
+          ]
+        },
+        {
+          "h2": "Ayuda práctica en casa",
+          "paragraphs": [
+            "La ayuda a domicilio incluye apoyo en tareas cotidianas para que el hogar sea un lugar más cómodo y ordenado. Definimos con la familia qué tareas son necesarias y con qué frecuencia."
+          ]
+        }
+      ],
+      "faq": [
+        { "q": "¿Puedo pedir acompañamiento solo para una cita médica?", "a": "Sí, es posible solicitarlo para una ocasión concreta. Llámanos con la fecha y el lugar para confirmar disponibilidad." },
+        { "q": "¿Cómo se presupuesta el servicio?", "a": "Preparamos un presupuesto según las horas, los días y el tipo de apoyo que necesites. Pídelo sin compromiso por teléfono, WhatsApp o formulario." }
+      ],
+      "related": ["ayuda-a-domicilio-benalmadena", "ayuda-a-domicilio-mijas"]
+    },
+    {
+      "slug": "ayuda-a-domicilio-mijas",
+      "municipality": "Mijas",
+      "title": "Cuidado de Personas Mayores en Mijas | Sol y Vida Care",
+      "description": "Cuidado de personas mayores a domicilio en Mijas Pueblo, Las Lagunas y La Cala de Mijas. Acompañamiento, ayuda en casa y respiro familiar.",
+      "h1": "Cuidado de personas mayores a domicilio en Mijas",
+      "intro": [
+        "Mijas es un municipio extenso, con núcleos y urbanizaciones separados entre sí. Por eso, al organizar un servicio a domicilio, conviene concretar bien la ubicación, los desplazamientos y los horarios.",
+        "En Sol y Vida Care atendemos a familias de Mijas que buscan compañía, ayuda en casa o apoyo como cuidadores."
+      ],
+      "zonesTitle": "Núcleos de Mijas que atendemos",
+      "zones": ["Mijas Pueblo", "Las Lagunas", "La Cala de Mijas"],
+      "sections": [
+        {
+          "h2": "Planificar bien los desplazamientos",
+          "paragraphs": [
+            "Debido a la extensión del municipio, es útil que nos indiques la dirección exacta y el horario que necesitas desde el primer contacto. Así podemos confirmarte la disponibilidad en tu zona y el calendario del servicio.",
+            "Si tu familiar vive en una urbanización, también tenemos en cuenta el acceso a la vivienda y las rutinas del día a día."
+          ]
+        },
+        {
+          "h2": "Compañía para quien vive solo",
+          "paragraphs": [
+            "La compañía regular, aunque sean unas horas, aporta rutina y tranquilidad tanto a la persona mayor como a su familia, sobre todo si los familiares viven lejos o trabajan durante el día."
+          ]
+        }
+      ],
+      "faq": [
+        { "q": "¿Atendéis en La Cala de Mijas y Las Lagunas?", "a": "Sí, además de Mijas Pueblo. Si tu vivienda está en otra zona del municipio, llámanos para confirmar la disponibilidad." },
+        { "q": "¿Se puede combinar compañía y ayuda en casa?", "a": "Sí. Podemos combinar ambos tipos de apoyo según lo que necesite tu familiar." }
+      ],
+      "related": ["ayuda-a-domicilio-fuengirola", "ayuda-a-domicilio-malaga"]
+    },
+    {
+      "slug": "ayuda-a-domicilio-malaga",
+      "municipality": "Málaga",
+      "title": "Acompañamiento de Mayores en Málaga | Sol y Vida Care",
+      "description": "Acompañamiento de personas mayores en Málaga: compañía, ayuda a domicilio, acompañamiento hospitalario y respiro familiar. Consulta disponibilidad.",
+      "h1": "Acompañamiento de personas mayores a domicilio en Málaga",
+      "intro": [
+        "Sol y Vida Care ofrece acompañamiento y cuidado a domicilio para personas mayores en Málaga. Antes de contratar, es importante confirmar la disponibilidad según el barrio y el horario.",
+        "Aquí te explicamos qué servicios puedes solicitar y cómo empezar."
+      ],
+      "zonesTitle": "Consulta la disponibilidad en tu barrio",
+      "zones": ["Centro", "Teatinos", "Cruz de Humilladero", "Churriana", "Pedregalejo", "El Palo"],
+      "sections": [
+        {
+          "h2": "Acompañamiento hospitalario en la capital",
+          "paragraphs": [
+            "En Málaga capital las consultas y pruebas médicas pueden suponer desplazamientos largos y esperas. Un acompañamiento profesional permite que la persona mayor no vaya sola y que su familia esté informada.",
+            "Podemos acompañar a consultas y pruebas en centros sanitarios de la ciudad. Indícanos centro, fecha y hora para confirmarlo."
+          ]
+        },
+        {
+          "h2": "Respiro familiar",
+          "paragraphs": [
+            "Si cuidas a un familiar en Málaga y necesitas descansar, puedes solicitar el servicio de respiro familiar por horas o días. Lo acordamos con antelación con la familia para que todo esté claro desde el principio."
+          ]
+        }
+      ],
+      "faq": [
+        { "q": "¿Cubrís todos los barrios de Málaga?", "a": "La disponibilidad depende de la zona y el horario. Llámanos al 626 406 477 o escríbenos y te confirmamos si podemos atender tu domicilio." },
+        { "q": "¿Qué información necesitáis para empezar?", "a": "Dirección, necesidades de tu familiar, horario deseado y fecha de inicio. Con eso te ofrecemos una propuesta y un presupuesto." }
+      ],
+      "related": ["ayuda-a-domicilio-torremolinos", "ayuda-a-domicilio-mijas"]
+    }
+  ]
+}

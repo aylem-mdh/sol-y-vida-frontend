@@ -17,8 +17,10 @@ export default function Header() {
         {/* LOGO */}
         <div className="z-20 shrink-0">
           <img
-            src="/logo.png"
-            alt="Sol y Vida"
+            src="/logo.webp"
+            width={512}
+            height={341}
+            alt="Sol y Vida Care"
             className="h-20 sm:h-44 w-auto object-contain drop-shadow-xl"
           />
         </div>

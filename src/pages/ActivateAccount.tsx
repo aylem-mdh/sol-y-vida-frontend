@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { activateAccount } from "../services/authService";
@@ -38,6 +39,7 @@ export default function ActivateAccount() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#F2FBFA_0%,#FFFFFF_100%)] flex items-center justify-center px-4">
+      <Seo path="/activate-account" noindex />
       <div className="w-full max-w-md rounded-3xl border border-[#D8EFEA] bg-white p-8 shadow-[0_18px_42px_rgba(15,25,30,0.12)]">
         <h1 className="text-2xl font-bold text-[#1F2937]">{t("activatePage.title")}</h1>
         <p className="mt-2 text-sm text-[#4B5563]">{t("activatePage.subtitle")}</p>

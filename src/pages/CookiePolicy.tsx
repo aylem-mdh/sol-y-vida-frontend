@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 
@@ -14,6 +15,7 @@ const cookieTypes = [
     paragraphs: [
       "Son aquellas utilizadas y gestionadas por entidades externas a nosotros, y nos proporcionan una serie de servicios con el objetivo de mejorar nuestra página web, así como tu experiencia al visitarla.",
       "Los principales objetivos por los que se utilizan cookies de terceros son la obtención de estadísticas y el análisis de información sobre la interacción en nuestra web.",
+      "Si activas las cookies de analítica en el banner de cookies, utilizaremos Google Analytics 4 para medir visitas y clics en teléfono, WhatsApp y formulario de contacto. No se carga ninguna herramienta de analítica sin tu consentimiento previo, y puedes retirarlo en cualquier momento desde «Configurar cookies» en el pie de página.",
       "La información que se podrá obtener con este tipo de cookies se referirá, por ejemplo, al número de páginas visitadas por la persona usuaria, su idioma, dirección IP, el número de personas que nos visitan, así como su frecuencia de utilización y el tiempo de permanencia en nuestra web.",
       "En ningún caso se recogerá información de forma anónima, sin identificar a las personas individualmente.",
       "Las entidades encargadas del suministro de cookies podrán ceder esta información a terceras partes, siempre y cuando la ley lo permita y dichas entidades lo procesen para sus propios fines.",
@@ -32,6 +34,7 @@ const cookieTypes = [
 export default function CookiePolicy() {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ECFAF8_0%,#F6FCFB_45%,#FFFFFF_100%)]">
+      <Seo path="/cookies" />
       {/* Hero */}
       <section className="relative overflow-hidden bg-[linear-gradient(140deg,#0F9E98_0%,#6EC8C3_40%,#F29A38_100%)] pb-16 pt-8 sm:pb-20 lg:pb-24">
         <div className="mx-auto max-w-7xl px-6">

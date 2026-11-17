@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -66,6 +67,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#072B61] via-[#0B4EA2] to-[#2563EB] flex items-center justify-center p-6">
+      <Seo path="/login" />
       <div className="w-full max-w-[520px] bg-white rounded-[32px] shadow-2xl p-10">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-[#0B4EA2]">{t("branding.name")}</h1>

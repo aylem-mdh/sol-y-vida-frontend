@@ -1,3 +1,4 @@
+import Seo from "../components/seo/Seo";
 import { useCallback, useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -5,6 +6,7 @@ import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { getFamilyProfile } from "../services/familyPortalService";
 import { sendPublicContact } from "../services/contactService";
+import { trackEvent } from "../lib/analytics";
 import { useTranslation } from "react-i18next";
 
 const MAP_QUERY = encodeURIComponent("Sol y Vida Cuidados, Paseo del Colorado 7, Torremolinos, Málaga");
@@ -67,6 +69,7 @@ export default function Contact() {
     try {
       setSending(true);
       await sendPublicContact({ ...form, website });
+      trackEvent("contact_form_submit");
       alert(t("contactPage.alerts.success"));
       setForm((current) => ({
         ...current,
@@ -87,6 +90,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ECFAF8_0%,#F7FCFB_45%,#FFFFFF_100%)]">
+      <Seo path="/contact" />
       <div className="mx-auto max-w-7xl px-6 pt-8">
         <Header />
       </div>

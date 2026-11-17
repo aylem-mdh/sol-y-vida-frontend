@@ -237,6 +237,7 @@ const resources = {
 
       publicHome: {
         hero: {
+          h1: "Cuidado de personas mayores a domicilio en la Costa del Sol",
           badge: "CUIDADO PROFESIONAL A DOMICILIO",
           lead: "Somos una empresa especializada en la atención y acompañamiento de personas mayores en la Costa del Sol.",
           description1:
@@ -631,6 +632,7 @@ const resources = {
         clientMain: "Carmen López"
       },
       contactPage: {
+        contactActions: { whatsapp: "Escr\u00edbenos por WhatsApp", call: "Llamar al 626 406 477", areas: "Zonas donde trabajamos", whatsappMessage: "Hola, me gustar\u00eda recibir informaci\u00f3n sobre el cuidado de una persona mayor." },
         followUpSubject: "Seguimiento familiar de {{clientName}}",
         title: "Contacta con Sol y Vida Cuidados",
         subtitle: "Estamos aquí para ayudarte.",
@@ -1218,6 +1220,7 @@ const resources = {
 
       publicHome: {
         hero: {
+          h1: "Home care for elderly people on the Costa del Sol",
           badge: "PROFESSIONAL HOME CARE",
           lead: "We are a company specialized in the care and support of older people on the Costa del Sol.",
           description1:
@@ -1743,6 +1746,7 @@ const resources = {
         clientMain: "Carmen Lopez"
       },
       contactPage: {
+        contactActions: { whatsapp: "Message us on WhatsApp", call: "Call 626 406 477", areas: "Areas we serve", whatsappMessage: "Hello, I would like information about care for an elderly person." },
         followUpSubject: "Family follow-up for {{clientName}}",
         title: "Contact Sol y Vida Cuidados",
         subtitle: "We are here to help you.",
@@ -2259,6 +2263,7 @@ const resources = {
       },
       publicHome: {
         hero: {
+          h1: "Accompagnement \u00e0 domicile de personnes \u00e2g\u00e9es sur la Costa del Sol",
           badge: "SOINS PROFESSIONNELS A DOMICILE",
           lead: "Nous sommes une entreprise specialisee dans l'accompagnement et les soins des personnes agees sur la Costa del Sol.",
           description1:
@@ -2797,6 +2802,7 @@ const resources = {
         clientMain: "Carmen Lopez"
       },
       contactPage: {
+        contactActions: { whatsapp: "\u00c9crivez-nous sur WhatsApp", call: "Appeler le 626 406 477", areas: "Zones desservies", whatsappMessage: "Bonjour, je souhaite des informations sur l'accompagnement d'une personne \u00e2g\u00e9e." },
         followUpSubject: "Suivi familial de {{clientName}}",
         title: "Contacter Sol y Vida Cuidados",
         subtitle: "Nous sommes la pour vous aider.",
@@ -2806,7 +2812,7 @@ const resources = {
         addressLabel: "Adresse",
         addressStreet: "Paseo del Colorado, 7",
         addressCity: "Torremolinos (Malaga)",
-        map: { title: "Nous trouver", description: "Nous sommes ? Torremolinos et accompagnons les familles de la Costa del Sol.", load: "Afficher Google Maps", directions: "Itin?raire" },
+        map: { title: "Nous trouver", description: "Nous sommes à Torremolinos et accompagnons les familles de la Costa del Sol.", load: "Afficher Google Maps", directions: "Itinéraire" },
         websiteLabel: "Site web",
         alerts: {
           required: "Completez les champs obligatoires pour envoyer votre demande.",
@@ -3313,6 +3319,7 @@ const resources = {
       },
       publicHome: {
         hero: {
+          h1: "Betreuung \u00e4lterer Menschen zu Hause an der Costa del Sol",
           badge: "PROFESSIONELLE HÄUSLICHE PFLEGE",
           lead: "Wir sind ein Unternehmen, das auf die Betreuung und Begleitung alterer Menschen an der Costa del Sol spezialisiert ist.",
           description1:
@@ -3851,6 +3858,7 @@ const resources = {
         clientMain: "Carmen Lopez"
       },
       contactPage: {
+        contactActions: { whatsapp: "Schreiben Sie uns per WhatsApp", call: "626 406 477 anrufen", areas: "Unsere Einsatzgebiete", whatsappMessage: "Guten Tag, ich m\u00f6chte Informationen zur Betreuung einer \u00e4lteren Person." },
         followUpSubject: "Familienbetreuung fur {{clientName}}",
         title: "Kontaktieren Sie Sol y Vida Cuidados",
         subtitle: "Wir sind hier, um Ihnen zu helfen.",

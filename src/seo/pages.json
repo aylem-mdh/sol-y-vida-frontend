@@ -1,0 +1,80 @@
+{
+  "site": {
+    "url": "https://www.solyvidacare.com",
+    "name": "Sol y Vida Care",
+    "legalName": "Sol y Vida Cuidados",
+    "phone": "+34626406477",
+    "phoneDisplay": "626 406 477",
+    "email": "solyvidacare@gmail.com",
+    "street": "Paseo del Colorado, 7",
+    "city": "Torremolinos",
+    "region": "Málaga",
+    "image": "/logo.png"
+  },
+  "pages": [
+    {
+      "path": "/",
+      "name": "Inicio",
+      "title": "Cuidado de Personas Mayores en la Costa del Sol | Sol y Vida Care",
+      "description": "Servicios de cuidado y acompañamiento de personas mayores a domicilio en Torremolinos, Benalmádena, Fuengirola y Mijas. Atención cercana y personalizada.",
+      "h1": "Cuidado de personas mayores a domicilio en la Costa del Sol",
+      "priority": "1.0"
+    },
+    {
+      "path": "/services",
+      "name": "Servicios",
+      "title": "Servicios de Atención a Domicilio para Mayores | Sol y Vida Care",
+      "description": "Acompañamiento y compañía, ayuda a domicilio, acompañamiento médico y hospitalario y respiro familiar para personas mayores en la Costa del Sol.",
+      "h1": "Servicios de cuidado y acompañamiento a domicilio",
+      "priority": "0.9"
+    },
+    {
+      "path": "/about",
+      "name": "Quiénes somos",
+      "title": "Quiénes Somos | Sol y Vida Care, cuidado de mayores en Torremolinos",
+      "description": "Conoce a Sol y Vida Care: un equipo dedicado al cuidado y acompañamiento de personas mayores a domicilio, con base en Torremolinos (Málaga).",
+      "h1": "Quiénes somos",
+      "priority": "0.7"
+    },
+    {
+      "path": "/contact",
+      "name": "Contacto",
+      "title": "Contacto y Presupuesto sin Compromiso | Sol y Vida Care",
+      "description": "Llámanos al 626 406 477 o escríbenos para consultar el cuidado a domicilio de un familiar mayor en Torremolinos, Benalmádena, Fuengirola o Mijas.",
+      "h1": "Contacta con Sol y Vida Care",
+      "priority": "0.9"
+    },
+    {
+      "path": "/aviso-legal",
+      "name": "Aviso legal",
+      "title": "Aviso Legal | Sol y Vida Care",
+      "description": "Aviso legal e información del titular del sitio web de Sol y Vida Care.",
+      "h1": "Aviso legal",
+      "priority": "0.2"
+    },
+    {
+      "path": "/privacidad",
+      "name": "Política de privacidad",
+      "title": "Política de Privacidad | Sol y Vida Care",
+      "description": "Información sobre el tratamiento de datos personales en Sol y Vida Care.",
+      "h1": "Política de privacidad",
+      "priority": "0.2"
+    },
+    {
+      "path": "/cookies",
+      "name": "Política de cookies",
+      "title": "Política de Cookies | Sol y Vida Care",
+      "description": "Información sobre las cookies que utiliza el sitio web de Sol y Vida Care.",
+      "h1": "Política de cookies",
+      "priority": "0.2"
+    },
+    {
+      "path": "/login",
+      "name": "Acceso",
+      "title": "Acceso a la plataforma | Sol y Vida Care",
+      "description": "Acceso privado para clientes, familias y equipo de Sol y Vida Care.",
+      "h1": "Acceso",
+      "noindex": true
+    }
+  ]
+}

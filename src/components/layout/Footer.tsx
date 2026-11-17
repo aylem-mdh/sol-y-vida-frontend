@@ -1,11 +1,29 @@
 import { ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import ContactActions from "../seo/ContactActions";
+import { localPages } from "../../seo";
 
 export default function Footer() {
   const { t } = useTranslation();
 
   return (
     <footer className="bg-[#FFE6BF] border-t border-[#FFD4A3] mt-20">
+      <ContactActions />
+      <div className="max-w-7xl mx-auto px-8 pt-10">
+        <nav aria-label={t("contactActions.areas")}>
+          <h2 className="text-lg font-bold text-black">{t("contactActions.areas")}</h2>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {localPages.map((page) => (
+              <li key={page.slug}>
+                <Link to={`/${page.slug}`} className="font-semibold text-[#0B6F6A] hover:underline">
+                  {page.municipality}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
       <div className="max-w-7xl mx-auto px-8 py-10">
         <div className="flex items-start gap-4">
           <div className="rounded-full bg-[#F29A38]/15 p-2.5 text-[#F29A38] sm:p-3">

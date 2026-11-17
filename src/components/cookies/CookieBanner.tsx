@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Cookie, X } from "lucide-react";
+import { analyticsConfigured, initAnalytics } from "../../lib/analytics";
 
 // ── Almacenamiento ────────────────────────────────────────────────────────────
 
@@ -9,6 +10,7 @@ const STORAGE_KEY = "syv_cookie_consent";
 interface ConsentRecord {
   decided: boolean;
   necessary: boolean; // siempre true; reservado para futuras categorías
+  analytics: boolean;
   timestamp: string;
 }
 
@@ -22,13 +24,15 @@ function getStoredConsent(): ConsentRecord | null {
   }
 }
 
-function saveConsent(): void {
+function saveConsent(analytics: boolean): void {
   const record: ConsentRecord = {
     decided: true,
     necessary: true,
+    analytics,
     timestamp: new Date().toISOString(),
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+  if (analytics) initAnalytics();
 }
 
 // ── Evento global para abrir el panel desde el Footer ─────────────────────────
@@ -43,6 +47,7 @@ export default function CookieBanner() {
   const [bannerVisible, setBannerVisible] = useState(false);
   // panelOpen: true cuando se muestra el modal de configuración
   const [panelOpen, setPanelOpen] = useState(false);
+  const [analyticsChoice, setAnalyticsChoice] = useState(() => getStoredConsent()?.analytics ?? false);
 
   useEffect(() => {
     const consent = getStoredConsent();
@@ -64,19 +69,21 @@ export default function CookieBanner() {
   // ── Acciones ────────────────────────────────────────────────────────────────
 
   function acceptAll() {
-    saveConsent();
+    saveConsent(true);
+    setAnalyticsChoice(true);
     setBannerVisible(false);
     setPanelOpen(false);
   }
 
   function reject() {
-    saveConsent(); // sólo cookies técnicas, que son las únicas existentes
+    saveConsent(false);
+    setAnalyticsChoice(false);
     setBannerVisible(false);
     setPanelOpen(false);
   }
 
   function savePreferences() {
-    saveConsent();
+    saveConsent(analyticsChoice);
     setBannerVisible(false);
     setPanelOpen(false);
   }
@@ -150,6 +157,25 @@ export default function CookieBanner() {
                 </span>
               </div>
             </div>
+
+            {analyticsConfigured && (
+              <div className="mt-4 rounded-2xl border border-[#E3F1EF] bg-[#FCFEFE] p-5">
+                <label className="flex cursor-pointer items-start justify-between gap-4">
+                  <span>
+                    <span className="block text-sm font-semibold text-[#1F2937]">Cookies de analítica</span>
+                    <span className="mt-1 block text-xs leading-5 text-[#6B7280]">
+                      Nos ayudan a conocer, de forma agregada, cómo se usa la web para mejorarla.
+                    </span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={analyticsChoice}
+                    onChange={(event) => setAnalyticsChoice(event.target.checked)}
+                    className="mt-1 h-5 w-5 accent-[#0F9E98]"
+                  />
+                </label>
+              </div>
+            )}
 
             <div className="mt-6 flex justify-end">
               <button

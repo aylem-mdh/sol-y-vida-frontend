@@ -1,8 +1,9 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import CookieBanner from "./components/cookies/CookieBanner";
+import { localPages } from "./seo";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -37,6 +38,10 @@ const ReviewsAdmin = lazy(() => import("./pages/ReviewsAdmin"));
 const LegalNotice = lazy(() => import("./pages/LegalNotice"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const LocalLanding = lazy(() => import("./pages/LocalLanding"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const BlogIndex = lazy(() => import("./pages/Blog").then((m) => ({ default: m.BlogIndex })));
+const BlogPost = lazy(() => import("./pages/Blog").then((m) => ({ default: m.BlogPost })));
 
 function App() {
   return (
@@ -55,6 +60,11 @@ function App() {
           <Route path="/aviso-legal" element={<LegalNotice />} />
           <Route path="/privacidad" element={<PrivacyPolicy />} />
           <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          {localPages.map((p) => (
+            <Route key={p.slug} path={`/${p.slug}`} element={<LocalLanding />} />
+          ))}
 
           {/* Dashboard */}
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><Admin /></ProtectedRoute>} />
@@ -87,7 +97,7 @@ function App() {
           <Route path="/family/messages" element={<ProtectedRoute allowedRoles={["family", "client"]}><FamilyMessages /></ProtectedRoute>} />
           <Route path="/worker" element={<ProtectedRoute allowedRoles={["worker"]}><Worker /></ProtectedRoute>} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

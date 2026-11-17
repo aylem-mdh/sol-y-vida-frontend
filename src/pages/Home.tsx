@@ -1,7 +1,9 @@
+import Seo from "../components/seo/Seo";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ReviewsSection from "../components/reviews/ReviewsSection";
 import { Link } from "react-router-dom";
+import { trackEvent } from "../lib/analytics";
 import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
@@ -59,27 +61,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F7FCFB] text-[#1F2937]">
+      <Seo path="/" />
       <section className="relative overflow-hidden bg-[#DDF7F5]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.9),_transparent_45%)]" />
         <Header />
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-8 lg:px-10 lg:py-10">
           <div className="mb-6 flex flex-wrap items-center justify-center gap-3 rounded-3xl bg-white/80 px-6 py-4 backdrop-blur sm:mb-8 sm:gap-4 sm:px-8 sm:py-3 lg:gap-6">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] sm:text-sm">
+            <Link to="/ayuda-a-domicilio-torremolinos" className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] hover:underline sm:text-sm">
               {t("workerPage.locations.torremolinos")}
-            </span>
+            </Link>
             <span className="text-[#F29A38]">•</span>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] sm:text-sm">
+            <Link to="/ayuda-a-domicilio-benalmadena" className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] hover:underline sm:text-sm">
               {t("workerPage.locations.benalmadena")}
-            </span>
+            </Link>
             <span className="text-[#F29A38]">•</span>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] sm:text-sm">
+            <Link to="/ayuda-a-domicilio-fuengirola" className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] hover:underline sm:text-sm">
               {t("workerPage.locations.fuengirola")}
-            </span>
+            </Link>
             <span className="text-[#F29A38]">•</span>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] sm:text-sm">
+            <Link to="/ayuda-a-domicilio-mijas" className="text-xs font-bold uppercase tracking-[0.2em] text-[#F29A38] hover:underline sm:text-sm">
               {t("workerPage.locations.mijas")}
-            </span>
+            </Link>
           </div>
 
           <div className="grid items-center gap-6 md:mt-8 md:gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
@@ -90,9 +93,13 @@ export default function Home() {
                 </span>
               </div>
 
-              <h1 className="mt-4 text-4xl font-black leading-[0.95] text-[#1F2937] sm:mt-6 sm:text-5xl md:text-6xl lg:text-7xl">
+              <p className="mt-4 text-4xl font-black leading-[0.95] text-[#1F2937] sm:mt-6 sm:text-5xl md:text-6xl lg:text-7xl">
                 {t("branding.name")}
                 <span className="mt-2 block text-[#0F9E98]">{t("branding.suffix")}</span>
+              </p>
+
+              <h1 className="mt-4 text-xl font-bold leading-snug text-[#1F2937] sm:text-2xl lg:text-3xl">
+                {t("publicHome.hero.h1")}
               </h1>
 
               <p className="mt-4 text-base font-semibold text-[#374151] sm:mt-5 sm:text-lg md:text-xl">
@@ -122,6 +129,15 @@ export default function Home() {
                 >
                   {t("services.title")}
                 </Link>
+
+                <a
+                  href="tel:+34626406477"
+                  onClick={() => trackEvent("phone_click", { location: "home_hero" })}
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#F29A38] px-6 py-3 font-semibold text-white transition duration-300 hover:bg-[#E28727] sm:px-7 sm:py-3.5"
+                >
+                  <Phone className="mr-2 h-5 w-5" aria-hidden="true" />
+                  {t("branding.supportPhone")}
+                </a>
               </div>
             </div>
 
@@ -130,7 +146,10 @@ export default function Home() {
                 <div className="absolute left-1/2 top-2 h-[200px] w-[200px] -translate-x-1/2 rounded-full bg-[#0F9E98]/20 sm:h-[240px] sm:w-[240px] md:left-auto md:right-[-4%] md:top-4 md:h-[300px] md:w-[300px] lg:right-[-4%] lg:top-4 lg:h-[380px] lg:w-[380px]" />
                 <div className="absolute left-1/2 top-6 h-[180px] w-[180px] -translate-x-1/2 rounded-full bg-[#DDF7F5] sm:h-[220px] sm:w-[220px] md:left-auto md:right-2 md:top-10 md:h-[280px] md:w-[280px] lg:right-4 lg:top-16 lg:h-[360px] lg:w-[360px]" />
                 <img
-                  src="/hero.png"
+                  src="/hero.webp"
+                  width={900}
+                  height={1126}
+                  fetchPriority="high"
                   alt={t("publicHome.hero.imageAlt")}
                   className="relative z-10 mx-auto h-[240px] w-auto rounded-[28px] border border-white/70 bg-white/40 p-2 shadow-[0_20px_50px_rgba(15,158,152,0.18)] sm:h-[280px] md:h-[340px] lg:h-[420px]"
                   style={{
